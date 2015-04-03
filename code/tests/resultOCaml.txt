@@ -1,0 +1,405 @@
+Moscow ML version 2.10
+Enter `quit();' to quit.
+[opening file "../auxi/cleaner.sml"]
+> val it = () : unit
+> type elem = char
+  type vector = string
+  type cs = cs
+  type instream = instream
+  type outstream = outstream
+  val stdErr = <outstream> : outstream
+  val openAppend = fn : string -> outstream
+  val flushOut = fn : outstream -> unit
+  val inputAll = fn : instream -> string
+  val inputLine = fn : instream -> string option
+  val output1 = fn : outstream * char -> unit
+  val closeIn = fn : instream -> unit
+  val closeOut = fn : outstream -> unit
+  val lookahead = fn : instream -> char option
+  val stdIn = <instream> : instream
+  val input = fn : instream -> string
+  val print = fn : string -> unit
+  val inputNoBlock = fn : instream -> string option
+  val endOfStream = fn : instream -> bool
+  val output = fn : outstream * string -> unit
+  val inputN = fn : instream * int -> string
+  val outputSubstr = fn : outstream * substring -> unit
+  val openIn = fn : string -> instream
+  val openOut = fn : string -> outstream
+  val stdOut = <outstream> : outstream
+  val input1 = fn : instream -> char option
+  val 'a scanStream = fn :
+  ((cs -> (char * cs) option) -> cs -> ('a * cs) option) -> instream ->
+  'a option
+> val hasNext = fn : instream -> bool
+> val substr = fn : string * int * int -> string option
+> val write = ref false : bool ref
+> val readFile = fn : unit -> unit
+sqrt(1 - power(cos(x + y),2))
+<<x + y < z>>
+<<(forall x. x < 2 ==> 2 * x <= 3) \/ false>>
+2 *
+x
+<<forall x y. exists z. x < z /\ y < z>>
+<<~(forall x. P(x)) <=> (exists y. ~P(y))>>
+x
+x'
+x''
+<<forall x'. x' = x>>
+<<forall x' x''. x' = x ==> x' = x''>>
+|- s = t ==> f(s,g(s,t,s),u,h(h(s))) = f(s,g(t,t,s),u,h(h(t)))
+|-
+(forall x y z. x + y + z = z + y + x) ==>
+(forall y' z. y + y' + z = z + y' + y)
+|- x + x = 2 * x ==> (x + x = x ==> x = 0) ==> 2 * x = x ==> x = 0
+|-
+x + x = 2 * x ==>
+(x + x = y + y ==> y + y + y = x + x + x) ==>
+2 * x = y + y ==> y + y + y = x + 2 * x
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y z. x + y + z = y + z + z)
+|- (forall x. x = x) ==> x = x
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y' z'. (w + y + z) + y' + z' = y' + z' + z')
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y' z'. (x + y + z) + y' + z' = y' + z' + z')
+|- (forall x y z. nothing_much) ==> (forall y z. nothing_much)
+|-
+x + x = 2 * x ==>
+(x + x = y + y <=> something \/ y + y + y = x + x + x) ==>
+(2 * x = y + y <=> something \/ y + y + y = x + x + x)
+|-
+x + x = 2 * x ==>
+((exists x. x = 2) <=> (exists y. y + x + x = y + y + y)) ==>
+((exists x. x = 2) <=> (exists y. y + 2 * x = y + y + y))
+|-
+x = y ==>
+((forall z. x = z) <=> (exists x. y < z) /\ (forall y. y < x)) ==>
+((forall z. y = z) <=> (exists x. y < z) /\ (forall y'. y' < y))
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x'' x'''. x' + x'' + x''' = 0)
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x' x'''. x'' + x' + x''' = 0)
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x''' x''''. (x' + x'') + x''' + x'''' = 0)
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x''' x''''. (x + x' + x'') + x''' + x'''' = 0)
+|-
+(forall x x'. x + x' = x' + x) ==> (forall x'. 2 * x + x' = x' + 2 * x)
+[2,*,(,(,var_1,+,x',),+,11,)]
+[if,(,*,p1,--,==,*,p2,++,),then,f,(,),else,g,(,)]
+|-
+forall x.
+  exists v w.
+    forall y z. P(x) /\ Q(y) ==> (P(v) \/ R(w)) /\ (R(z) ==> Q(v))
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+|- p ==> q <=> ~q ==> ~p
+|- ~(~p) <=> p
+|- ~(p ==> q) ==> q ==> p
+|- ~p ==> q <=> ~q ==> p
+|- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
+|- p \/ ~p
+|- p \/ ~(~(~p))
+|- ((p ==> q) ==> p) ==> p
+|- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
+|- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
+|- p <=> p
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+|- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
+|- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
+|- p ==> q <=> ~p \/ q
+|- (p ==> q) \/ (q ==> p)
+|- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
+|- p ==> q <=> ~q ==> ~p
+|- ~(~p) <=> p
+|- ~(p ==> q) ==> q ==> p
+|- ~p ==> q <=> ~q ==> p
+|- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
+|- p \/ ~p
+|- p \/ ~(~(~p))
+|- ((p ==> q) ==> p) ==> p
+|- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
+|- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
+|- p <=> p
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+|- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
+|- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
+|- p ==> q <=> ~p \/ q
+|- (p ==> q) \/ (q ==> p)
+|- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
+|- exists y. forall x. P(y) ==> P(x)
+|- exists x. forall y z. (P(y) ==> Q(z)) ==> P(x) ==> Q(x)
+|-
+(forall x y. exists z. forall w. P(x) /\ Q(y) ==> R(z) /\ U(w)) ==>
+(exists x y. P(x) /\ Q(y)) ==> (exists z. R(z))
+|-
+(exists x. P ==> Q(x)) /\ (exists x. Q(x) ==> P) ==>
+(exists x. P <=> Q(x))
+|- (forall x. P <=> Q(x)) ==> (P <=> (forall x. Q(x)))
+|- (forall x. P \/ Q(x)) <=> P \/ (forall x. Q(x))
+|-
+~(exists x. U(x) /\ Q(x)) /\
+(forall x. P(x) ==> Q(x) \/ R(x)) /\
+~(exists x. P(x) ==> (exists x. Q(x))) /\
+(forall x. Q(x) /\ R(x) ==> U(x)) ==> (exists x. P(x) /\ R(x))
+|-
+(exists x. P(x)) /\
+(forall x. U(x) ==> ~G(x) /\ R(x)) /\
+(forall x. P(x) ==> G(x) /\ U(x)) /\
+((forall x. P(x) ==> Q(x)) \/ (exists x. Q(x) /\ P(x))) ==>
+(exists x. Q(x) /\ P(x))
+|-
+((exists x. P(x)) <=> (exists x. Q(x))) /\
+(forall x y. P(x) /\ Q(y) ==> (R(x) <=> U(y))) ==>
+((forall x. P(x) ==> R(x)) <=> (forall x. Q(x) ==> U(x)))
+|-
+(exists x. P(x) /\ ~Q(x)) /\
+(forall x. P(x) ==> R(x)) /\
+(forall x. U(x) /\ V(x) ==> P(x)) /\ (exists x. R(x) /\ ~Q(x)) ==>
+(forall x. V(x) ==> ~R(x)) ==> (forall x. U(x) ==> ~V(x))
+|-
+(forall x. P(x) ==> (forall x. Q(x))) /\
+((forall x. Q(x) \/ R(x)) ==> (exists x. Q(x) /\ R(x))) /\
+((exists x. R(x)) ==> (forall x. L(x) ==> M(x))) ==>
+(forall x. P(x) /\ L(x) ==> M(x))
+|-
+(exists x. P(x)) /\ (exists x. G(x)) ==>
+((forall x. P(x) ==> H(x)) /\ (forall x. G(x) ==> J(x)) <=>
+ (forall x y. P(x) /\ G(y) ==> H(x) /\ J(y)))
+|-
+(forall x. P(x) \/ G(x) ==> ~H(x)) /\
+(forall x. (G(x) ==> ~U(x)) ==> P(x) /\ H(x)) ==> (forall x. U(x))
+|-
+~(exists x. P(x) /\ (G(x) \/ H(x))) /\
+(exists x. Q(x) /\ P(x)) /\ (forall x. ~H(x) ==> J(x)) ==>
+(exists x. Q(x) /\ J(x))
+|-
+(forall x. P(x) /\ (G(x) \/ H(x)) ==> Q(x)) /\
+(forall x. Q(x) /\ H(x) ==> J(x)) /\ (forall x. R(x) ==> H(x)) ==>
+(forall x. P(x) /\ R(x) ==> J(x))
+|-
+(forall x. P(a) /\ (P(x) ==> P(b)) ==> P(c)) <=>
+(forall x. P(a) ==> P(x) \/ P(c)) /\ (P(a) ==> P(b) ==> P(c))
+|- exists x y. P(x,y) ==> (forall x y. P(x,y))
+|-
+(forall x. exists y. P(x,y)) /\
+(forall x. exists y. G(x,y)) /\
+(forall x y.
+   P(x,y) \/ G(x,y) ==> (forall z. P(y,z) \/ G(y,z) ==> H(x,z))) ==>
+(forall x. exists y. H(x,y))
+|-
+(forall z.
+   exists w.
+     forall x.
+       exists y.
+         (P(x,z) ==> P(y,w)) /\
+         P(y,z) /\ (P(y,w) ==> (exists u. Q(u,w)))) /\
+(forall x z. ~P(x,z) ==> (exists y. Q(y,z))) /\
+((exists x y. Q(x,y)) ==> (forall x. R(x,x))) ==>
+(forall x. exists y. R(x,y))
+|-
+(forall x.
+   P(a) /\ (P(x) ==> (exists y. P(y) /\ R(x,y))) ==>
+   (exists z w. P(z) /\ R(x,w) /\ R(w,z))) <=>
+(forall x.
+   (~P(a) \/ P(x) \/ (exists z w. P(z) /\ R(x,w) /\ R(w,z))) /\
+   (~P(a) \/
+    ~(exists y. P(y) /\ R(x,y)) \/
+    (exists z w. P(z) /\ R(x,w) /\ R(w,z))))
+|- ~(exists x. forall y. P(y,x) <=> ~P(y,y))
+|-
+(exists y. forall x. P(x,y) <=> P(x,x)) ==>
+~(forall x. exists y. forall z. P(z,y) <=> ~P(z,x))
+|-
+(forall z. exists y. forall x. P(x,y) <=> P(x,z) /\ ~P(x,x)) ==>
+~(exists z. forall x. P(x,z))
+|- ~(exists y. forall x. P(x,y) <=> ~(exists z. P(x,z) /\ P(z,x)))
+|-
+(forall x.
+   P(x) ==> (exists y. G(y) /\ H(x,y)) /\ (exists y. G(y) /\ ~H(x,y))) /\
+(exists x. J(x) /\ (forall y. G(y) ==> H(x,y))) ==>
+(exists x. J(x) /\ ~P(x))
+|-
+lives(agatha) /\
+lives(butler) /\
+lives(charles) /\
+(killed(agatha,agatha) \/
+ killed(butler,agatha) \/ killed(charles,agatha)) /\
+(forall x y. killed(x,y) ==> hates(x,y) /\ ~richer(x,y)) /\
+(forall x. hates(agatha,x) ==> ~hates(charles,x)) /\
+(hates(agatha,agatha) /\ hates(agatha,charles)) /\
+(forall x. lives(x) /\ ~richer(x,agatha) ==> hates(butler,x)) /\
+(forall x. hates(agatha,x) ==> hates(butler,x)) /\
+(forall x. ~hates(x,agatha) \/ ~hates(x,butler) \/ ~hates(x,charles)) ==>
+killed(agatha,agatha) /\
+~killed(butler,agatha) /\ ~killed(charles,agatha)
+|-
+P(f(a,b),f(b,c)) /\
+P(f(b,c),f(a,c)) /\ (forall x y z. P(x,y) /\ P(y,z) ==> P(x,z)) ==>
+P(f(a,b),f(a,c))
+|-
+forall P Q R x.
+  exists v w.
+    forall y z. P(x) /\ Q(y) ==> (P(v) \/ R(w)) /\ (R(z) ==> Q(v))
+|- (forall x. P(x) <=> ~P(f(x))) ==> (exists x. P(x) /\ ~P(f(x)))
+|-
+forall x.
+  P(x,f(x)) <=> (exists y. (forall z. P(z,y) ==> P(z,f(x))) /\ P(x,y))
+|-
+exists x.
+  forall y z.
+    ((F(y,z) ==> G(y) ==> H(x)) ==> F(x,x)) /\
+    ((F(z,x) ==> G(x)) ==> H(z)) /\ F(x,y) ==> F(z,z)
+|-
+exists x y.
+  forall z.
+    (F(x,y) ==> F(y,z) /\ F(z,z)) /\
+    (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
+|-
+(forall x. exists y. F(x,y) \/ F(y,x)) /\
+(forall x y. F(y,x) ==> F(y,y)) ==> (exists z. F(z,z))
+|-
+forall x.
+  exists y.
+    (exists u. forall v. F(u,x) ==> G(v,u) /\ G(u,x)) ==>
+    (exists u. forall v. F(u,y) ==> G(v,u) /\ G(u,y)) \/
+    (forall u v. exists w. G(v,u) \/ H(w,y,u) ==> G(u,w))
+|-
+(forall x. K(x) ==> (exists y. L(y) /\ (F(x,y) ==> G(x,y)))) /\
+(exists z. K(z) /\ (forall u. L(u) ==> F(z,u))) ==>
+(exists v w. K(v) /\ L(w) /\ G(v,w))
+|-
+exists x.
+  forall y z.
+    ((F(y,z) ==> G(y) ==> (forall u. exists v. H(u,v,x))) ==> F(x,x)) /\
+    ((F(z,x) ==> G(x)) ==> (forall u. exists v. H(u,v,z))) /\ F(x,y) ==>
+    F(z,z)
+|-
+forall x.
+  exists y.
+    forall z.
+      ((forall u. exists v. F(y,u,v) /\ G(y,u) /\ ~H(y,x)) ==>
+       (forall u. exists v. F(x,u,v) /\ G(z,u) /\ ~H(x,z)) ==>
+       (forall u. exists v. F(x,u,v) /\ G(y,u) /\ ~H(x,y))) /\
+      ((forall u. exists v. F(x,u,v) /\ G(y,u) /\ ~H(x,y)) ==>
+       ~(forall u. exists v. F(x,u,v) /\ G(z,u) /\ ~H(x,z)) ==>
+       (forall u. exists v. F(y,u,v) /\ G(y,u) /\ ~H(y,x)) /\
+       (forall u. exists v. F(z,u,v) /\ G(y,u) /\ ~H(z,y)))
+|-
+exists x y.
+  forall z.
+    (F(x,y) ==> F(y,z) /\ F(z,z)) /\
+    (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> g(x) <= g(y))
+f(x,x,x)
+g(x,y)
+true
+
+false
+
+
+1 subgoal:
+---> (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y)) ==>
+     (forall x y. x <= y ==> f(x) <= f(y)) /\
+     (forall x y. x <= y ==> g(x) <= g(y))
+
+
+1 subgoal:
+ant: (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y))
+---> (forall x y. x <= y ==> f(x) <= f(y)) /\
+     (forall x y. x <= y ==> g(x) <= g(y))
+
+
+2 subgoals starting with
+ant: (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y))
+---> forall x y. x <= y ==> f(x) <= f(y)
+
+No subgoals
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y)) /\
+(forall x y. x <= y ==> g(x) <= g(y))
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y)) /\
+(forall x y. x <= y ==> g(x) <= g(y))
+|-
+(forall x y. x <= y <=> x * y = x) /\
+(forall x y. f(x * y) = f(x) * f(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+|-
+p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+|-
+p(c) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+|- p(a) \/ p(b) ==> q ==> (exists y. p(y))
+|-
+(p(a) \/ p(b)) /\ (forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(y)))
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(y)))
+|-
+(forall x. p(x) ==> q(x)) ==>
+(forall x. q(x) ==> p(x)) ==> (p(a) <=> q(a))
+[(f(f(z),g(y)),f(f(z),g(y)))]
+[(f(y,y),f(y,y))]
+[(f(f(f(x_3,x_3),f(x_3,x_3)),f(f(x_3,x_3),f(x_3,x_3))),f(f(f(x_3,x_3),
+                                                           f(x_3,x_3))
+                                                         ,
+                                                         f(f(x_3,x_3),
+                                                           f(x_3,x_3))))
+ ,(f(f(x_3,x_3),f(x_3,x_3)),f(f(x_3,x_3),f(x_3,x_3))),
+ (f(x_3,x_3),f(x_3,x_3))]
+|- (p ==> q) \/ (q ==> p)
+|- p /\ q <=> (p <=> q) <=> p \/ q
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+> val it = () : unit
+[closing file "../auxi/cleaner.sml"]
+- 

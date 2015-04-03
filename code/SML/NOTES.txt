@@ -1,0 +1,75 @@
+SML version
+===
+This is a translation to SML of the code in John Harrison's "Handbook of Practical Logic and Automated Reasoning".
+
+### Running the program ###
+The program has been tested and run in Isabelle, Moscow ML, Standard ML of New Jersey and Poly/ML.
+
+In Isabelle you can simply open the Init.thy file.
+
+To use Moscow ML you run
+ mosml init.ml
+
+To use Standard ML of New Jersey, first run
+ sml
+and then in the presented interactive system write
+ use "init_nj.sml";;
+ 
+You can also run it using Poly/ML. First run
+ polyml
+and then in the presented interactive system write
+ use "init_nj.sml";;
+
+### Timing ###
+To test how fast your version of SML can load and run the program and its examples, you can run timing.sml in Moscow ML, or you can run timing_nj.sml in Standard ML of New Jersey or Poly/ML. You can also open Init.thy in Isabelle and use Isabelle menu Plugins / Isabelle / Timing panel to measure the time used.
+
+Results from timing the program in Windows 7 on a relatively weak laptop:
+
+Isabelle:                   5.9 seconds
+Moscow ML:                 38.3 seconds 
+Standard ML of New Jersey: 26.6 seconds 
+Poly/ML:                    5.2 seconds
+
+(The program was run a couple of times with approximately the same results.)
+
+As can be seen, the program is fully loaded and fully run considerably faster in Poly/ML and Isabelle than in Moscow ML and Standard ML of New Jersey.
+
+### Warnings ###
+The translation contains many warnings. Isabelle reports them as follows:
+1. "Value identifier x has not been referenced."
+2. "Pattern is not exhaustive."
+3. "Matches are not exhaustive."
+These warnings could be avoided, but this would make the code less faithful to the OCaml version which in most cases contains the equivalent warnings. The above warnings 2 and 3 correspond to this OCaml warning:
+"Warning P: this pattern-matching is not exhaustive"
+Warning 1 could be avoided by introducing _'s in some of the patterns where the OCaml version uses named variables.
+
+### Differences from OCaml version ###
+* SML does not have build-in polymorpic ordering and hashing. (Do, however, note that for instance Moscow ML actually has a polymorphic hash function called Polyhash.hash.) Therefore orderings and hash functions are explicitly defined for each datatype. For instance the ordering folfm_ord for fol formulas and the hash function t_hash for terms. This also means that many functions now also take an ordering and/or a hash function as arguments. An example is the apply function. Furthermore it means that the types of certain functions have been specialized. For instance, the apply function has a version specific for (string,'a) functions, namely apply_str. 
+* Shallow/pointer comparison (== in ocaml) is not used. Like in the F# version (https://github.com/jack-pappas/fsharp-logic-examples/) the = is used instead.
+* In SML one cannot use "when"-guards in case-expressions like in OCaml. Therefore if-then-else is used in these cases. The best example of this is lcftab, where the case expression has been replaced with if-then-else. Another example is modus ponens where if-then-else is placed inside the case.
+* The OCaml version uses a preprocessor (camlp4 or camlp5) so that one can write for instance
+<<P(x) \/ forall y.Q(y)>>
+For the sake of working in any SML implementation this version does not use a preprocessor. Instead the function << is defined which takes a string and the element >> as arguments. Therefore the above example will be:
+<<"P(x) \\/ forall y.Q(y)">>
+It also means that the program contains some extra parentheses when a function takes a formula as input. For instance
+print_fol_formula <<P(x) \/ forall y.Q(y)>>
+becomes
+print_fol_formula (<<"P(x) \\/ forall y.Q(y)">>)
+* The OCaml version uses the OCaml format library. The SML translation contains a port of that library. However, the OCaml top-level flushes just before it asks for new input. This cannot easily be done in SML. Therefore the SML versions of the printing functions do a flush themselves. There is, however, for each of them also a version that does not flush. For instance print_fol_formula flushes, while print_fol_formula_aux does not.
+
+### TODO ###
+The current version contains all of the code for Chapter 6 and the functions on which it depends. The rest of the book has yet to be translated.
+
+### Useful resources ###
+Code and resources for "Handbook of Practical Logic and Automated Reasoning"
+ http://www.cl.cam.ac.uk/~jrh13/atp/
+ 
+Logic Programming in F# - Code and Examples from John Harrison's "Handbook of Practical Logic and Automated Reasoning" 
+ https://github.com/jack-pappas/fsharp-logic-examples/
+ 
+How to run the OCaml version
+ http://www.math.uni-bonn.de/ag/logik/teaching/2014SS/Seminar_Praktische_Logik.shtml
+ 
+Fast Mergeable Integer Maps (1998) by Chris Okasaki, Andrew Gill
+(On Patricia trees)
+ http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.37.5452

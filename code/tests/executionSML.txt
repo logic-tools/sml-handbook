@@ -1,0 +1,4285 @@
+Moscow ML version 2.10
+Enter `quit();' to quit.
+- [opening file "init.sml"]
+> New type names: =dummy_interactive
+  datatype dummy_interactive =
+  (dummy_interactive,
+   {con END_INTERACTIVE : dummy_interactive,
+    con START_INTERACTIVE : dummy_interactive})
+  con END_INTERACTIVE = END_INTERACTIVE : dummy_interactive
+  con START_INTERACTIVE = START_INTERACTIVE : dummy_interactive
+[opening file "initialization.sml"]
+> val it = () : unit
+> val it = () : unit
+> val it = () : unit
+> val it = () : unit
+[opening file "format.sml"]
+> val max_int = 1073741823 : int
+> val max = fn : int -> int -> int
+> val string_make = fn : int -> char -> string
+> val pred = fn : int -> int
+> val output = fn : outstream -> string -> int -> int -> unit
+> type size = int
+> val size_of_int = fn : int -> int
+> val int_of_size = fn : int -> int
+> New type names: =tblock, =block_type, =pp_token
+  type tag = string
+  datatype pp_token =
+  (pp_token,
+   {con Pp_begin : int * block_type -> pp_token,
+    con Pp_break : int * int -> pp_token,
+    con Pp_close_tag : pp_token,
+    con Pp_end : pp_token,
+    con Pp_if_newline : pp_token,
+    con Pp_newline : pp_token,
+    con Pp_open_tag : string -> pp_token,
+    con Pp_stab : pp_token,
+    con Pp_tbegin : tblock -> pp_token,
+    con Pp_tbreak : int * int -> pp_token,
+    con Pp_tend : pp_token,
+    con Pp_text : string -> pp_token})
+  datatype block_type =
+  (block_type,
+   {con Pp_box : block_type,
+    con Pp_fits : block_type,
+    con Pp_hbox : block_type,
+    con Pp_hovbox : block_type,
+    con Pp_hvbox : block_type,
+    con Pp_vbox : block_type})
+  datatype tblock = (tblock,{con Pp_tbox : int list ref -> tblock})
+  con Pp_begin = fn : int * block_type -> pp_token
+  con Pp_break = fn : int * int -> pp_token
+  con Pp_close_tag = Pp_close_tag : pp_token
+  con Pp_end = Pp_end : pp_token
+  con Pp_if_newline = Pp_if_newline : pp_token
+  con Pp_newline = Pp_newline : pp_token
+  con Pp_open_tag = fn : string -> pp_token
+  con Pp_stab = Pp_stab : pp_token
+  con Pp_tbegin = fn : tblock -> pp_token
+  con Pp_tbreak = fn : int * int -> pp_token
+  con Pp_tend = Pp_tend : pp_token
+  con Pp_text = fn : string -> pp_token
+  con Pp_box = Pp_box : block_type
+  con Pp_fits = Pp_fits : block_type
+  con Pp_hbox = Pp_hbox : block_type
+  con Pp_hovbox = Pp_hovbox : block_type
+  con Pp_hvbox = Pp_hvbox : block_type
+  con Pp_vbox = Pp_vbox : block_type
+  con Pp_tbox = fn : int list ref -> tblock
+> val string_of_tag = fn : string -> string
+> val tag_of_string = fn : string -> string
+> type pp_queue_elem = {elem_size : int ref, length : int, token : pp_token}
+> New type names: =pp_scan_elem
+  datatype pp_scan_elem =
+  (pp_scan_elem,
+   {con Scan_elem :
+      int * {elem_size : int ref, length : int, token : pp_token} ->
+      pp_scan_elem})
+  con Scan_elem = fn :
+  int * {elem_size : int ref, length : int, token : pp_token} -> pp_scan_elem
+> New type names: =pp_format_elem
+  datatype pp_format_elem =
+  (pp_format_elem,{con Format_elem : block_type * int -> pp_format_elem})
+  con Format_elem = fn : block_type * int -> pp_format_elem
+> New type names: =queue_cell, =queue_elem
+  datatype 'a queue_elem =
+  ('a queue_elem,
+   {con 'a Cons : 'a queue_cell -> 'a queue_elem, con 'a Nil : 'a queue_elem})
+  datatype 'a queue_cell =
+  ('a queue_cell,
+   {con 'a Queue_cell :
+      {head : 'a ref, tail : 'a queue_elem ref} -> 'a queue_cell})
+  con 'a Cons = fn : 'a queue_cell -> 'a queue_elem
+  con 'a Nil = Nil : 'a queue_elem
+  con 'a Queue_cell = fn :
+  {head : 'a ref, tail : 'a queue_elem ref} -> 'a queue_cell
+> val 'a dest_q_cell = fn :
+  'a queue_cell -> {head : 'a ref, tail : 'a queue_elem ref}
+> type 'a queue = {body : 'a queue_elem ref, insert : 'a queue_elem ref}
+> type formatter =
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val 'a make_queue = fn :
+  unit -> {body : 'a queue_elem ref, insert : 'a queue_elem ref}
+> val 'a clear_queue = fn :
+  {body : 'a queue_elem ref, insert : 'a queue_elem ref} -> unit
+> val 'a add_queue = fn :
+  'a -> {body : 'a queue_elem ref, insert : 'a queue_elem ref} -> unit
+> exn Empty_queue = Empty_queue : exn
+> val ('a, 'b) peek_queue = fn : {body : 'a queue_elem ref, insert : 'b} -> 'a
+> val (''a, 'b) take_queue = fn :
+  {body : ''a queue_elem ref, insert : 'b queue_elem ref} -> ''a
+> val pp_enqueue = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} ->
+  {elem_size : int ref, length : int, token : pp_token} -> unit
+> val pp_clear_queue = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val pp_infinity = 1000000010 : int
+> val pp_output_string = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} ->
+  string -> unit
+  val pp_output_newline = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+  val pp_display_blanks = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val break_new_line = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  int -> unit
+> val break_line = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val break_same_line = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_force_break_line = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val pp_skip_token = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> exn Not_found = Not_found : exn
+> val format_pp_token = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  pp_token -> unit
+> val advance_loop = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val advance_left = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val enqueue_advance = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} ->
+  {elem_size : int ref, length : int, token : pp_token} -> unit
+> val ('a, 'b, 'c) make_queue_elem = fn :
+  'a -> 'b -> 'c -> {elem_size : 'a ref, length : 'c, token : 'b}
+> val enqueue_string_as = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  string -> unit
+> val enqueue_string = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} ->
+  string -> unit
+> val scan_stack_bottom =
+    [Scan_elem(~1, {elem_size = ref ~1, length = 0, token = Pp_text ""})] :
+  pp_scan_elem list
+> val clear_scan_stack = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val set_size = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  unit
+> val scan_push = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  {elem_size : int ref, length : int, token : pp_token} -> unit
+> val pp_open_box_gen = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  block_type -> unit
+> val pp_open_sys_box = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val pp_close_box = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+> val pp_set_print_tags = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  unit
+> val pp_set_mark_tags = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  unit
+> val pp_get_print_tags = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  bool
+> val pp_get_mark_tags = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  bool
+> val pp_set_tags = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  unit
+> val pp_rinit = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit
+> val pp_flush_queue = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> bool ->
+  unit
+> val pp_print_as_size = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  string -> unit
+> val pp_print_as = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  string -> unit
+> val pp_print_string = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} ->
+  string -> unit
+> val pp_print_int = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_open_hbox = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+  val pp_open_box = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_open_hvbox = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_print_newline = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+  val pp_print_flush = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+> val pp_print_break = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  int -> unit
+> val pp_print_space = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+> val pp_set_max_boxes = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_limit = fn : int -> int
+> val pp_set_min_space_left = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_set_max_indent = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val pp_set_margin = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val default_pp_mark_open_tag = fn : string -> string
+> val default_pp_mark_close_tag = fn : string -> string
+> val 'a default_pp_print_open_tag = fn : 'a -> unit
+> val 'a default_pp_print_close_tag = fn : 'a -> unit
+> val pp_make_formatter = fn :
+  (string -> int -> int -> unit) -> (unit -> unit) -> (unit -> unit) ->
+  (int -> unit) ->
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val blank_line =
+    "                                                                                "
+     : string
+> val display_blanks = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> int ->
+  unit
+> val display_newline = fn :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref} -> unit ->
+  unit
+> val make_formatter = fn :
+  (string -> int -> int -> unit) -> (unit -> unit) ->
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val formatter_of_out_channel = fn :
+  outstream ->
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val std_formatter =
+    {pp_curr_depth = ref 1, pp_current_indent = ref 0, pp_ellipsis = ref ".",
+     pp_flush_function = ref fn, pp_format_stack = ref [],
+     pp_is_new_line = ref true, pp_left_total = ref 1, pp_margin = ref 78,
+     pp_mark_close_tag = ref fn, pp_mark_open_tag = ref fn,
+     pp_mark_stack = ref [], pp_mark_tags = ref false,
+     pp_max_boxes = ref 1073741823, pp_max_indent = ref 68,
+     pp_min_space_left = ref 10, pp_output_function = ref fn,
+     pp_output_newline = ref fn, pp_output_spaces = ref fn,
+     pp_print_close_tag = ref fn, pp_print_open_tag = ref fn,
+     pp_print_tags = ref false,
+     pp_queue =
+       ref{body =
+             ref(Cons(Queue_cell{head =
+                                   ref{elem_size = ref ~1, length = 0,
+                                       token = Pp_begin(0, Pp_hovbox)},
+                                 tail = ref Nil})),
+           insert =
+             ref(Cons(Queue_cell{head =
+                                   ref{elem_size = ref ~1, length = 0,
+                                       token = Pp_begin(0, Pp_hovbox)},
+                                 tail = ref Nil}))}, pp_right_total = ref 1,
+     pp_scan_stack =
+       ref [Scan_elem(1,
+                      {elem_size = ref ~1, length = 0,
+                       token = Pp_begin(0, Pp_hovbox)}),
+            Scan_elem(~1,
+                      {elem_size = ref ~1, length = 0, token = Pp_text ""})],
+     pp_space_left = ref 78, pp_tag_stack = ref [], pp_tbox_stack = ref []} :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val err_formatter =
+    {pp_curr_depth = ref 1, pp_current_indent = ref 0, pp_ellipsis = ref ".",
+     pp_flush_function = ref fn, pp_format_stack = ref [],
+     pp_is_new_line = ref true, pp_left_total = ref 1, pp_margin = ref 78,
+     pp_mark_close_tag = ref fn, pp_mark_open_tag = ref fn,
+     pp_mark_stack = ref [], pp_mark_tags = ref false,
+     pp_max_boxes = ref 1073741823, pp_max_indent = ref 68,
+     pp_min_space_left = ref 10, pp_output_function = ref fn,
+     pp_output_newline = ref fn, pp_output_spaces = ref fn,
+     pp_print_close_tag = ref fn, pp_print_open_tag = ref fn,
+     pp_print_tags = ref false,
+     pp_queue =
+       ref{body =
+             ref(Cons(Queue_cell{head =
+                                   ref{elem_size = ref ~1, length = 0,
+                                       token = Pp_begin(0, Pp_hovbox)},
+                                 tail = ref Nil})),
+           insert =
+             ref(Cons(Queue_cell{head =
+                                   ref{elem_size = ref ~1, length = 0,
+                                       token = Pp_begin(0, Pp_hovbox)},
+                                 tail = ref Nil}))}, pp_right_total = ref 1,
+     pp_scan_stack =
+       ref [Scan_elem(1,
+                      {elem_size = ref ~1, length = 0,
+                       token = Pp_begin(0, Pp_hovbox)}),
+            Scan_elem(~1,
+                      {elem_size = ref ~1, length = 0, token = Pp_text ""})],
+     pp_space_left = ref 78, pp_tag_stack = ref [], pp_tbox_stack = ref []} :
+  {pp_curr_depth : int ref, pp_current_indent : int ref,
+   pp_ellipsis : string ref, pp_flush_function : (unit -> unit) ref,
+   pp_format_stack : pp_format_elem list ref, pp_is_new_line : bool ref,
+   pp_left_total : int ref, pp_margin : int ref,
+   pp_mark_close_tag : (string -> string) ref,
+   pp_mark_open_tag : (string -> string) ref, pp_mark_stack : string list ref,
+   pp_mark_tags : bool ref, pp_max_boxes : int ref, pp_max_indent : int ref,
+   pp_min_space_left : int ref,
+   pp_output_function : (string -> int -> int -> unit) ref,
+   pp_output_newline : (unit -> unit) ref,
+   pp_output_spaces : (int -> unit) ref,
+   pp_print_close_tag : (string -> unit) ref,
+   pp_print_open_tag : (string -> unit) ref, pp_print_tags : bool ref,
+   pp_queue :
+     {body :
+        {elem_size : int ref, length : int, token : pp_token} queue_elem ref,
+      insert :
+        {elem_size : int ref, length : int,
+         token : pp_token} queue_elem ref} ref, pp_right_total : int ref,
+   pp_scan_stack : pp_scan_elem list ref, pp_space_left : int ref,
+   pp_tag_stack : string list ref, pp_tbox_stack : tblock list ref}
+> val open_hbox = fn : unit -> unit
+> val open_hvbox = fn : int -> unit
+> val open_box = fn : int -> unit
+> val close_box = fn : unit -> unit
+> val print_break = fn : int -> int -> unit
+> val print_string = fn : string -> unit
+> val print_space = fn : unit -> unit
+> val print_flush = fn : unit -> unit
+> val print_newline = fn : unit -> unit
+> val print_int = fn : int -> unit
+> val set_margin = fn : int -> unit
+> val set_max_indent = fn : int -> unit
+> val set_max_boxes = fn : int -> unit
+> val set_mark_tags = fn : bool -> unit
+[closing file "format.sml"]
+> val it = () : unit
+> val it = () : unit
+[closing file "initialization.sml"]
+> val it = () : unit
+[opening file "lib.sml"]
+> val str_ord = fn : string -> string -> int
+> val sip_ord = fn : string * int -> string * int -> int
+> infix 6 lxor
+  infix 6 land
+  val to_int_fun = fn : (word * word -> word) -> int -> int -> int
+> val lxor = fn : int * int -> int
+> val land = fn : int * int -> int
+> val 'a list_hash = fn : ('a -> int) -> 'a list -> int
+> val str_hash = fn : string -> int
+> val ('a, 'b) fst = fn : 'a * 'b -> 'a
+> val ('a, 'b) snd = fn : 'a * 'b -> 'b
+> val 'a identity = fn : 'a -> 'a
+> val 'a non = fn : ('a -> bool) -> 'a -> bool
+> val 'a check = fn : ('a -> bool) -> 'a -> 'a
+> val 'a funpow = fn : int -> ('a -> 'a) -> 'a -> 'a
+> val ('a, 'b) can = fn : ('a -> 'b) -> 'a -> bool
+> val 'a repeat = fn : ('a -> 'a) -> 'a -> 'a
+> infix 6 --
+  val -- = fn : int * int -> int list
+> val ('a, 'b, 'c) map2 = fn :
+  ('a -> 'b -> 'c) -> 'a list -> 'b list -> 'c list
+> val ('a, 'b) itlist = fn : ('a -> 'b -> 'b) -> 'a list -> 'b -> 'b
+> val 'a end_itlist = fn : ('a -> 'a -> 'a) -> 'a list -> 'a
+> val ('a, 'b, 'c) itlist2 = fn :
+  ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c
+> val ('a, 'b) zip = fn : 'a list -> 'b list -> ('a * 'b) list
+> val 'a chop_list = fn : int -> 'a list -> 'a list * 'a list
+> val ''a index = fn : ''a -> ''a list -> int
+> val ('a, 'b) unzip = fn : ('a * 'b) list -> 'a list * 'b list
+> val (''a, 'b) assoc = fn : ''a -> (''a * 'b) list -> 'b
+> val 'a merge = fn : ('a -> 'a -> bool) -> 'a list -> 'a list -> 'a list
+> val ''a sort = fn : (''a -> ''a -> bool) -> ''a list -> ''a list
+> val 'a increasing = fn : ('a -> int) -> 'a -> 'a -> bool
+> val 'a decreasing = fn : ('a -> int) -> 'a -> 'a -> bool
+> val ''a uniq = fn : ''a list -> ''a list
+> val ('a, 'b) tryfind = fn : ('a -> 'b) -> 'a list -> 'b
+> val ''a setify = fn : (''a -> ''a -> int) -> ''a list -> ''a list
+> val ''a union = fn : (''a -> ''a -> int) -> ''a list -> ''a list -> ''a list
+> val union_str = fn : string list -> string list -> string list
+> val union_sip = fn :
+  (string * int) list -> (string * int) list -> (string * int) list
+> val ''a subtract = fn :
+  (''a -> ''a -> int) -> ''a list -> ''a list -> ''a list
+> val subtract_str = fn : string list -> string list -> string list
+> val ''a insert = fn : (''a -> ''a -> int) -> ''a -> ''a list -> ''a list
+> val insert_str = fn : string -> string list -> string list
+> val ''a unions = fn : (''a -> ''a -> int) -> ''a list list -> ''a list
+> val unions_str = fn : string list list -> string list
+> val ''a mem = fn : ''a -> ''a list -> bool
+> val ('a, 'b) time = fn : ('a -> 'b) -> 'a -> 'b
+> New type names: =func
+  datatype ('a, 'b) func =
+  (('a, 'b) func,
+   {con ('a, 'b) Branch :
+      int * int * ('a, 'b) func * ('a, 'b) func -> ('a, 'b) func,
+    con ('a, 'b) Empty : ('a, 'b) func,
+    con ('a, 'b) Leaf : int * ('a * 'b) list -> ('a, 'b) func})
+  con ('a, 'b) Branch = fn :
+  int * int * ('a, 'b) func * ('a, 'b) func -> ('a, 'b) func
+  con ('a, 'b) Empty = Empty : ('a, 'b) func
+  con ('a, 'b) Leaf = fn : int * ('a * 'b) list -> ('a, 'b) func
+> val ('a, 'b) undefined = Empty : ('a, 'b) func
+> val ('a, 'b) is_undefined = fn : ('a, 'b) func -> bool
+> val ('a, 'b, 'c) mapf = fn : ('a -> 'b) -> ('c, 'a) func -> ('c, 'b) func
+> val (''a, 'b) applyd = fn :
+  (''a -> ''a -> int) -> (''a -> int) -> (''a, 'b) func -> (''a -> 'b) ->
+  ''a -> 'b
+> val (''a, 'b) apply = fn :
+  (''a -> ''a -> int) -> (''a -> int) -> (''a, 'b) func -> ''a -> 'b
+> val 'a apply_str = fn : (string, 'a) func -> string -> 'a
+> val (''a, 'b) tryapplyd = fn :
+  (''a -> ''a -> int) -> (''a -> int) -> (''a, 'b) func -> ''a -> 'b -> 'b
+> val 'a tryapplyd_str = fn : (string, 'a) func -> string -> 'a -> 'a
+> val (''a, 'b) tryapplyl = fn :
+  (''a -> ''a -> int) -> (''a -> int) -> (''a, 'b list) func -> ''a -> 'b list
+> val (''a, 'b) defined = fn :
+  (''a -> ''a -> int) -> (''a -> int) -> (''a, 'b) func -> ''a -> bool
+> val 'a defined_str = fn : (string, 'a) func -> string -> bool
+> val ('a, ''b, ''c) undefine = fn :
+  ('a -> ''b -> int) -> ('a -> int) -> 'a -> (''b, ''c) func -> (''b, ''c) func
+> infix 6 |->
+  val ''a undefine_str = fn :
+  string -> (string, ''a) func -> (string, ''a) func
+  val ('a, 'b) |-> = fn :
+  'a * 'b -> ('a, 'b) func -> ('a -> 'a -> int) -> ('a -> int) -> ('a, 'b) func
+  val (''a, ''b) combine = fn :
+  (''a -> ''a -> int) -> (''b -> ''b -> ''b) -> (''b -> bool) ->
+  (''a, ''b) func -> (''a, ''b) func -> (''a, ''b) func
+> infix 6 |-->
+  val 'a |--> = fn : string * 'a -> (string, 'a) func -> (string, 'a) func
+> infix 6 |=>
+  val ('a, 'b) |=> = fn :
+  'a * 'b -> ('a -> 'a -> int) -> ('a -> int) -> ('a, 'b) func
+> infix 6 |==>
+  val 'a |==> = fn : string * 'a -> (string, 'a) func
+[closing file "lib.sml"]
+> val it = () : unit
+[opening file "intro.sml"]
+> val matches = fn : string -> char -> bool
+> val space = fn : char -> bool
+> val punctuation = fn : char -> bool
+> val symbolic = fn : char -> bool
+> val numeric = fn : char -> bool
+> val alphanumeric = fn : char -> bool
+> val lexwhile = fn : (char -> bool) -> char list -> string * char list
+> val lex = fn : char list -> string list
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = ["2", "*", "(", "(", "var_1", "+", "x'", ")", "+", "11", ")"] :
+  string list
+> val it =
+    ["if", "(", "*", "p1", "--", "==", "*", "p2", "++", ")", "then", "f", "(",
+     ")", "else", "g", "(", ")"] : string list
+> val it = END_INTERACTIVE : dummy_interactive
+> val ('a, ''b) make_parser = fn :
+  (string list -> 'a * ''b list) -> string -> 'a
+[closing file "intro.sml"]
+> val it = () : unit
+[opening file "formulas.sml"]
+> New type names: =formula
+  datatype 'a formula =
+  ('a formula,
+   {con 'a And : 'a formula * 'a formula -> 'a formula,
+    con 'a Atom : 'a -> 'a formula,
+    con 'a Exists : string * 'a formula -> 'a formula,
+    con 'a False : 'a formula,
+    con 'a Forall : string * 'a formula -> 'a formula,
+    con 'a Iff : 'a formula * 'a formula -> 'a formula,
+    con 'a Imp : 'a formula * 'a formula -> 'a formula,
+    con 'a Not : 'a formula -> 'a formula,
+    con 'a Or : 'a formula * 'a formula -> 'a formula,
+    con 'a True : 'a formula})
+  con 'a And = fn : 'a formula * 'a formula -> 'a formula
+  con 'a Atom = fn : 'a -> 'a formula
+  con 'a Exists = fn : string * 'a formula -> 'a formula
+  con 'a False = False : 'a formula
+  con 'a Forall = fn : string * 'a formula -> 'a formula
+  con 'a Iff = fn : 'a formula * 'a formula -> 'a formula
+  con 'a Imp = fn : 'a formula * 'a formula -> 'a formula
+  con 'a Not = fn : 'a formula -> 'a formula
+  con 'a Or = fn : 'a formula * 'a formula -> 'a formula
+  con 'a True = True : 'a formula
+> val ('a, 'b) fm_ord = fn :
+  ('a -> 'b -> int) -> 'a formula -> 'b formula -> int
+  val ('a, 'b) fm_pair_ord = fn :
+  ('a -> 'b -> int) -> 'a formula * 'a formula -> 'b formula * 'b formula ->
+  int
+  val ('a, 'b) fm_quant_ord = fn :
+  ('a -> 'b -> int) -> string * 'a formula -> string * 'b formula -> int
+> val (''a, 'b, 'c) parse_ginfix = fn :
+  ''a -> (('b -> 'c) -> 'b -> 'b -> 'c) -> ('b -> 'c) ->
+  (''a list -> 'b * ''a list) -> ''a list -> 'c * ''a list
+> val (''a, 'b) parse_left_infix = fn :
+  ''a -> ('b * 'b -> 'b) -> (''a list -> 'b * ''a list) -> ''a list ->
+  'b * ''a list
+> val (''a, 'b) parse_right_infix = fn :
+  ''a -> ('b * 'b -> 'b) -> (''a list -> 'b * ''a list) -> ''a list ->
+  'b * ''a list
+> val (''a, 'b) parse_list = fn :
+  ''a -> (''a list -> 'b * ''a list) -> ''a list -> 'b list * ''a list
+> val ('a, 'b, 'c) papply = fn : ('a -> 'b) -> 'a * 'c -> 'b * 'c
+> val ''a nextin = fn : ''a list -> ''a -> bool
+> val ('a, 'b, ''c) parse_bracketed = fn :
+  ('a -> 'b * ''c list) -> ''c -> 'a -> 'b * ''c list
+> val 'a parse_atomic_formula = fn :
+  (string list -> string list -> 'a formula * string list) *
+  (string list -> string list -> 'a formula * string list) -> string list ->
+  string list -> 'a formula * string list
+  val 'a parse_quant = fn :
+  (string list -> string list -> 'a formula * string list) *
+  (string list -> string list -> 'a formula * string list) -> string list ->
+  (string * 'a formula -> 'a formula) -> string -> string list ->
+  'a formula * string list
+  val 'a parse_formula = fn :
+  (string list -> string list -> 'a formula * string list) *
+  (string list -> string list -> 'a formula * string list) -> string list ->
+  string list -> 'a formula * string list
+> val ('a, 'b, 'c) bracket = fn :
+  bool -> int -> ('a -> 'b -> 'c) -> 'a -> 'b -> unit
+> val 'a strip_quant = fn : 'a formula -> string list * 'a formula
+> val 'a print_formula_aux = fn : (int -> 'a -> unit) -> 'a formula -> unit
+> val 'a print_formula = fn : (int -> 'a -> unit) -> 'a formula -> unit
+> val 'a print_qformula_aux = fn : (int -> 'a -> unit) -> 'a formula -> unit
+> val 'a print_qformula = fn : (int -> 'a -> unit) -> 'a formula -> unit
+> val 'a mk_and = fn : 'a formula -> 'a formula -> 'a formula
+  val 'a mk_or = fn : 'a formula -> 'a formula -> 'a formula
+  val 'a mk_imp = fn : 'a formula -> 'a formula -> 'a formula
+  val 'a mk_iff = fn : 'a formula -> 'a formula -> 'a formula
+  val 'a mk_forall = fn : string -> 'a formula -> 'a formula
+  val 'a mk_exists = fn : string -> 'a formula -> 'a formula
+  val 'a dest_iff = fn : 'a formula -> 'a formula * 'a formula
+> val 'a dest_and = fn : 'a formula -> 'a formula * 'a formula
+> val 'a conjuncts = fn : 'a formula -> 'a formula list
+> val 'a dest_or = fn : 'a formula -> 'a formula * 'a formula
+> val 'a disjuncts = fn : 'a formula -> 'a formula list
+> val 'a dest_imp = fn : 'a formula -> 'a formula * 'a formula
+> val 'a antecedent = fn : 'a formula -> 'a formula
+> val 'a consequent = fn : 'a formula -> 'a formula
+> val 'a onatoms = fn : ('a -> 'a formula) -> 'a formula -> 'a formula
+> val ('a, 'b) overatoms = fn : ('a -> 'b -> 'b) -> 'a formula -> 'b -> 'b
+> val (''a, 'b) atom_union = fn :
+  (''a -> ''a -> int) -> ('b -> ''a list) -> 'b formula -> ''a list
+> val 'a atom_union_sip = fn :
+  ('a -> (string * int) list) -> 'a formula -> (string * int) list
+[closing file "formulas.sml"]
+> val it = () : unit
+[opening file "prop.sml"]
+> val ''a list_conj = fn : ''a formula list -> ''a formula
+[closing file "prop.sml"]
+> val it = () : unit
+[opening file "fol.sml"]
+> New type names: =term
+  datatype term =
+  (term,{con Fn : string * term list -> term, con Var : string -> term})
+  con Fn = fn : string * term list -> term
+  con Var = fn : string -> term
+> val t_ord = fn : term -> term -> int
+  val tl_ord = fn : term list -> term list -> int
+> val t_hash = fn : term -> int
+> infix 6 |--->
+  val 'a |---> = fn : term * 'a -> (term, 'a) func -> (term, 'a) func
+> infix 6 |===>
+  val 'a |===> = fn : term * 'a -> (term, 'a) func
+> val 'a apply_t = fn : (term, 'a) func -> term -> 'a
+> val it = START_INTERACTIVE : dummy_interactive
+> val it =
+    Fn("sqrt",
+       [Fn("-",
+           [Fn("1", []),
+            Fn("power",
+               [Fn("cos", [Fn("+", [Var "x", Var "y"])]), Fn("2", [])])])]) :
+  term
+> val it = END_INTERACTIVE : dummy_interactive
+> New type names: =fol
+  datatype fol = (fol,{con R : string * term list -> fol})
+  con R = fn : string * term list -> fol
+> val fol_ord = fn : fol -> fol -> int
+> val folfm_ord = fn : fol formula -> fol formula -> int
+> val union_folfm = fn :
+  fol formula list -> fol formula list -> fol formula list
+> val ftp_ord = fn : fol formula * term -> fol formula * term -> int
+> val setify_ftp = fn : (fol formula * term) list -> (fol formula * term) list
+> val onformula = fn : (term -> term) -> fol formula -> fol formula
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = Atom(R("<", [Fn("+", [Var "x", Var "y"]), Var "z"])) : fol formula
+> val it = END_INTERACTIVE : dummy_interactive
+> val is_const_name = fn : string -> bool
+> val parse_atomic_term = fn : string list -> string list -> term * string list
+  val parse_term = fn : string list -> string list -> term * string list
+> val parset = fn : string -> term
+> val parse_infix_atom = fn :
+  string list -> string list -> fol formula * string list
+> val parse_atom = fn : string list -> string list -> fol formula * string list
+> val parse = fn : string -> fol formula
+> val default_parser = fn : string -> fol formula
+> New type names: =default_parser_end
+  datatype default_parser_end =
+  (default_parser_end,{con >> : default_parser_end})
+  con >> = >> : default_parser_end
+> val << = fn : string -> default_parser_end -> fol formula
+> val secondary_parser = fn : string -> term
+> New type names: =secondary_parser_end
+  datatype secondary_parser_end =
+  (secondary_parser_end,{con |>> : secondary_parser_end})
+  con |>> = |>> : secondary_parser_end
+> val <<| = fn : string -> secondary_parser_end -> term
+> val it = START_INTERACTIVE : dummy_interactive
+> val it =
+    Or(Forall("x",
+              Imp(Atom(R("<", [Var "x", Fn("2", [])])),
+                  Atom(R("<=",
+                         [Fn("*", [Fn("2", []), Var "x"]), Fn("3", [])])))),
+       False) : fol formula
+> val it = Fn("*", [Fn("2", []), Var "x"]) : term
+> val it = END_INTERACTIVE : dummy_interactive
+> val print_term_aux = fn : int -> term -> unit
+  val print_fargs_aux = fn : string -> term list -> unit
+  val print_infix_term_aux = fn :
+  bool -> int -> int -> string -> term -> term -> unit
+File "fol.sml", line 216, characters 41-78:
+! and print_infix_term il op np sym p q = (print_infix_term_aux il op np sym p q; print_flush ());; 
+!                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! Warning: function-type result is being discarded.
+
+> val print_term = fn : int -> term -> unit
+  val print_fargs = fn : string -> term list -> unit
+  val print_infix_term = fn : bool -> int -> int -> string -> term -> unit
+> val printert_aux = fn : term -> unit
+> val printert = fn : term -> unit
+> val 'a print_atom_aux = fn : 'a -> fol -> unit
+> val 'a print_atom = fn : 'a -> fol -> unit
+> val print_fol_formula_aux = fn : fol formula -> unit
+> val print_fol_formula = fn : fol formula -> unit
+> val it = START_INTERACTIVE : dummy_interactive
+> val it =
+    Forall("x",
+           Forall("y",
+                  Exists("z",
+                         And(Atom(R("<", [Var "x", Var "z"])),
+                             Atom(R("<", [Var "y", Var "z"])))))) : fol formula
+> val it =
+    Iff(Not(Forall("x", Atom(R("P", [Var "x"])))),
+        Exists("y", Not(Atom(R("P", [Var "y"]))))) : fol formula
+> val it = END_INTERACTIVE : dummy_interactive
+> val fvt = fn : term -> string list
+> val var = fn : fol formula -> string list
+> val fv = fn : fol formula -> string list
+> val tsubst = fn : (string, term) func -> term -> term
+> val variant = fn : string -> string list -> string
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = "x" : string
+> val it = "x'" : string
+> val it = "x''" : string
+> val it = END_INTERACTIVE : dummy_interactive
+> val subst = fn : (string, term) func -> fol formula -> fol formula
+  val substq = fn :
+  (string, term) func -> (string -> fol formula -> fol formula) -> string ->
+  fol formula -> fol formula
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = Forall("x'", Atom(R("=", [Var "x'", Var "x"]))) : fol formula
+> val it =
+    Forall("x'",
+           Forall("x''",
+                  Imp(Atom(R("=", [Var "x'", Var "x"])),
+                      Atom(R("=", [Var "x'", Var "x''"]))))) : fol formula
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "fol.sml"]
+> val it = () : unit
+[opening file "skolem.sml"]
+> val funcs = fn : term -> (string * int) list
+> val functions = fn : fol formula -> (string * int) list
+[closing file "skolem.sml"]
+> val it = () : unit
+[opening file "unif.sml"]
+> val istriv = fn : (string, term) func -> string -> term -> bool
+> val unify = fn :
+  (string, term) func -> (term * term) list -> (string, term) func
+> val solve = fn : (string, term) func -> (string, term) func
+> val fullunify = fn : (term * term) list -> (string, term) func
+> val unify_and_apply = fn : (term * term) list -> (term * term) list
+> val it = START_INTERACTIVE : dummy_interactive
+> val it =
+    [(Fn("f", [Fn("f", [Var "z"]), Fn("g", [Var "y"])]),
+      Fn("f", [Fn("f", [Var "z"]), Fn("g", [Var "y"])]))] : (term * term) list
+> val it = [(Fn("f", [Var "y", Var "y"]), Fn("f", [Var "y", Var "y"]))] :
+  (term * term) list
+> val it =
+    [(Fn("f",
+         [Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])]),
+          Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])])]),
+      Fn("f",
+         [Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])]),
+          Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])])])),
+     (Fn("f",
+         [Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"])]),
+      Fn("f",
+         [Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"])])),
+     (Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"]))] :
+  (term * term) list
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "unif.sml"]
+> val it = () : unit
+[opening file "tableaux.sml"]
+> val 'a deepen = fn : (int -> 'a) -> int -> 'a
+[closing file "tableaux.sml"]
+> val it = () : unit
+[opening file "resolution.sml"]
+> val term_match = fn :
+  (string, term) func -> (term * term) list -> (string, term) func
+[closing file "resolution.sml"]
+> val it = () : unit
+[opening file "equal.sml"]
+> val mk_eq = fn : term -> term -> fol formula
+> val dest_eq = fn : fol formula -> term * term
+> val lhs = fn : fol formula -> term
+  val rhs = fn : fol formula -> term
+[closing file "equal.sml"]
+> val it = () : unit
+[opening file "order.sml"]
+> val termsize = fn : term -> int
+> val it = START_INTERACTIVE : dummy_interactive
+> val s = Fn("f", [Var "x", Var "x", Var "x"]) : term
+> val t = Fn("g", [Var "x", Var "y"]) : term
+> val it = true : bool
+> val i = Leaf(121, [("y", Fn("f", [Var "x", Var "x", Var "x"]))]) :
+  (string, term) func
+> val it = false : bool
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "order.sml"]
+> val it = () : unit
+[opening file "eqelim.sml"]
+> val replacet = fn : (term, term) func -> term -> term
+[closing file "eqelim.sml"]
+> val it = () : unit
+[opening file "lcf.sml"]
+> signature PROOFSYSTEM =
+  /\thm.
+    {type thm = thm,
+     val modusponens : thm -> thm -> thm,
+     val gen : string -> thm -> thm,
+     val axiom_addimp : fol formula -> fol formula -> thm,
+     val axiom_distribimp : fol formula -> fol formula -> fol formula -> thm,
+     val axiom_doubleneg : fol formula -> thm,
+     val axiom_allimp : string -> fol formula -> fol formula -> thm,
+     val axiom_impall : string -> fol formula -> thm,
+     val axiom_existseq : string -> term -> thm,
+     val axiom_eqrefl : term -> thm,
+     val axiom_funcong : string -> term list -> term list -> thm,
+     val axiom_predcong : string -> term list -> term list -> thm,
+     val axiom_iffimp1 : fol formula -> fol formula -> thm,
+     val axiom_iffimp2 : fol formula -> fol formula -> thm,
+     val axiom_impiff : fol formula -> fol formula -> thm,
+     val axiom_true : thm,
+     val axiom_not : fol formula -> thm,
+     val axiom_and : fol formula -> fol formula -> thm,
+     val axiom_or : fol formula -> fol formula -> thm,
+     val axiom_exists : string -> fol formula -> thm,
+     val concl : thm -> fol formula}
+> val occurs_in = fn : term -> term -> bool
+> val free_in = fn : term -> fol formula -> bool
+> New type names: thm
+  structure Proven :
+  {type thm = thm,
+   val axiom_addimp : fol formula -> fol formula -> thm,
+   val axiom_allimp : string -> fol formula -> fol formula -> thm,
+   val axiom_and : fol formula -> fol formula -> thm,
+   val axiom_distribimp : fol formula -> fol formula -> fol formula -> thm,
+   val axiom_doubleneg : fol formula -> thm,
+   val axiom_eqrefl : term -> thm,
+   val axiom_exists : string -> fol formula -> thm,
+   val axiom_existseq : string -> term -> thm,
+   val axiom_funcong : string -> term list -> term list -> thm,
+   val axiom_iffimp1 : fol formula -> fol formula -> thm,
+   val axiom_iffimp2 : fol formula -> fol formula -> thm,
+   val axiom_impall : string -> fol formula -> thm,
+   val axiom_impiff : fol formula -> fol formula -> thm,
+   val axiom_not : fol formula -> thm,
+   val axiom_or : fol formula -> fol formula -> thm,
+   val axiom_predcong : string -> term list -> term list -> thm,
+   val axiom_true : thm,
+   val concl : thm -> fol formula,
+   val gen : string -> thm -> thm,
+   val modusponens : thm -> thm -> thm}
+> type thm = thm
+  val axiom_addimp = fn : fol formula -> fol formula -> thm
+  val axiom_allimp = fn : string -> fol formula -> fol formula -> thm
+  val axiom_and = fn : fol formula -> fol formula -> thm
+  val axiom_distribimp = fn : fol formula -> fol formula -> fol formula -> thm
+  val axiom_doubleneg = fn : fol formula -> thm
+  val axiom_eqrefl = fn : term -> thm
+  val axiom_exists = fn : string -> fol formula -> thm
+  val axiom_existseq = fn : string -> term -> thm
+  val axiom_funcong = fn : string -> term list -> term list -> thm
+  val axiom_iffimp1 = fn : fol formula -> fol formula -> thm
+  val axiom_iffimp2 = fn : fol formula -> fol formula -> thm
+  val axiom_impall = fn : string -> fol formula -> thm
+  val axiom_impiff = fn : fol formula -> fol formula -> thm
+  val axiom_not = fn : fol formula -> thm
+  val axiom_or = fn : fol formula -> fol formula -> thm
+  val axiom_predcong = fn : string -> term list -> term list -> thm
+  val axiom_true = <thm> : thm
+  val concl = fn : thm -> fol formula
+  val gen = fn : string -> thm -> thm
+  val modusponens = fn : thm -> thm -> thm
+> val print_thm_aux = fn : thm -> unit
+> val print_thm = fn : thm -> unit
+[closing file "lcf.sml"]
+> val it = () : unit
+[opening file "lcfprop.sml"]
+> val imp_refl = fn : fol formula -> thm
+> val imp_unduplicate = fn : thm -> thm
+> val 'a negatef = fn : 'a formula -> 'a formula
+> val 'a negativef = fn : 'a formula -> bool
+> val add_assum = fn : fol formula -> thm -> thm
+> val imp_add_assum = fn : fol formula -> thm -> thm
+> val imp_trans = fn : thm -> thm -> thm
+> val imp_insert = fn : fol formula -> thm -> thm
+> val imp_swap = fn : thm -> thm
+> val imp_trans_th = fn : fol formula -> fol formula -> fol formula -> thm
+> val imp_add_concl = fn : fol formula -> thm -> thm
+> val imp_swap_th = fn : fol formula -> fol formula -> fol formula -> thm
+> val imp_swap2 = fn : thm -> thm
+> val right_mp = fn : thm -> thm -> thm
+> val iff_imp1 = fn : thm -> thm
+> val iff_imp2 = fn : thm -> thm
+> val imp_antisym = fn : thm -> thm -> thm
+> val right_doubleneg = fn : thm -> thm
+> val ex_falso = fn : fol formula -> thm
+File "lcfprop.sml", line 204, characters 10-19:
+!       val Imp(r',s) = concl th2 
+!           ^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+File "lcfprop.sml", line 203, characters 10-25:
+!   let val Imp(p,Imp(q,r)) = concl th1 
+!           ^^^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val imp_trans2 = fn : thm -> thm -> thm
+> val imp_trans_chain = fn : thm list -> thm -> thm
+> val imp_truefalse = fn : fol formula -> fol formula -> thm
+> val imp_mono_th = fn :
+  fol formula -> fol formula -> fol formula -> fol formula -> thm
+> val truth = <thm> : thm
+> val contrapos = fn : thm -> thm
+> val and_left = fn : fol formula -> fol formula -> thm
+> val and_right = fn : fol formula -> fol formula -> thm
+> val conjths = fn : fol formula -> thm list
+> val and_pair = fn : fol formula -> fol formula -> thm
+> val shunt = fn : thm -> thm
+> val unshunt = fn : thm -> thm
+> val iff_def = fn : fol formula -> fol formula -> thm
+> val iff_def = fn : fol formula -> fol formula -> thm
+> val expand_connective = fn : fol formula -> thm
+> val eliminate_connective = fn : fol formula -> thm
+> val imp_false_conseqs = fn : fol formula -> fol formula -> thm list
+> val imp_false_rule = fn : thm -> thm
+> val imp_true_rule = fn : thm -> thm -> thm
+> val imp_contr = fn : fol formula -> fol formula -> thm
+> val imp_front_th = fn : int -> fol formula -> thm
+> val imp_front = fn : int -> thm -> thm
+> val 'a is_false = fn : 'a formula -> bool
+> val ''a is_true = fn : ''a formula -> bool
+> val 'a is_conj = fn : 'a formula -> bool
+  val 'a dest_conj = fn : 'a formula -> 'a formula * 'a formula
+  val ''a is_disj = fn : ''a formula -> bool
+  val 'a dest_disj = fn : 'a formula -> 'a formula * 'a formula
+> val 'a is_prop_lit = fn : 'a formula -> bool
+> val lcfptab = fn : fol formula list -> fol formula list -> thm
+> val lcftaut = fn : fol formula -> thm
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "lcfprop.sml"]
+> val it = () : unit
+[opening file "folderived.sml"]
+> val eq_sym = fn : term -> term -> thm
+> val eq_trans = fn : term -> term -> term -> thm
+> val icongruence = fn : term -> term -> term -> term -> thm
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val gen_right_th = fn : string -> fol formula -> fol formula -> thm
+> val genimp = fn : string -> thm -> thm
+> val gen_right = fn : string -> thm -> thm
+> val exists_left_th = fn : string -> fol formula -> fol formula -> thm
+> val exists_left = fn : string -> thm -> thm
+> val subspec = fn : thm -> thm
+> val subalpha = fn : thm -> thm
+> val isubst = fn : term -> term -> fol formula -> fol formula -> thm
+> val alpha = fn : string -> fol formula -> thm
+> val ispec = fn : term -> fol formula -> thm
+> val spec = fn : term -> thm -> thm
+> val it = START_INTERACTIVE : dummy_interactive
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "folderived.sml"]
+> val it = () : unit
+[opening file "lcffol.sml"]
+> val unify_complementsf = fn :
+  (string, term) func -> fol formula * fol formula -> (string, term) func
+File "lcffol.sml", line 29-36, characters 7-415:
+! 	......(Imp(Imp(q',s),Imp(i' as Imp(q,p),r)),true) =>
+! 		     let val th1 = axiom_distribimp i (Imp(Imp(q,s),r)) (Imp(Imp(p,s),r))
+! 			     val th2 = imp_swap(imp_trans_th q p s)
+!                  val th3 = imp_swap(imp_trans_th (Imp(p,s)) (Imp(q,s)) r) in
+!              imp_swap2(modusponens th1 (imp_trans th2 th3))
+! 			 end
+! 	    | (Imp(qs,Imp(a,b)),_) =>
+! 		     imp_swap2(imp_add_assum a (use_laterimp i (Imp(qs,b))))
+! Warning: pattern matching is not exhaustive
+
+File "lcffol.sml", line 27-37, characters 4-469:
+! ....Imp(_,Imp(i',_)) => 
+! 	  ( case (fm,i'=i) of 
+! 	      (Imp(Imp(q',s),Imp(i' as Imp(q,p),r)),true) =>
+! 		     let val th1 = axiom_distribimp i (Imp(Imp(q,s),r)) (Imp(Imp(p,s),r))
+! ..........
+! 			 end
+! 	    | (Imp(qs,Imp(a,b)),_) =>
+! 		     imp_swap2(imp_add_assum a (use_laterimp i (Imp(qs,b))))
+! 	  )
+! Warning: pattern matching is not exhaustive
+
+> val use_laterimp = fn : fol formula -> fol formula -> thm
+> val 'a imp_false_rule' = fn : ('a -> thm) -> 'a -> thm
+> val 'a imp_true_rule' = fn : ('a -> thm) -> ('a -> thm) -> 'a -> thm
+> val 'a imp_front' = fn : int -> ('a -> thm) -> 'a -> thm
+> val 'a add_assum' = fn :
+  fol formula -> ((term -> term) * 'a -> thm) -> (term -> term) * 'a -> thm
+> val 'a eliminate_connective' = fn :
+  fol formula -> ((term -> term) * 'a -> thm) -> (term -> term) * 'a -> thm
+> val 'a spec' = fn :
+  term -> fol formula -> int -> ((term -> term) * 'a -> thm) ->
+  (term -> term) * 'a -> thm
+> val ex_falso' = fn : fol formula list -> (term -> term) * fol formula -> thm
+File "lcffol.sml", line 65, characters 10-21:
+!   let val (l1,p'::l2) = chop_list i lits in 
+!           ^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+File "lcffol.sml", line 64-69, characters 4-227:
+! ....complits' (p::fl,lits) i (e,s) =
+!   let val (l1,p'::l2) = chop_list i lits in 
+!   itlist (imp_insert o onformula e) (fl @ l1)
+!          (imp_contr (onformula e p)
+!                     (itlist (mk_imp o onformula e) l2 s))
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val complits' = fn :
+  fol formula list * fol formula list -> int -> (term -> term) * fol formula ->
+  thm
+> val 'a deskol' = fn :
+  fol formula -> ((term -> term) * 'a -> thm) -> (term -> term) * 'a -> thm
+> val 'a is_lit = fn : 'a formula -> bool
+> val 'a is_uni = fn : 'a formula -> bool
+File "lcffol.sml", line 87, characters 4-34:
+! fun dest_uni (Forall(x,p)) = (x,p);;
+!     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val 'a dest_uni = fn : 'a formula -> string * 'a formula
+> val 'a is_exi = fn : 'a formula -> bool
+File "lcffol.sml", line 92, characters 4-54:
+! fun dest_exi (Imp(yp as Forall(y,p),False)) = (y,p,yp);;
+!     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val 'a dest_exi = fn : 'a formula -> string * 'a formula * 'a formula
+> val 'a lcftab = fn :
+  (fol formula -> term) -> fol formula list * fol formula list * int ->
+  (((term -> term) * fol formula -> thm) ->
+   (string, term) func * (fol formula * term) list * int -> 'a) ->
+  (string, term) func * (fol formula * term) list * int -> 'a
+> val quantforms = fn : bool -> fol formula -> fol formula list
+File "lcffol.sml", line 166-169, characters 10-172:
+! ..........skofun i (ap as Forall(y,p)) =
+!             let val vars = List.map (fn v => Var v) (fv ap) in
+!             (ap,Fn(variant("f"^"_"^Int.toString i) fns,vars))
+! 			end
+! Warning: pattern matching is not exhaustive
+
+> val skolemfuns = fn : fol formula -> (fol formula * term) list
+> val form_match = fn :
+  fol formula * fol formula -> (string, term) func -> (string, term) func
+> val 'a lcfrefute = fn :
+  fol formula -> int ->
+  (((term -> term) * fol formula -> thm) ->
+   (string, term) func * (fol formula * term) list * int -> 'a) -> 'a
+File "lcffol.sml", line 222-223, characters 4-78:
+! ....mk_skol (Forall(y,p),fx) q =
+!   Imp(Imp(subst (y |==> fx) p,Forall(y,p)),q)..
+! Warning: pattern matching is not exhaustive
+
+> val mk_skol = fn : fol formula * term -> fol formula -> fol formula
+> val ('a, 'b) simpcont = fn :
+  ((term -> term) * fol formula -> 'a) ->
+  (string, term) func * (fol formula * term) list * 'b -> 'a
+> val it = <thm> : thm
+> val it = <thm> : thm
+File "lcffol.sml", line 244, characters 17-25:
+!         let val [th1,th2] = List.map (imp_trans(imp_add_concl False th))
+!                  ^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val elim_skolemvar = fn : thm -> thm
+> val 'a deskolcont = fn :
+  ((term -> term) * fol formula -> thm) ->
+  (string, term) func * (fol formula * term) list * 'a -> thm
+> val lcffol = fn : fol formula -> thm
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+> val p58 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+> val ewd1062_1 = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+> val start_time = 2.267958 : real
+CPU time (user): 0.001744
+> val p1 = <thm> : thm
+CPU time (user): 0.000416
+> val p2 = <thm> : thm
+CPU time (user): 6.5E~5
+> val p3 = <thm> : thm
+CPU time (user): 0.000965
+> val p4 = <thm> : thm
+CPU time (user): 0.001181
+> val p5 = <thm> : thm
+CPU time (user): 0.000148
+> val p6 = <thm> : thm
+CPU time (user): 0.000245
+> val p7 = <thm> : thm
+CPU time (user): 0.0002
+> val p8 = <thm> : thm
+CPU time (user): 0.002725
+> val p9 = <thm> : thm
+CPU time (user): 0.002664
+> val p10 = <thm> : thm
+CPU time (user): 0.000286
+> val p11 = <thm> : thm
+CPU time (user): 0.011868
+> val p12 = <thm> : thm
+CPU time (user): 0.00304
+> val p13 = <thm> : thm
+CPU time (user): 0.003274
+> val p14 = <thm> : thm
+CPU time (user): 0.001118
+> val p15 = <thm> : thm
+CPU time (user): 0.000597
+> val p16 = <thm> : thm
+CPU time (user): 0.007006
+> val p17 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.001494
+> val p1 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.001116
+> val p2 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.000611
+> val p3 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.00177
+> val p4 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.001905
+> val p5 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.000745
+> val p6 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.000769
+> val p7 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.000627
+> val p8 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.004054
+> val p9 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.002667
+> val p10 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.000701
+> val p11 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.017014
+> val p12 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.006062
+> val p13 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.006035
+> val p14 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.002612
+> val p15 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.001437
+> val p16 = <thm> : thm
+Searching with depth limit 0
+CPU time (user): 0.011027
+> val p17 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.004401
+> val p18 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.011574
+> val p19 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.014541
+> val p20 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.010063
+> val p21 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.004952
+> val p22 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+CPU time (user): 0.004797
+> val p23 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 0.029694
+> val p24 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.008468
+> val p25 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+CPU time (user): 0.068767
+> val p26 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.034611
+> val p27 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.035486
+> val p28 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.075634
+> val p29 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.006714
+> val p30 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.008972
+> val p31 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.020025
+> val p32 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+CPU time (user): 0.04536
+> val p33 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+CPU time (user): 0.003978
+> val p35 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 0.016394
+> val p36 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 0.059288
+> val p37 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.883717
+> val p38 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+CPU time (user): 0.005389
+> val p39 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.02175
+> val p40 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.01434
+> val p41 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.063654
+> val p42 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.013135
+> val p44 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+Searching with depth limit 8
+CPU time (user): 31.031157
+> val p55 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.050815
+> val p57 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.103992
+> val p58 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.006464
+> val p59 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+CPU time (user): 0.010231
+> val p60 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.115031
+> val gilmore_3 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+CPU time (user): 9.323935
+> val gilmore_4 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.009118
+> val gilmore_5 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+CPU time (user): 0.033924
+> val gilmore_6 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+CPU time (user): 0.016385
+> val gilmore_7 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+CPU time (user): 0.452223
+> val gilmore_8 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 2.355622
+> val gilmore_9 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+CPU time (user): 8.637743
+> val davis_putnam_example = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 0.088064
+> val ewd1062_1 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+CPU time (user): 0.119225
+> val ewd1062_2 = <thm> : thm
+Complete CPU time (user): 54.153183
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "lcffol.sml"]
+> val it = () : unit
+[opening file "tactics.sml"]
+> New type names: goals
+  datatype goals =
+  (goals,
+   {con Goals :
+      ((string * fol formula) list * fol formula) list * (thm list -> thm) ->
+      goals})
+  con Goals = fn :
+  ((string * fol formula) list * fol formula) list * (thm list -> thm) -> goals
+> val print_goal_aux = fn : goals -> unit
+> val print_goal = fn : goals -> unit
+File "tactics.sml", line 55, characters 17-53:
+!   Goals([([],p)],fn [th] => chk(modusponens th truth))
+!                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val set_goal = fn : fol formula -> goals
+> val extract_thm = fn : goals -> thm
+> val tac_proof = fn : goals -> (goals -> goals) list -> thm
+> val prove = fn : fol formula -> (goals -> goals) list -> thm
+File "tactics.sml", line 73-74, characters 10-88:
+! ..........jfn' (thp::thq::ths) =
+!     jfn(imp_trans_chain [thp, thq] (and_pair p q)::ths)...
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 72-76, characters 4-187:
+! ....conj_intro_tac (Goals((asl,And(p,q))::gls,jfn)) =
+!   let fun jfn' (thp::thq::ths) =
+!     jfn(imp_trans_chain [thp, thq] (and_pair p q)::ths) in
+!   Goals((asl,p)::(asl,q)::gls,jfn')
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val conj_intro_tac = fn : goals -> goals
+File "tactics.sml", line 83, characters 4-52:
+! fun jmodify jfn tfn (th::oths) = jfn(tfn th :: oths);;
+!     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val ('a, 'b) jmodify = fn : ('a list -> 'b) -> ('a -> 'a) -> 'a list -> 'b
+> val gen_right_alpha = fn : string -> string -> thm -> thm
+File "tactics.sml", line 98-102, characters 4-274:
+! ....forall_intro_tac y (Goals((asl,(fm as Forall(x,p)))::gls,jfn)) =
+!   if mem y (fv fm) orelse List.exists (mem y o fv o snd) asl
+!   then raise Fail "fix: variable already free in goal" else
+!   Goals((asl,subst(x |==> Var y) p)::gls,
+!         jmodify jfn (gen_right_alpha y x))..
+! Warning: pattern matching is not exhaustive
+
+> val forall_intro_tac = fn : string -> goals -> goals
+File "tactics.sml", line 110, characters 10-21:
+!       val Not(Not p') = antecedent(concl th) in
+!           ^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+> val right_exists = fn : string -> term -> fol formula -> thm
+File "tactics.sml", line 120-122, characters 4-164:
+! ....exists_intro_tac t (Goals((asl,Exists(x,p))::gls,jfn)) =
+!   Goals((asl,subst(x |==> t) p)::gls,
+!         jmodify jfn (fn th => imp_trans th (right_exists x t p)))...
+! Warning: pattern matching is not exhaustive
+
+> val exists_intro_tac = fn : term -> goals -> goals
+File "tactics.sml", line 128-131, characters 4-180:
+! ....imp_intro_tac s (Goals((asl,Imp(p,q))::gls,jfn)) =
+!   let val jmod = if asl = [] then add_assum True else imp_swap o shunt in
+!   Goals(((s,p)::asl,q)::gls,jmodify jfn jmod)
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val imp_intro_tac = fn : string -> goals -> goals
+File "tactics.sml", line 137-138, characters 4-86:
+! ....assumptate (Goals((asl,w)::gls,jfn)) th =
+!   add_assum (list_conj (map snd asl)) th..
+! Warning: pattern matching is not exhaustive
+
+> val assumptate = fn : goals -> thm -> thm
+> val ''a firstassum = fn : (''a * fol formula) list -> thm
+> val 'a using = fn : thm list -> 'a -> goals -> thm list
+> val 'a assumps = fn : ('a * fol formula) list -> ('a * thm) list
+File "tactics.sml", line 178-181, characters 4-117:
+! ....by hyps p (Goals((asl,w)::gls,jfn)) =
+!   let val ths = assumps asl in 
+!   List.map (fn s => assoc s ths) hyps
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a by = fn : string list -> 'a -> goals -> thm list
+> val 'a justify = fn :
+  ('a -> fol formula -> goals -> thm list) -> 'a -> fol formula -> goals -> thm
+File "tactics.sml", line 211, characters 30-43:
+!   [tac_proof (Goals([(asl,p)],fn [th] => th)) tacs];;
+!                               ^^^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 210-211, characters 4-96:
+! ....proof tacs p (Goals((asl,w)::gls,jfn)) =
+!   [tac_proof (Goals([(asl,p)],fn [th] => th)) tacs]..
+! Warning: pattern matching is not exhaustive
+
+> val proof = fn : (goals -> goals) list -> fol formula -> goals -> thm list
+> val ('a, 'b, 'c, 'd) at = fn : 'a -> 'b -> 'c -> 'd list
+> val 'a once = [] : 'a list
+File "tactics.sml", line 224-227, characters 4-137:
+! ....auto_tac byfn hyps (g as Goals((asl,w)::gls,jfn)) =
+!   let val th = justify byfn hyps w g in
+!   Goals(gls,fn ths => jfn(th::ths))
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a auto_tac = fn :
+  ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals
+File "tactics.sml", line 233-237, characters 4-234:
+! ....lemma_tac s p byfn hyps (g as Goals((asl,w)::gls,jfn)) =
+!   let val tr  = imp_trans(justify byfn hyps p g) 
+!       val mfn = if asl = [] then tr else imp_unduplicate o tr o shunt in
+!   Goals(((s,p)::asl,w)::gls,jmodify jfn mfn)
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a lemma_tac = fn :
+  string -> fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a ->
+  goals -> goals
+File "tactics.sml", line 244, characters 10-21:
+!   let val Exists(x,p) = fm in
+!           ^^^^^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 243-251, characters 4-411:
+! ....exists_elim_tac l fm byfn hyps (g as Goals((asl,w)::gls,jfn)) = 
+!   let val Exists(x,p) = fm in
+!   if List.exists (mem x o fv) (w::List.map snd asl)
+!   then raise Fail "exists_elim_tac: variable free in assumptions" else
+!   let val th = justify byfn hyps (Exists(x,p)) g
+!       fun jfn' pth = imp_unduplicate(imp_trans th (exists_left x (shunt pth))) 
+!   in
+!   Goals(((l,p)::asl,w)::gls,jmodify jfn jfn')
+!   end end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a exists_elim_tac = fn :
+  string -> fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a ->
+  goals -> goals
+> val ante_disj = fn : thm -> thm -> thm
+File "tactics.sml", line 274-277, characters 10-154:
+! ..........jfn' (pth::qth::ths) =
+!          let val th1 = imp_trans th (ante_disj (shunt pth) (shunt qth)) in
+!          jfn(imp_unduplicate th1::ths) 
+! 		 end
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 273, characters 10-17:
+!       val Or(p,q) = fm
+!           ^^^^^^^
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 271-280, characters 4-344:
+! ....disj_elim_tac l fm byfn hyps (g as Goals((asl,w)::gls,jfn) ) =
+!   let val th = justify byfn hyps fm g 
+!       val Or(p,q) = fm
+!       fun jfn' (pth::qth::ths) =
+! ..........
+! 		 end
+!   in
+!   Goals(((l,p)::asl,w)::((l,q)::asl,w)::gls,jfn')
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a disj_elim_tac = fn :
+  string -> fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a ->
+  goals -> goals
+> val it = START_INTERACTIVE : dummy_interactive
+> val g0 =
+    Goals([([],
+            Imp(And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                    And(Forall("x",
+                               Forall("y",
+                                      Forall("z", Imp(And(#, #), Atom(R#))))),
+                        Forall("x",
+                               Forall("y",
+                                      Iff(Atom(R("<=", [#, #])),
+                                          Atom(R("<=", [#, #]))))))),
+                And(Forall("x",
+                           Forall("y",
+                                  Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                      Atom(R("<=",
+                                             [Fn("f", #), Fn("f", #)]))))),
+                    Forall("x",
+                           Forall("y",
+                                  Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                      Atom(R("<=",
+                                             [Fn("g", #), Fn("g", #)]))))))))],
+          fn) : goals
+> val g1 =
+    Goals([([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            And(Forall("x",
+                       Forall("y",
+                              Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                  Atom(R("<=",
+                                         [Fn("f", [Var "x"]),
+                                          Fn("f", [Var "y"])]))))),
+                Forall("x",
+                       Forall("y",
+                              Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                  Atom(R("<=",
+                                         [Fn("g", [Var "x"]),
+                                          Fn("g", [Var "y"])])))))))], fn) :
+  goals
+> val g2 =
+    Goals([([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            Forall("x",
+                   Forall("y",
+                          Imp(Atom(R("<=", [Var "x", Var "y"])),
+                              Atom(R("<=",
+                                     [Fn("f", [Var "x"]),
+                                      Fn("f", [Var "y"])])))))),
+           ([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            Forall("x",
+                   Forall("y",
+                          Imp(Atom(R("<=", [Var "x", Var "y"])),
+                              Atom(R("<=",
+                                     [Fn("g", [Var "x"]),
+                                      Fn("g", [Var "y"])]))))))], fn) : goals
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+> val g3 = Goals([], fn) : goals
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val multishunt = fn : int -> thm -> thm
+File "tactics.sml", line 326-331, characters 4-266:
+! ....assume lps (Goals((asl,Imp(p,q))::gls,jfn)) =
+!   if end_itlist mk_and (map snd lps) <> p then raise Fail "assume" else
+!   let fun jfn' th = 
+!     if asl = [] then add_assum True th  else multishunt (length lps) th in
+!   Goals((lps@asl,q)::gls,jmodify jfn jfn')
+!   end..
+! Warning: pattern matching is not exhaustive
+
+> val assume = fn : (string * fol formula) list -> goals -> goals
+> val 'a note = fn :
+  string * fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a ->
+  goals -> goals
+> val 'a have = fn :
+  fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a -> goals ->
+  goals
+File "tactics.sml", line 338-339, characters 30-117:
+! ..............................fn (gl as Goals((asl,w)::_,_)) =>
+!                      firstassum asl :: byfn hyps p gl...
+! Warning: pattern matching is not exhaustive
+
+> val ('a, 'b, 'c, 'd) so = fn :
+  ('a -> ('b -> 'c -> goals -> thm list) -> 'd) -> 'a ->
+  ('b -> 'c -> goals -> thm list) -> 'd
+> val fix = fn : string -> goals -> goals
+> val 'a consider = fn :
+  string * fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a ->
+  goals -> goals
+> val take = fn : term -> goals -> goals
+> val 'a cases = fn :
+  fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a -> goals ->
+  goals
+File "tactics.sml", line 353-360, characters 4-378:
+! ....conclude p byfn hyps (gl as Goals((asl,w)::gls,jfn)) =
+!   let val th = justify byfn hyps p gl in
+!   if p = w then Goals((asl,True)::gls,jmodify jfn (fn _ => th)) else
+!   let val (p',q) = dest_and w in
+!   if p' <> p then raise Fail "conclude: bad conclusion" else
+!   let fun mfn th' = imp_trans_chain [th, th'] (and_pair p q) in
+!   Goals((asl,q)::gls,jmodify jfn mfn)
+!   end end end..
+! Warning: pattern matching is not exhaustive
+
+> val 'a conclude = fn :
+  fol formula -> ('a -> fol formula -> goals -> thm list) -> 'a -> goals ->
+  goals
+File "tactics.sml", line 366-367, characters 4-84:
+! ....our thesis byfn hyps (gl as Goals((asl,w)::gls,jfn)) =
+!   conclude w byfn hyps gl..
+! Warning: pattern matching is not exhaustive
+
+> val ('a, 'b) our = fn :
+  'a -> ('b -> fol formula -> goals -> thm list) -> 'b -> goals -> goals
+> val thesis = "" : string
+File "tactics.sml", line 374-376, characters 4-155:
+! ....qed (gl as Goals((asl,w)::gls,jfn)) =
+!   if w = True then Goals(gls,fn ths => jfn(assumptate gl truth :: ths))
+!   else raise Fail "qed: non-trivial goal"..
+! Warning: pattern matching is not exhaustive
+
+> val qed = fn : goals -> goals
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+> val ewd954 = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+> val it = <thm> : thm
+File "tactics.sml", line 433-434, characters 8-98:
+! ........fn (thp::thw::oths) =>
+!             jfn(imp_unduplicate(imp_trans thp (shunt thw)) :: oths)....
+! Warning: pattern matching is not exhaustive
+
+File "tactics.sml", line 431-434, characters 8-191:
+! ........lemma (s,p) (gl as Goals((asl,w)::gls,jfn)) =
+!   Goals((asl,p)::((s,p)::asl,w)::gls,
+!         fn (thp::thw::oths) =>
+!             jfn(imp_unduplicate(imp_trans thp (shunt thw)) :: oths))...
+! Warning: pattern matching is not exhaustiveSearching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+
+
+> val it = <thm> : thm
+> val 'a run = fn : ('a -> 'a) list -> 'a -> 'a
+> val current_goal = ref [Goals([([], False)], fn)] : goals list ref
+> val g = fn : fol formula -> goals
+> val e = fn : (goals -> goals) -> goals
+> val es = fn : (goals -> goals) list -> goals
+> val b = fn : unit -> goals
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+> val it = <thm> : thm
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 0
+Searching with depth limit 1
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "tactics.sml"]
+> val it = () : unit
+[closing file "init.sml"]
+> val it = () : unit
+- - [opening file "full_test.sml"]
+[opening file "verbose_functions.sml"]
+> val begin_output = fn : unit -> unit
+> val end_output = fn : unit -> unit
+> val ''a print_list = fn : (''a -> unit) -> ''a list -> unit
+> val ('a, 'b, 'c, 'd) print_pair = fn :
+  ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> unit
+> val print_bool = fn : bool -> unit
+> val variant' = fn : string -> string list -> string
+> val subst' = fn : (string, term) func -> fol formula -> fol formula
+> val icongruence' = fn : term -> term -> term -> term -> thm
+> val ispec' = fn : term -> fol formula -> thm
+> val isubst' = fn : term -> term -> fol formula -> fol formula -> thm
+> val lex' = fn : char list -> string list
+> val lcffol' = fn : fol formula -> thm
+> val lcftaut' = fn : fol formula -> thm
+> val set_goal' = fn : fol formula -> goals
+> val imp_intro_tac' = fn : string -> goals -> goals
+> val conj_intro_tac' = fn : goals -> goals
+> val extract_thm' = fn : goals -> thm
+> val prove' = fn : fol formula -> (goals -> goals) list -> thm
+> val unify_and_apply' = fn : (term * term) list -> (term * term) list
+[closing file "verbose_functions.sml"]
+> val it = () : unit
+> val it = () : unit
+> val it = START_INTERACTIVE : dummy_interactive
+********************
+********TEST********
+********************
+:::
+sqrt(1 - power(cos(x + y),2))
+;;;
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+<<x + y < z>>
+;;;
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+<<(forall x. x < 2 ==> 2 * x <= 3) \/ false>>
+;;;
+> val it = () : unit
+:::
+2 *
+x
+;;;
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+<<forall x y. exists z. x < z /\ y < z>>
+;;;
+> val it = () : unit
+:::
+<<~(forall x. P(x)) <=> (exists y. ~P(y))>>
+;;;
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+x
+;;;
+> val it = "x" : string
+:::
+x'
+;;;
+> val it = "x'" : string
+:::
+x''
+;;;
+> val it = "x''" : string
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+<<forall x'. x' = x>>
+;;;
+> val it = Forall("x'", Atom(R("=", [Var "x'", Var "x"]))) : fol formula
+:::
+<<forall x' x''. x' = x ==> x' = x''>>
+;;;
+> val it =
+    Forall("x'",
+           Forall("x''",
+                  Imp(Atom(R("=", [Var "x'", Var "x"])),
+                      Atom(R("=", [Var "x'", Var "x''"]))))) : fol formula
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+|- s = t ==> f(s,g(s,t,s),u,h(h(s))) = f(s,g(t,t,s),u,h(h(t)))
+;;;
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+|-
+(forall x y z. x + y + z = z + y + x) ==>
+(forall y' z. y + y' + z = z + y' + y)
+;;;
+> val it = <thm> : thm
+:::
+|- x + x = 2 * x ==> (x + x = x ==> x = 0) ==> 2 * x = x ==> x = 0
+;;;
+> val it = <thm> : thm
+:::
+|-
+x + x = 2 * x ==>
+(x + x = y + y ==> y + y + y = x + x + x) ==>
+2 * x = y + y ==> y + y + y = x + 2 * x
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y z. x + y + z = y + z + z)
+;;;
+> val it = <thm> : thm
+:::
+|- (forall x. x = x) ==> x = x
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y' z'. (w + y + z) + y' + z' = y' + z' + z')
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x y z. x + y + z = y + z + z) ==>
+(forall y' z'. (x + y + z) + y' + z' = y' + z' + z')
+;;;
+> val it = <thm> : thm
+:::
+|- (forall x y z. nothing_much) ==> (forall y z. nothing_much)
+;;;
+> val it = <thm> : thm
+:::
+|-
+x + x = 2 * x ==>
+(x + x = y + y <=> something \/ y + y + y = x + x + x) ==>
+(2 * x = y + y <=> something \/ y + y + y = x + x + x)
+;;;
+> val it = <thm> : thm
+:::
+|-
+x + x = 2 * x ==>
+((exists x. x = 2) <=> (exists y. y + x + x = y + y + y)) ==>
+((exists x. x = 2) <=> (exists y. y + 2 * x = y + y + y))
+;;;
+> val it = <thm> : thm
+:::
+|-
+x = y ==>
+((forall z. x = z) <=> (exists x. y < z) /\ (forall y. y < x)) ==>
+((forall z. y = z) <=> (exists x. y < z) /\ (forall y'. y' < y))
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x'' x'''. x' + x'' + x''' = 0)
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x' x'''. x'' + x' + x''' = 0)
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x''' x''''. (x' + x'') + x''' + x'''' = 0)
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x x' x''. x + x' + x'' = 0) ==>
+(forall x''' x''''. (x + x' + x'') + x''' + x'''' = 0)
+;;;
+> val it = <thm> : thm
+:::
+|-
+(forall x x'. x + x' = x' + x) ==> (forall x'. 2 * x + x' = x' + 2 * x)
+;;;
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+[2,*,(,(,var_1,+,x',),+,11,)]
+;;;
+> val it = ["2", "*", "(", "(", "var_1", "+", "x'", ")", "+", "11", ")"] :
+  string list
+:::
+[if,(,*,p1,--,==,*,p2,++,),then,f,(,),else,g,(,)]
+;;;
+> val it =
+    ["if", "(", "*", "p1", "--", "==", "*", "p2", "++", ")", "then", "f", "(",
+     ")", "else", "g", "(", ")"] : string list
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+forall x.
+  exists v w.
+    forall y z. P(x) /\ Q(y) ==> (P(v) \/ R(w)) /\ (R(z) ==> Q(v))
+;;;
+> val p58 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+;;;
+> val ewd1062_1 = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+> val start_time = 57.844309 : real
+:::
+|- p ==> q <=> ~q ==> ~p
+;;;
+CPU time (user): 0.002825
+> val p1 = <thm> : thm
+:::
+|- ~(~p) <=> p
+;;;
+CPU time (user): 0.001672
+> val p2 = <thm> : thm
+:::
+|- ~(p ==> q) ==> q ==> p
+;;;
+CPU time (user): 0.00149
+> val p3 = <thm> : thm
+:::
+|- ~p ==> q <=> ~q ==> p
+;;;
+CPU time (user): 0.003546
+> val p4 = <thm> : thm
+:::
+|- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
+;;;
+CPU time (user): 0.002447
+> val p5 = <thm> : thm
+:::
+|- p \/ ~p
+;;;
+CPU time (user): 0.001569
+> val p6 = <thm> : thm
+:::
+|- p \/ ~(~(~p))
+;;;
+CPU time (user): 0.001431
+> val p7 = <thm> : thm
+:::
+|- ((p ==> q) ==> p) ==> p
+;;;
+CPU time (user): 0.001352
+> val p8 = <thm> : thm
+:::
+|- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
+;;;
+CPU time (user): 0.00389
+> val p9 = <thm> : thm
+:::
+|- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
+;;;
+CPU time (user): 0.00438
+> val p10 = <thm> : thm
+:::
+|- p <=> p
+;;;
+CPU time (user): 0.002695
+> val p11 = <thm> : thm
+:::
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+;;;
+CPU time (user): 0.012824
+> val p12 = <thm> : thm
+:::
+|- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
+;;;
+CPU time (user): 0.004975
+> val p13 = <thm> : thm
+:::
+|- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
+;;;
+CPU time (user): 0.004757
+> val p14 = <thm> : thm
+:::
+|- p ==> q <=> ~p \/ q
+;;;
+CPU time (user): 0.00291
+> val p15 = <thm> : thm
+:::
+|- (p ==> q) \/ (q ==> p)
+;;;
+CPU time (user): 0.001783
+> val p16 = <thm> : thm
+:::
+|- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
+;;;
+CPU time (user): 0.00928
+> val p17 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p ==> q <=> ~q ==> ~p
+;;;
+CPU time (user): 0.003641
+> val p1 = <thm> : thm
+Searching with depth limit 0
+:::
+|- ~(~p) <=> p
+;;;
+CPU time (user): 0.002265
+> val p2 = <thm> : thm
+Searching with depth limit 0
+:::
+|- ~(p ==> q) ==> q ==> p
+;;;
+CPU time (user): 0.002475
+> val p3 = <thm> : thm
+Searching with depth limit 0
+:::
+|- ~p ==> q <=> ~q ==> p
+;;;
+CPU time (user): 0.003341
+> val p4 = <thm> : thm
+Searching with depth limit 0
+:::
+|- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
+;;;
+CPU time (user): 0.004127
+> val p5 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p \/ ~p
+;;;
+CPU time (user): 0.001896
+> val p6 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p \/ ~(~(~p))
+;;;
+CPU time (user): 0.002299
+> val p7 = <thm> : thm
+Searching with depth limit 0
+:::
+|- ((p ==> q) ==> p) ==> p
+;;;
+CPU time (user): 0.001627
+> val p8 = <thm> : thm
+Searching with depth limit 0
+:::
+|- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
+;;;
+CPU time (user): 0.006137
+> val p9 = <thm> : thm
+Searching with depth limit 0
+:::
+|- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
+;;;
+CPU time (user): 0.004433
+> val p10 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p <=> p
+;;;
+CPU time (user): 0.00228
+> val p11 = <thm> : thm
+Searching with depth limit 0
+:::
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+;;;
+CPU time (user): 0.017542
+> val p12 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
+;;;
+CPU time (user): 0.005997
+> val p13 = <thm> : thm
+Searching with depth limit 0
+:::
+|- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
+;;;
+CPU time (user): 0.007307
+> val p14 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p ==> q <=> ~p \/ q
+;;;
+CPU time (user): 0.003464
+> val p15 = <thm> : thm
+Searching with depth limit 0
+:::
+|- (p ==> q) \/ (q ==> p)
+;;;
+CPU time (user): 0.002028
+> val p16 = <thm> : thm
+Searching with depth limit 0
+:::
+|- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
+;;;
+CPU time (user): 0.010934
+> val p17 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|- exists y. forall x. P(y) ==> P(x)
+;;;
+CPU time (user): 0.006185
+> val p18 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|- exists x. forall y z. (P(y) ==> Q(z)) ==> P(x) ==> Q(x)
+;;;
+CPU time (user): 0.013269
+> val p19 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+(forall x y. exists z. forall w. P(x) /\ Q(y) ==> R(z) /\ U(w)) ==>
+(exists x y. P(x) /\ Q(y)) ==> (exists z. R(z))
+;;;
+CPU time (user): 0.016024
+> val p20 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|-
+(exists x. P ==> Q(x)) /\ (exists x. Q(x) ==> P) ==>
+(exists x. P <=> Q(x))
+;;;
+CPU time (user): 0.011743
+> val p21 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|- (forall x. P <=> Q(x)) ==> (P <=> (forall x. Q(x)))
+;;;
+CPU time (user): 0.005577
+> val p22 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|- (forall x. P \/ Q(x)) <=> P \/ (forall x. Q(x))
+;;;
+CPU time (user): 0.006217
+> val p23 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+~(exists x. U(x) /\ Q(x)) /\
+(forall x. P(x) ==> Q(x) \/ R(x)) /\
+~(exists x. P(x) ==> (exists x. Q(x))) /\
+(forall x. Q(x) /\ R(x) ==> U(x)) ==> (exists x. P(x) /\ R(x))
+;;;
+CPU time (user): 0.027357
+> val p24 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|-
+(exists x. P(x)) /\
+(forall x. U(x) ==> ~G(x) /\ R(x)) /\
+(forall x. P(x) ==> G(x) /\ U(x)) /\
+((forall x. P(x) ==> Q(x)) \/ (exists x. Q(x) /\ P(x))) ==>
+(exists x. Q(x) /\ P(x))
+;;;
+CPU time (user): 0.008726
+> val p25 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+:::
+|-
+((exists x. P(x)) <=> (exists x. Q(x))) /\
+(forall x y. P(x) /\ Q(y) ==> (R(x) <=> U(y))) ==>
+((forall x. P(x) ==> R(x)) <=> (forall x. Q(x) ==> U(x)))
+;;;
+CPU time (user): 0.067863
+> val p26 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(exists x. P(x) /\ ~Q(x)) /\
+(forall x. P(x) ==> R(x)) /\
+(forall x. U(x) /\ V(x) ==> P(x)) /\ (exists x. R(x) /\ ~Q(x)) ==>
+(forall x. V(x) ==> ~R(x)) ==> (forall x. U(x) ==> ~V(x))
+;;;
+CPU time (user): 0.036991
+> val p27 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(forall x. P(x) ==> (forall x. Q(x))) /\
+((forall x. Q(x) \/ R(x)) ==> (exists x. Q(x) /\ R(x))) /\
+((exists x. R(x)) ==> (forall x. L(x) ==> M(x))) ==>
+(forall x. P(x) /\ L(x) ==> M(x))
+;;;
+CPU time (user): 0.061485
+> val p28 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+(exists x. P(x)) /\ (exists x. G(x)) ==>
+((forall x. P(x) ==> H(x)) /\ (forall x. G(x) ==> J(x)) <=>
+ (forall x y. P(x) /\ G(y) ==> H(x) /\ J(y)))
+;;;
+CPU time (user): 0.073043
+> val p29 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|-
+(forall x. P(x) \/ G(x) ==> ~H(x)) /\
+(forall x. (G(x) ==> ~U(x)) ==> P(x) /\ H(x)) ==> (forall x. U(x))
+;;;
+CPU time (user): 0.008777
+> val p30 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+~(exists x. P(x) /\ (G(x) \/ H(x))) /\
+(exists x. Q(x) /\ P(x)) /\ (forall x. ~H(x) ==> J(x)) ==>
+(exists x. Q(x) /\ J(x))
+;;;
+CPU time (user): 0.011365
+> val p31 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(forall x. P(x) /\ (G(x) \/ H(x)) ==> Q(x)) /\
+(forall x. Q(x) /\ H(x) ==> J(x)) /\ (forall x. R(x) ==> H(x)) ==>
+(forall x. P(x) /\ R(x) ==> J(x))
+;;;
+CPU time (user): 0.020546
+> val p32 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(forall x. P(a) /\ (P(x) ==> P(b)) ==> P(c)) <=>
+(forall x. P(a) ==> P(x) \/ P(c)) /\ (P(a) ==> P(b) ==> P(c))
+;;;
+CPU time (user): 0.046632
+> val p33 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|- exists x y. P(x,y) ==> (forall x y. P(x,y))
+;;;
+CPU time (user): 0.010285
+> val p35 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall x. exists y. P(x,y)) /\
+(forall x. exists y. G(x,y)) /\
+(forall x y.
+   P(x,y) \/ G(x,y) ==> (forall z. P(y,z) \/ G(y,z) ==> H(x,z))) ==>
+(forall x. exists y. H(x,y))
+;;;
+CPU time (user): 0.019489
+> val p36 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall z.
+   exists w.
+     forall x.
+       exists y.
+         (P(x,z) ==> P(y,w)) /\
+         P(y,z) /\ (P(y,w) ==> (exists u. Q(u,w)))) /\
+(forall x z. ~P(x,z) ==> (exists y. Q(y,z))) /\
+((exists x y. Q(x,y)) ==> (forall x. R(x,x))) ==>
+(forall x. exists y. R(x,y))
+;;;
+CPU time (user): 0.070839
+> val p37 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+(forall x.
+   P(a) /\ (P(x) ==> (exists y. P(y) /\ R(x,y))) ==>
+   (exists z w. P(z) /\ R(x,w) /\ R(w,z))) <=>
+(forall x.
+   (~P(a) \/ P(x) \/ (exists z w. P(z) /\ R(x,w) /\ R(w,z))) /\
+   (~P(a) \/
+    ~(exists y. P(y) /\ R(x,y)) \/
+    (exists z w. P(z) /\ R(x,w) /\ R(w,z))))
+;;;
+CPU time (user): 0.746371
+> val p38 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|- ~(exists x. forall y. P(y,x) <=> ~P(y,y))
+;;;
+CPU time (user): 0.007889
+> val p39 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(exists y. forall x. P(x,y) <=> P(x,x)) ==>
+~(forall x. exists y. forall z. P(z,y) <=> ~P(z,x))
+;;;
+CPU time (user): 0.018804
+> val p40 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(forall z. exists y. forall x. P(x,y) <=> P(x,z) /\ ~P(x,x)) ==>
+~(exists z. forall x. P(x,z))
+;;;
+CPU time (user): 0.015739
+> val p41 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|- ~(exists y. forall x. P(x,y) <=> ~(exists z. P(x,z) /\ P(z,x)))
+;;;
+CPU time (user): 0.053628
+> val p42 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+(forall x.
+   P(x) ==> (exists y. G(y) /\ H(x,y)) /\ (exists y. G(y) /\ ~H(x,y))) /\
+(exists x. J(x) /\ (forall y. G(y) ==> H(x,y))) ==>
+(exists x. J(x) /\ ~P(x))
+;;;
+CPU time (user): 0.016296
+> val p44 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+Searching with depth limit 8
+:::
+|-
+lives(agatha) /\
+lives(butler) /\
+lives(charles) /\
+(killed(agatha,agatha) \/
+ killed(butler,agatha) \/ killed(charles,agatha)) /\
+(forall x y. killed(x,y) ==> hates(x,y) /\ ~richer(x,y)) /\
+(forall x. hates(agatha,x) ==> ~hates(charles,x)) /\
+(hates(agatha,agatha) /\ hates(agatha,charles)) /\
+(forall x. lives(x) /\ ~richer(x,agatha) ==> hates(butler,x)) /\
+(forall x. hates(agatha,x) ==> hates(butler,x)) /\
+(forall x. ~hates(x,agatha) \/ ~hates(x,butler) \/ ~hates(x,charles)) ==>
+killed(agatha,agatha) /\
+~killed(butler,agatha) /\ ~killed(charles,agatha)
+;;;
+CPU time (user): 29.587239
+> val p55 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+P(f(a,b),f(b,c)) /\
+P(f(b,c),f(a,c)) /\ (forall x y z. P(x,y) /\ P(y,z) ==> P(x,z)) ==>
+P(f(a,b),f(a,c))
+;;;
+CPU time (user): 0.144302
+> val p57 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+forall P Q R x.
+  exists v w.
+    forall y z. P(x) /\ Q(y) ==> (P(v) \/ R(w)) /\ (R(z) ==> Q(v))
+;;;
+CPU time (user): 0.130891
+> val p58 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|- (forall x. P(x) <=> ~P(f(x))) ==> (exists x. P(x) /\ ~P(f(x)))
+;;;
+CPU time (user): 0.011772
+> val p59 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+forall x.
+  P(x,f(x)) <=> (exists y. (forall z. P(z,y) ==> P(z,f(x))) /\ P(x,y))
+;;;
+CPU time (user): 0.019819
+> val p60 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+exists x.
+  forall y z.
+    ((F(y,z) ==> G(y) ==> H(x)) ==> F(x,x)) /\
+    ((F(z,x) ==> G(x)) ==> H(z)) /\ F(x,y) ==> F(z,z)
+;;;
+CPU time (user): 0.172845
+> val gilmore_3 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+:::
+|-
+exists x y.
+  forall z.
+    (F(x,y) ==> F(y,z) /\ F(z,z)) /\
+    (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
+;;;
+CPU time (user): 9.870329
+> val gilmore_4 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+(forall x. exists y. F(x,y) \/ F(y,x)) /\
+(forall x y. F(y,x) ==> F(y,y)) ==> (exists z. F(z,z))
+;;;
+CPU time (user): 0.018018
+> val gilmore_5 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+:::
+|-
+forall x.
+  exists y.
+    (exists u. forall v. F(u,x) ==> G(v,u) /\ G(u,x)) ==>
+    (exists u. forall v. F(u,y) ==> G(v,u) /\ G(u,y)) \/
+    (forall u v. exists w. G(v,u) \/ H(w,y,u) ==> G(u,w))
+;;;
+CPU time (user): 0.116873
+> val gilmore_6 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+:::
+|-
+(forall x. K(x) ==> (exists y. L(y) /\ (F(x,y) ==> G(x,y)))) /\
+(exists z. K(z) /\ (forall u. L(u) ==> F(z,u))) ==>
+(exists v w. K(v) /\ L(w) /\ G(v,w))
+;;;
+CPU time (user): 0.026772
+> val gilmore_7 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+:::
+|-
+exists x.
+  forall y z.
+    ((F(y,z) ==> G(y) ==> (forall u. exists v. H(u,v,x))) ==> F(x,x)) /\
+    ((F(z,x) ==> G(x)) ==> (forall u. exists v. H(u,v,z))) /\ F(x,y) ==>
+    F(z,z)
+;;;
+CPU time (user): 0.634123
+> val gilmore_8 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+forall x.
+  exists y.
+    forall z.
+      ((forall u. exists v. F(y,u,v) /\ G(y,u) /\ ~H(y,x)) ==>
+       (forall u. exists v. F(x,u,v) /\ G(z,u) /\ ~H(x,z)) ==>
+       (forall u. exists v. F(x,u,v) /\ G(y,u) /\ ~H(x,y))) /\
+      ((forall u. exists v. F(x,u,v) /\ G(y,u) /\ ~H(x,y)) ==>
+       ~(forall u. exists v. F(x,u,v) /\ G(z,u) /\ ~H(x,z)) ==>
+       (forall u. exists v. F(y,u,v) /\ G(y,u) /\ ~H(y,x)) /\
+       (forall u. exists v. F(z,u,v) /\ G(y,u) /\ ~H(z,y)))
+;;;
+CPU time (user): 3.040525
+> val gilmore_9 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 7
+:::
+|-
+exists x y.
+  forall z.
+    (F(x,y) ==> F(y,z) /\ F(z,z)) /\
+    (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
+;;;
+CPU time (user): 7.931618
+> val davis_putnam_example = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+;;;
+CPU time (user): 0.085029
+> val ewd1062_1 = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> g(x) <= g(y))
+;;;
+CPU time (user): 0.122052
+> val ewd1062_2 = <thm> : thm
+Complete CPU time (user): 53.671801
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+> val s = Fn("f", [Var "x", Var "x", Var "x"]) : term
+> val t = Fn("g", [Var "x", Var "y"]) : term
+:::
+f(x,x,x)
+;;;
+> val it = () : unit
+:::
+g(x,y)
+;;;
+> val it = () : unit
+:::
+true
+
+;;;
+> val it = () : unit
+> val i = Leaf(121, [("y", Fn("f", [Var "x", Var "x", Var "x"]))]) :
+  (string, term) func
+:::
+false
+
+;;;
+> val it = () : unit
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+
+1 subgoal:
+---> (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y)) ==>
+     (forall x y. x <= y ==> f(x) <= f(y)) /\
+     (forall x y. x <= y ==> g(x) <= g(y))
+
+;;;
+> val g0 =
+    Goals([([],
+            Imp(And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                    And(Forall("x",
+                               Forall("y",
+                                      Forall("z", Imp(And(#, #), Atom(R#))))),
+                        Forall("x",
+                               Forall("y",
+                                      Iff(Atom(R("<=", [#, #])),
+                                          Atom(R("<=", [#, #]))))))),
+                And(Forall("x",
+                           Forall("y",
+                                  Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                      Atom(R("<=",
+                                             [Fn("f", #), Fn("f", #)]))))),
+                    Forall("x",
+                           Forall("y",
+                                  Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                      Atom(R("<=",
+                                             [Fn("g", #), Fn("g", #)]))))))))],
+          fn) : goals
+:::
+
+1 subgoal:
+ant: (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y))
+---> (forall x y. x <= y ==> f(x) <= f(y)) /\
+     (forall x y. x <= y ==> g(x) <= g(y))
+
+;;;
+> val g1 =
+    Goals([([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            And(Forall("x",
+                       Forall("y",
+                              Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                  Atom(R("<=",
+                                         [Fn("f", [Var "x"]),
+                                          Fn("f", [Var "y"])]))))),
+                Forall("x",
+                       Forall("y",
+                              Imp(Atom(R("<=", [Var "x", Var "y"])),
+                                  Atom(R("<=",
+                                         [Fn("g", [Var "x"]),
+                                          Fn("g", [Var "y"])])))))))], fn) :
+  goals
+:::
+
+2 subgoals starting with
+ant: (forall x. x <= x) /\
+     (forall x y z. x <= y /\ y <= z ==> x <= z) /\
+     (forall x y. f(x) <= y <=> x <= g(y))
+---> forall x y. x <= y ==> f(x) <= f(y)
+
+;;;
+> val g2 =
+    Goals([([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            Forall("x",
+                   Forall("y",
+                          Imp(Atom(R("<=", [Var "x", Var "y"])),
+                              Atom(R("<=",
+                                     [Fn("f", [Var "x"]),
+                                      Fn("f", [Var "y"])])))))),
+           ([("ant",
+              And(Forall("x", Atom(R("<=", [Var "x", Var "x"]))),
+                  And(Forall("x",
+                             Forall("y",
+                                    Forall("z", Imp(And(#, #), Atom(R#))))),
+                      Forall("x",
+                             Forall("y",
+                                    Iff(Atom(R("<=", [#, #])),
+                                        Atom(R("<=", [#, #]))))))))],
+            Forall("x",
+                   Forall("y",
+                          Imp(Atom(R("<=", [Var "x", Var "y"])),
+                              Atom(R("<=",
+                                     [Fn("g", [Var "x"]),
+                                      Fn("g", [Var "y"])]))))))], fn) : goals
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+> val g3 = Goals([], fn) : goals
+:::
+No subgoals
+;;;
+> val it = () : unit
+:::
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y)) /\
+(forall x y. x <= y ==> g(x) <= g(y))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 6
+:::
+|-
+(forall x. x <= x) /\
+(forall x y z. x <= y /\ y <= z ==> x <= z) /\
+(forall x y. f(x) <= y <=> x <= g(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y)) /\
+(forall x y. x <= y ==> g(x) <= g(y))
+;;;
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 3
+Searching with depth limit 4
+Searching with depth limit 5
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|-
+(forall x y. x <= y <=> x * y = x) /\
+(forall x y. f(x * y) = f(x) * f(y)) ==>
+(forall x y. x <= y ==> f(x) <= f(y))
+;;;
+> val ewd954 = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+;;;
+> val it = <thm> : thm
+File "full_test.sml", line 579-580, characters 8-98:
+! ........fn (thp::thw::oths) =>
+!             jfn(imp_unduplicate(imp_trans thp (shunt thw)) :: oths)....
+! Warning: pattern matching is not exhaustive
+
+File "full_test.sml", line 577-580, characters 8-191:
+! ........lemma (s,p) (gl as Goals((asl,w)::gls,jfn)) =
+!   Goals((asl,p)::((s,p)::asl,w)::gls,
+!         fn (thp::thw::oths) =>
+!             jfn(imp_unduplicate(imp_trans thp (shunt thw)) :: oths))...
+! Warning: pattern matching is not exhaustiveSearching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+;;;
+
+
+> val it = <thm> : thm
+> val 'a run = fn : ('a -> 'a) list -> 'a -> 'a
+> val current_goal = ref [Goals([([], False)], fn)] : goals list ref
+> val g = fn : fol formula -> goals
+> val e = fn : (goals -> goals) -> goals
+> val es = fn : (goals -> goals) list -> goals
+> val b = fn : unit -> goals
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+:::
+|-
+p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 2
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+:::
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+p(c) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+:::
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+:::
+|-
+forall a.
+  p(a) ==> (forall x. p(x) ==> p(f(x))) ==> (exists y. p(y) /\ p(f(y)))
+;;;
+> val it = <thm> : thm
+:::
+|- p(a) \/ p(b) ==> q ==> (exists y. p(y))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(p(a) \/ p(b)) /\ (forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+:::
+|-
+(exists x. p(x)) ==>
+(forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(y)))
+;;;
+> val it = <thm> : thm
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+Searching with depth limit 1
+Searching with depth limit 0
+:::
+|-
+(forall x. p(x) ==> q(x)) ==>
+(forall x. q(x) ==> p(x)) ==> (p(a) <=> q(a))
+;;;
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+[(f(f(z),g(y)),f(f(z),g(y)))]
+;;;
+> val it =
+    [(Fn("f", [Fn("f", [Var "z"]), Fn("g", [Var "y"])]),
+      Fn("f", [Fn("f", [Var "z"]), Fn("g", [Var "y"])]))] : (term * term) list
+:::
+[(f(y,y),f(y,y))]
+;;;
+> val it = [(Fn("f", [Var "y", Var "y"]), Fn("f", [Var "y", Var "y"]))] :
+  (term * term) list
+:::
+[(f(f(f(x_3,x_3),f(x_3,x_3)),f(f(x_3,x_3),f(x_3,x_3))),f(f(f(x_3,x_3),
+                                                           f(x_3,x_3))
+                                                         ,
+                                                         f(f(x_3,x_3),
+                                                           f(x_3,x_3))))
+ ,(f(f(x_3,x_3),f(x_3,x_3)),f(f(x_3,x_3),f(x_3,x_3))),
+ (f(x_3,x_3),f(x_3,x_3))]
+;;;
+> val it =
+    [(Fn("f",
+         [Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])]),
+          Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])])]),
+      Fn("f",
+         [Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])]),
+          Fn("f",
+             [Fn("f", [Var "x_3", Var "x_3"]),
+              Fn("f", [Var "x_3", Var "x_3"])])])),
+     (Fn("f",
+         [Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"])]),
+      Fn("f",
+         [Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"])])),
+     (Fn("f", [Var "x_3", Var "x_3"]), Fn("f", [Var "x_3", Var "x_3"]))] :
+  (term * term) list
+> val it = END_INTERACTIVE : dummy_interactive
+> val it = START_INTERACTIVE : dummy_interactive
+:::
+|- (p ==> q) \/ (q ==> p)
+;;;
+> val it = <thm> : thm
+:::
+|- p /\ q <=> (p <=> q) <=> p \/ q
+;;;
+> val it = <thm> : thm
+:::
+|- ((p <=> q) <=> r) <=> p <=> q <=> r
+;;;
+> val it = <thm> : thm
+> val it = END_INTERACTIVE : dummy_interactive
+[closing file "full_test.sml"]
+> val it = () : unit
+- - 
