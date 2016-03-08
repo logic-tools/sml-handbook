@@ -22,18 +22,18 @@ All rights reserved. (See "LICENSE" for details.)
 val max_int = 
     case Int.maxInt of
       SOME n => n
-	| NONE => 1073741823
+    | NONE => 1073741823
 ;;
 
 fun max a b = Int.max(a,b);;
 
 fun string_make n c =
-	if n<0 then raise Fail "n<0" else
-	let fun string_make_aux s n' =
-	  if n' = 0 then s else string_make_aux (c::s) (n'-1)
-	in
-	String.implode (string_make_aux [] n)
-	end
+    if n<0 then raise Fail "n<0" else
+    let fun string_make_aux s n' =
+      if n' = 0 then s else string_make_aux (c::s) (n'-1)
+    in
+    String.implode (string_make_aux [] n)
+    end
 ;;
 
 fun pred x = x - 1;;
@@ -198,14 +198,14 @@ fun add_queue x (q : 'a queue) =
   let val c = Cons (Queue_cell { head = ref x, tail = ref Nil} ) in
   case q of
     { insert = ref (Cons (Queue_cell cell)), body = _} => (
-	   #insert q := c; 
-	   #tail cell := c
-	   )
+       #insert q := c; 
+       #tail cell := c
+       )
   (* Invariant: when insert is Nil body should be Nil. *)
   | { insert = ref Nil, body = _ } => (
        #insert q := c; 
-	   #body q := c
-	   )
+       #body q := c
+       )
   end;;
 
 exception Empty_queue;;
@@ -220,7 +220,7 @@ val take_queue = fn
     (#body q) := tl;
     if tl = Nil then (#insert q) := Nil else (); (* Maintain the invariant. *)
     x
-	)
+    )
   | { body = ref Nil, insert = _ } => raise Empty_queue
 ;;
 
@@ -298,10 +298,10 @@ fun pp_force_break_line state =
       (case bl_ty of
          Pp_fits => () | Pp_hbox => ()
        | Pp_vbox   => (break_line state width)
-	   | Pp_hvbox  => (break_line state width)
-	   | Pp_hovbox => (break_line state width)
-	   | Pp_box    => (break_line state width)
-	  )
+       | Pp_hvbox  => (break_line state width)
+       | Pp_hovbox => (break_line state width)
+       | Pp_box    => (break_line state width)
+      )
     else ()
   | [] => pp_output_newline state
 ;;
@@ -313,7 +313,7 @@ fun pp_skip_token (state : formatter) =
     { elem_size = ref size, length = len, token = _ } => (
     (#pp_left_total state) := !(#pp_left_total state) - len;
     (#pp_space_left state) := !(#pp_space_left state) + int_of_size size
-	)
+    )
 ;;
 
 exception Not_found;;
@@ -337,21 +337,21 @@ fun format_pp_token (state : formatter) size = fn
     if insertion_point > !(#pp_max_indent state) then
       (* can't open a block right there. *)
       (pp_force_break_line state ) else () 
-	end;
+    end;
     let val offset = !(#pp_space_left state) - off 
         val bl_type =
       ( case ty of
         Pp_vbox => Pp_vbox
       | Pp_hbox    => if size > !(#pp_space_left state) then ty else Pp_fits
-	  | Pp_hvbox   => if size > !(#pp_space_left state) then ty else Pp_fits
-	  | Pp_hovbox  => if size > !(#pp_space_left state) then ty else Pp_fits
-	  | Pp_box     => if size > !(#pp_space_left state) then ty else Pp_fits
-	  | Pp_fits    => if size > !(#pp_space_left state) then ty else Pp_fits
+      | Pp_hvbox   => if size > !(#pp_space_left state) then ty else Pp_fits
+      | Pp_hovbox  => if size > !(#pp_space_left state) then ty else Pp_fits
+      | Pp_box     => if size > !(#pp_space_left state) then ty else Pp_fits
+      | Pp_fits    => if size > !(#pp_space_left state) then ty else Pp_fits
       ) in
     #pp_format_stack state :=
       Format_elem (bl_type, offset) :: !(#pp_format_stack state) 
     end)
-	
+    
   | Pp_end =>
     ( case !(#pp_format_stack state) of
       _ :: ls => (#pp_format_stack state) := ls
@@ -374,7 +374,7 @@ fun format_pp_token (state : formatter) size = fn
           [] => [n]
         | ls as(x :: l) => if n < x then n :: ls else x :: add_tab n l in
       tabs := add_tab (!(#pp_margin state) - !(#pp_space_left state) ) (!tabs)
-	  end
+      end
     | [] => () (* No opened tabulation block. *)
     )
 
@@ -390,17 +390,17 @@ fun format_pp_token (state : formatter) size = fn
           x :: _ =>
           (
             (find insertion_point (!tabs)) 
-			handle Not_found => x
+            handle Not_found => x
           )
         | _ => insertion_point 
           val offset = tab - insertion_point in
       if offset >= 0
       then break_same_line state (offset + n)
       else ( break_new_line state (tab + off) (!(#pp_margin state) ))
-	  end
+      end
     | [] => () (* No opened tabulation block. *)
     )
-	end
+    end
 
   | Pp_newline =>
     ( case !(#pp_format_stack state) of
@@ -441,7 +441,7 @@ fun format_pp_token (state : formatter) size = fn
      let val marker = !(#pp_mark_open_tag state) tag_name in
      pp_output_string state marker;
      (#pp_mark_stack state) := tag_name :: !(#pp_mark_stack state) 
-	 end
+     end
 
    | Pp_close_tag =>
      ( case !(#pp_mark_stack state) of
@@ -449,8 +449,8 @@ fun format_pp_token (state : formatter) size = fn
        let val marker = (!(#pp_mark_close_tag state)) tag_name in (
        pp_output_string state marker;
        (#pp_mark_stack state) := tags
-	   )
-	   end
+       )
+       end
      | [] => () (* No more tag to close. *)
      )
 ;;
@@ -466,7 +466,7 @@ fun advance_loop (state : formatter) =
   case peek_queue (!(#pp_queue state)) of
     {elem_size = ref size, token = tok, length = len} =>
     let val size = int_of_size size in
-	(
+    (
     if not
          (size < 0 andalso
           (!(#pp_right_total state) - !(#pp_left_total state) < !(#pp_space_left state) ))
@@ -476,9 +476,9 @@ fun advance_loop (state : formatter) =
       (#pp_left_total state) := len + !(#pp_left_total state) ;
       advance_loop state
     ) else ()
-	)
-	end
-	)
+    )
+    end
+    )
 ;;
 
 fun advance_left state =
@@ -535,12 +535,12 @@ fun set_size (state : formatter) ty =
     if left_tot < !(#pp_left_total state) then clear_scan_stack state else
       ( case tok of
         Pp_break (_, _)  =>
-		if ty then
+        if ty then
         (
           (#elem_size queue_elem) := size_of_int ( !(#pp_right_total state) + size);
           (#pp_scan_stack state) := t
         ) else ()
-	  | Pp_tbreak (_, _) =>
+      | Pp_tbreak (_, _) =>
         if ty then
         (
           (#elem_size queue_elem) := size_of_int ( !(#pp_right_total state) + size);
@@ -557,7 +557,7 @@ fun set_size (state : formatter) ty =
       => () | Pp_open_tag _ => () | Pp_close_tag =>
         () (* scan_push is only used for breaks and boxes. *)
       )
-	end
+    end
   | [] => () (* scan_stack is never empty. *)
 ;
 
@@ -582,7 +582,7 @@ fun pp_open_box_gen (state : formatter) indent br_ty =(
         (Pp_begin (indent, br_ty))
         0 in
     scan_push state false elem 
-	end
+    end
   else if !(#pp_curr_depth state) = !(#pp_max_boxes state) 
   then enqueue_string state (!(#pp_ellipsis state)) else ()
 );;
@@ -679,7 +679,7 @@ fun pp_print_break state width offset =
         (Pp_break (width, offset))
         width in
     scan_push state true elem
-	end
+    end
   else ()
 ;;
 
@@ -705,7 +705,7 @@ fun pp_set_min_space_left state n =
     #pp_min_space_left state := n;
     #pp_max_indent state := !(#pp_margin state) - !(#pp_min_space_left state);
     pp_rinit state
-	) end
+    ) end
   else ()
 ;;
 
@@ -719,25 +719,25 @@ fun pp_set_max_indent (state:formatter) n =
 fun pp_set_margin state n =
   if n >= 1 then
     let val n = pp_limit n 
-	in
-	  (
+    in
+      (
         (#pp_margin state) := n;
         let val new_max_indent =
           (* Try to maintain max_indent to its actual value. *)
           if !(#pp_max_indent state) <= !(#pp_margin state) then 
-  		    !(#pp_max_indent state)
-  		  else
+              !(#pp_max_indent state)
+            else
           (* If possible maintain pp_min_space_left to its actual value,
              if this leads to a too small max_indent, take half of the
              new margin, if it is greater than 1. *)
             max (max (!(#pp_margin state) - !(#pp_min_space_left state))
                     (!(#pp_margin state) div 2)) 1 
-    	in
+        in
           (* Rebuild invariants. *)
           pp_set_max_indent state new_max_indent
         end
-	  )
-	end
+      )
+    end
   else ()
 ;;
 

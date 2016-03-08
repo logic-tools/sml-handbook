@@ -31,7 +31,7 @@ $ tail -n 6 resultSML.txt
 - 
 $ 
 
-The tests were done in Ubuntu 12.04 LTS running on a VirtualBox in Windows 7.
+The latest tests were done in Mac OS X Version 10.11.3.
 
 ### LICENSE ###
 

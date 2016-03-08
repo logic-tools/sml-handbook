@@ -17,12 +17,12 @@ datatype goals =
 val print_goal_aux =
     let fun print_hyp (l, fm) = (
         open_hbox();
-		print_string (l^":");
-		print_space ();
+        print_string (l^":");
+        print_space ();
         print_formula_aux print_atom_aux fm;
-		print_newline();
-		close_box()
-	) in
+        print_newline();
+        close_box()
+    ) in
     fn (Goals (gls, jfn)) =>
         case gls of
           [] =>
@@ -32,18 +32,18 @@ val print_goal_aux =
             if ogls = [] then
                 print_string "1 subgoal:"
             else (
-			    print_int (List.length gls); 
-				print_string " subgoals starting with"
-			)
-			;
+                print_int (List.length gls); 
+                print_string " subgoals starting with"
+            )
+            ;
             print_newline();
             List.app print_hyp (List.rev asl);
             print_string "---> ";
             open_hvbox 0; print_formula_aux print_atom_aux w; close_box();
             print_newline ()
-	      )
+          )
     end;;
-	
+    
 fun print_goal g = (print_goal_aux g; print_flush ());;
 
 (* ------------------------------------------------------------------------- *)
@@ -169,7 +169,7 @@ fun assumps asl =
             val q = antecedent(concl(snd(List.hd ths))) 
             val rth = and_right p q in
         (l,and_left p q)::List.map (fn (l,th) => (l,imp_trans rth th)) ths
-		end;;
+        end;;
 
 (* ------------------------------------------------------------------------- *)
 (* Produce canonical theorem from list of theorems or assumption labels.     *)
@@ -190,16 +190,16 @@ local
 in
   fun justify byfn hyps p g =
     let val ths = byfn hyps p g in
-	if singleton ths andalso consequent(concl (List.hd ths)) = p then (
-	  List.hd ths
-	) else (
-	  let val th = lcffol(itlist (mk_imp o consequent o concl) ths p) in
-	  case ths of
-	    [] => assumptate g th
-	  | _  => imp_trans_chain ths th
-	  end
-	)
-	end
+    if singleton ths andalso consequent(concl (List.hd ths)) = p then (
+      List.hd ths
+    ) else (
+      let val th = lcffol(itlist (mk_imp o consequent o concl) ths p) in
+      case ths of
+        [] => assumptate g th
+      | _  => imp_trans_chain ths th
+      end
+    )
+    end
 end;;
   
       
@@ -274,7 +274,7 @@ fun disj_elim_tac l fm byfn hyps (g as Goals((asl,w)::gls,jfn) ) =
       fun jfn' (pth::qth::ths) =
          let val th1 = imp_trans th (ante_disj (shunt pth) (shunt qth)) in
          jfn(imp_unduplicate th1::ths) 
-		 end
+         end
   in
   Goals(((l,p)::asl,w)::((l,q)::asl,w)::gls,jfn')
   end;;

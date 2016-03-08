@@ -287,7 +287,7 @@ fun conjths fm =
 fun and_pair p q =
   let val th1 = iff_imp2(axiom_and p q)
       val th2 = imp_swap_th (Imp(p,Imp(q,False))) q False
-	  val th3 = imp_add_assum p (imp_trans2 th2 th1) in
+      val th3 = imp_add_assum p (imp_trans2 th2 th1) in
   modusponens th3 (imp_swap (imp_refl (Imp(p,Imp(q,False)))))
   end;;
 
@@ -375,7 +375,7 @@ fun imp_false_rule th =
 
 fun imp_true_rule th1 th2 =
   let val p = funpow 2 antecedent (concl th1)
-	  val q = antecedent(concl th2)
+      val q = antecedent(concl th2)
       val th3 = right_doubleneg(imp_add_concl False th1)
       val th4 = imp_add_concl False th2 
       val th5 = imp_swap(imp_truefalse p q) 
@@ -431,9 +431,9 @@ fun is_conj (Imp(Imp(p,q),False)) = true
   | is_conj _ = false
   
 fun dest_conj fm =
-	case fm of
-	  (Imp(Imp(p,q),False)) => (p,q)
-	| _ => raise Fail "dest_conj"
+    case fm of
+      (Imp(Imp(p,q),False)) => (p,q)
+    | _ => raise Fail "dest_conj"
   
 fun is_disj (Imp(p,q)) = (q <> False)
   | is_disj _ = false
@@ -446,33 +446,33 @@ fun is_prop_lit p =
    | _ => false ;;
 
 fun lcfptab fms lits =
-	case fms of
-	  []     => raise Fail "lcfptab: no contradiction"
-	| fm::fl =>
-		if is_false fm then (
-			ex_falso (itlist mk_imp (fl @ lits) False)
-		) else if is_true fm then (
-		    add_assum fm (lcfptab fl lits)
-		) else if is_conj fm then (
-			let val (p,q)=dest_conj fm in
-			imp_false_rule(lcfptab (p::Imp(q,False)::fl) lits)
-			end
-		) else if is_disj fm then (
-			let val (p,q)=dest_disj fm in
-			imp_true_rule (lcfptab (Imp(p,False)::fl) lits) (lcfptab (q::fl) lits)
-			end
-		) else if is_prop_lit fm then (
-			if mem (negatef fm) lits then
+    case fms of
+      []     => raise Fail "lcfptab: no contradiction"
+    | fm::fl =>
+        if is_false fm then (
+            ex_falso (itlist mk_imp (fl @ lits) False)
+        ) else if is_true fm then (
+            add_assum fm (lcfptab fl lits)
+        ) else if is_conj fm then (
+            let val (p,q)=dest_conj fm in
+            imp_false_rule(lcfptab (p::Imp(q,False)::fl) lits)
+            end
+        ) else if is_disj fm then (
+            let val (p,q)=dest_disj fm in
+            imp_true_rule (lcfptab (Imp(p,False)::fl) lits) (lcfptab (q::fl) lits)
+            end
+        ) else if is_prop_lit fm then (
+            if mem (negatef fm) lits then
               let val (l1,l2) = chop_list (index (negatef fm) lits) lits
                   val th = imp_contr fm (itlist mk_imp (List.tl l2) False ) in
               itlist imp_insert (fl @ l1) th
-			  end
+              end
             else imp_front (List.length fl) (lcfptab fl (fm::lits))
-		) else ( (* is nonprimitive *)
-		   let val th = eliminate_connective fm in
+        ) else ( (* is nonprimitive *)
+           let val th = eliminate_connective fm in
            imp_trans th (lcfptab (consequent(concl th)::fl) lits)
-		   end
-		)
+           end
+        )
 ;;
 
 

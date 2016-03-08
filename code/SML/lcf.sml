@@ -37,7 +37,7 @@
 
 signature PROOFSYSTEM =
 sig
-	type thm
+    type thm
        val modusponens : thm -> thm -> thm
        val gen : string -> thm -> thm
        val axiom_addimp : fol formula -> fol formula -> thm
@@ -66,52 +66,52 @@ end ;;
 (* ------------------------------------------------------------------------- *)
   
 fun occurs_in s t =
-	s = t orelse
-	case t of
-	  Var y => false
-	| Fn(f,args) => List.exists (occurs_in s) args;;
-	
+    s = t orelse
+    case t of
+      Var y => false
+    | Fn(f,args) => List.exists (occurs_in s) args;;
+    
 fun free_in t fm =
-	case fm of 
-	  False => false
-	| True  => false
-	| Atom(R(p,args)) => List.exists (occurs_in t) args
-	| Not(p) => free_in t p
-	| And(p,q) => (free_in t p) orelse (free_in t q)
-	| Or(p,q)  => (free_in t p) orelse (free_in t q)
-	| Imp(p,q) => (free_in t p) orelse (free_in t q)
-	| Iff(p,q) => (free_in t p) orelse (free_in t q)
-	| Forall(y,p) => not(occurs_in (Var y) t) andalso free_in t p
-	| Exists(y,p) => not(occurs_in (Var y) t) andalso free_in t p;;
+    case fm of 
+      False => false
+    | True  => false
+    | Atom(R(p,args)) => List.exists (occurs_in t) args
+    | Not(p) => free_in t p
+    | And(p,q) => (free_in t p) orelse (free_in t q)
+    | Or(p,q)  => (free_in t p) orelse (free_in t q)
+    | Imp(p,q) => (free_in t p) orelse (free_in t q)
+    | Iff(p,q) => (free_in t p) orelse (free_in t q)
+    | Forall(y,p) => not(occurs_in (Var y) t) andalso free_in t p
+    | Exists(y,p) => not(occurs_in (Var y) t) andalso free_in t p;;
 
 (* ------------------------------------------------------------------------- *)
 (* Implementation of the abstract data type of theorems.                     *)
 (* ------------------------------------------------------------------------- *)
-	
+    
 structure Proven :> PROOFSYSTEM =
 struct
-	type thm = fol formula
-	fun modusponens pq p =
-		case pq of
-		  Imp(p',q) => 
-			if p = p' then q 
-			else raise Fail "modusponens"
-		| _ =>   raise Fail "modusponens"
-	fun gen x p = Forall(x,p)
-	fun axiom_addimp p q = Imp(p,Imp(q,p))
+    type thm = fol formula
+    fun modusponens pq p =
+        case pq of
+          Imp(p',q) => 
+            if p = p' then q 
+            else raise Fail "modusponens"
+        | _ =>   raise Fail "modusponens"
+    fun gen x p = Forall(x,p)
+    fun axiom_addimp p q = Imp(p,Imp(q,p))
     fun axiom_distribimp p q r =
       Imp(Imp(p,Imp(q,r)),Imp(Imp(p,q),Imp(p,r)))
     fun axiom_doubleneg p = Imp(Imp(Imp(p,False),False),p)
-	fun axiom_allimp x p q =
+    fun axiom_allimp x p q =
       Imp(Forall(x,Imp(p,q)),Imp(Forall(x,p),Forall(x,q)))
     fun axiom_impall x p =
       if not (free_in (Var x) p) then Imp(p,Forall(x,p))
       else raise Fail "axiom_impall: variable free in formula"
-	fun axiom_existseq x t =
+    fun axiom_existseq x t =
       if not (occurs_in (Var x) t) then Exists(x,mk_eq (Var x) t)
       else raise Fail "axiom_existseq: variable free in term"
     fun axiom_eqrefl t = mk_eq t t
-	fun axiom_funcong f lefts rights =
+    fun axiom_funcong f lefts rights =
        itlist2 (fn s => fn t => fn p => Imp(mk_eq s t,p)) lefts rights
                (mk_eq (Fn(f,lefts)) (Fn(f,rights))) 
     fun axiom_predcong p lefts rights =
@@ -135,10 +135,10 @@ struct
 open Proven;;
 
 fun print_thm_aux th = (
-	open_box 0;
-	print_string "|-"; print_space();
-	open_box 0; print_formula_aux print_atom_aux (concl th); close_box();
-	close_box()
+    open_box 0;
+    print_string "|-"; print_space();
+    open_box 0; print_formula_aux print_atom_aux (concl th); close_box();
+    close_box()
 );;
 
 fun print_thm th = (print_thm_aux th; print_flush ());;

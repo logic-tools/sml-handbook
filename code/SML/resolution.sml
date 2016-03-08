@@ -16,7 +16,7 @@ fun term_match env eqs =
     | (Fn (f, fa), Fn(g, ga)) :: oth =>
         if (f = g andalso List.length fa = List.length ga) then
         term_match env (zip fa ga @ oth)
-		else raise Fail  "term_match"
+        else raise Fail  "term_match"
     | (Var x, t) :: oth =>
         if not (defined_str env x) then
             term_match ((x |--> t) env) oth
@@ -26,5 +26,5 @@ fun term_match env eqs =
             raise Fail "term_match"
     | _ =>
         raise Fail "term_match";;
-		
+        
 (* TODO: All other functions *)

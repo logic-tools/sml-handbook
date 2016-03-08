@@ -20,52 +20,52 @@ datatype 'a formula =
 
 
 fun fm_ord at_ord fm1 fm2 =
-	case (fm1,fm2) of  
-	  (False,False) => 0
-	| (False,_) =>  1
-	| (_,False) => ~1
-	  
-	| (True,True) => 0
-	| (True,_)  =>  1
-	| (_,True)  => ~1
-	
-	| (Atom a, Atom b) => at_ord a b
-	| (Atom(_),_) => 1
-	| (_,Atom(_)) => ~1
-	  
-	| (Not a,Not b) => fm_ord at_ord a b
-	| (Not(_),_) => 1
-	| (_,Not(_)) => ~1
-	  
-	| (And(a1,a2),And(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
-	| (And(_,_),_) =>  1
-	| (_,And(_,_)) => ~1
-	  
-	| (Or(a1,a2),Or(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
-	| (Or(_,_),_) =>  1
-	| (_,Or(_,_)) => ~1
-	  
-	| (Imp(a1,a2),Imp(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
-	| (Imp(_,_),_) =>  1
-	| (_,Imp(_,_)) => ~1
-	  
-	| (Iff(a1,a2),Iff(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
-	| (Iff(_,_),_) =>  1
-	| (_,Iff(_,_)) => ~1
-	  
-	| (Forall(x1,a),Forall(x2,b)) => fm_quant_ord at_ord (x1,a) (x2,b)
-	| (Forall (_,_), _) => 1
-	| (_, Forall (_,_)) => ~1
-		
-	| (Exists(x1,a),Exists(x2,b)) => fm_quant_ord at_ord (x1,a) (x2,b)
+    case (fm1,fm2) of  
+      (False,False) => 0
+    | (False,_) =>  1
+    | (_,False) => ~1
+      
+    | (True,True) => 0
+    | (True,_)  =>  1
+    | (_,True)  => ~1
+    
+    | (Atom a, Atom b) => at_ord a b
+    | (Atom(_),_) => 1
+    | (_,Atom(_)) => ~1
+      
+    | (Not a,Not b) => fm_ord at_ord a b
+    | (Not(_),_) => 1
+    | (_,Not(_)) => ~1
+      
+    | (And(a1,a2),And(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
+    | (And(_,_),_) =>  1
+    | (_,And(_,_)) => ~1
+      
+    | (Or(a1,a2),Or(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
+    | (Or(_,_),_) =>  1
+    | (_,Or(_,_)) => ~1
+      
+    | (Imp(a1,a2),Imp(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
+    | (Imp(_,_),_) =>  1
+    | (_,Imp(_,_)) => ~1
+      
+    | (Iff(a1,a2),Iff(b1,b2)) => fm_pair_ord at_ord (a1,a2) (b1,b2)
+    | (Iff(_,_),_) =>  1
+    | (_,Iff(_,_)) => ~1
+      
+    | (Forall(x1,a),Forall(x2,b)) => fm_quant_ord at_ord (x1,a) (x2,b)
+    | (Forall (_,_), _) => 1
+    | (_, Forall (_,_)) => ~1
+        
+    | (Exists(x1,a),Exists(x2,b)) => fm_quant_ord at_ord (x1,a) (x2,b)
 and fm_pair_ord at_ord (a1,a2) (b1,b2) =
-	case fm_ord at_ord a1 b1 of 
-	 0 => fm_ord at_ord a2 b2
-	|n => n
+    case fm_ord at_ord a1 b1 of 
+     0 => fm_ord at_ord a2 b2
+    |n => n
 and fm_quant_ord at_ord (x1,a) (x2,b) =
-	case str_ord x1 x2 of
-	 0 => fm_ord at_ord a b
-	|n => n
+    case str_ord x1 x2 of
+     0 => fm_ord at_ord a b
+    |n => n
 ;;
 
 (* ------------------------------------------------------------------------- *)
@@ -150,15 +150,15 @@ fun bracket p n f x y = (
 fun strip_quant fm =
     case fm of
       Forall (x, (Forall (y, p))) =>
-	    let val (xs, q) = strip_quant (Forall (y, p)) in 
+        let val (xs, q) = strip_quant (Forall (y, p)) in 
         ((x :: xs), q)
-		end
+        end
     | Exists (x, (Exists (y, p))) =>
         let val (xs, q) = strip_quant (Exists (y, p)) in
         ((x :: xs), q)
-		end
+        end
     | Forall (x, p) =>
-		([x],p)
+        ([x],p)
     | Exists (x, p) =>
         ([x],p)
     | _ =>
@@ -193,22 +193,22 @@ fun print_formula_aux pfn =
         List.app (fn v => (print_string " "; print_string v)) bvs;
         print_string "."; print_space(); open_box 0;
         print_formula 0 bod;
-		close_box()
-	)
+        close_box()
+    )
 
     and print_prefix newpr sym p = (
         print_string sym ; print_formula (newpr + 1) p
-	)
+    )
 
     and print_infix newpr sym p q = (
         print_formula (newpr + 1) p ;
-		print_string (" "^sym); print_space();
+        print_string (" "^sym); print_space();
         print_formula newpr q
-	) in
+    ) in
     print_formula 0
-	end
-	;;
-	
+    end
+    ;;
+    
 fun print_formula pfn fm = (print_formula_aux pfn fm; print_flush ());;
 
 fun print_qformula_aux pfn fm = (
@@ -218,7 +218,7 @@ fun print_qformula_aux pfn fm = (
 );;
 
 fun print_qformula pfn fm = (print_qformula_aux pfn fm; print_flush ());;
-	
+    
 (* ------------------------------------------------------------------------- *)
 (* OCaml won't let us use the constructors.                                  *)
 (* ------------------------------------------------------------------------- *)
