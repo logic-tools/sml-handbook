@@ -38,12 +38,12 @@ fun icongruence s t stm ttm =
   else if stm = s andalso ttm = t then imp_refl (mk_eq s t) else
   case (stm,ttm) of
    (Fn(fs,sa),Fn(ft,ta)) => 
-		if fs = ft andalso length sa = length ta then
-			let val ths = map2 (icongruence s t) sa ta 
-				val ts = List.map (consequent o concl) ths in
-			imp_trans_chain ths (axiom_funcong fs (List.map lhs ts) (List.map rhs ts))
-			end
-		else raise Fail "icongruence: not congruent"
+        if fs = ft andalso length sa = length ta then
+            let val ths = map2 (icongruence s t) sa ta 
+                val ts = List.map (consequent o concl) ths in
+            imp_trans_chain ths (axiom_funcong fs (List.map lhs ts) (List.map rhs ts))
+            end
+        else raise Fail "icongruence: not congruent"
   | _ => raise Fail "icongruence: not congruent";;
 
 (* ------------------------------------------------------------------------- *)
@@ -89,13 +89,13 @@ fun gen_right x th =
 fun exists_left_th x p q =
   let val  p' = Imp(p,False) 
       val  q' = Imp(q,False) 
-	  val th1 = genimp x (imp_swap(imp_trans_th p q False)) 
-	  val th2 = imp_trans th1 (gen_right_th x q' p') 
-	  val th3 = imp_swap(imp_trans_th q' (Forall(x,p')) False) 
-	  val th4 = imp_trans2 (imp_trans th2 th3) (axiom_doubleneg q) 
-	  val th5 = imp_add_concl False (genimp x (iff_imp2 (axiom_not p))) 
-	  val th6 = imp_trans (iff_imp1 (axiom_not (Forall(x,Not p)))) th5 
-	  val th7 = imp_trans (iff_imp1(axiom_exists x p)) th6 in
+      val th1 = genimp x (imp_swap(imp_trans_th p q False)) 
+      val th2 = imp_trans th1 (gen_right_th x q' p') 
+      val th3 = imp_swap(imp_trans_th q' (Forall(x,p')) False) 
+      val th4 = imp_trans2 (imp_trans th2 th3) (axiom_doubleneg q) 
+      val th5 = imp_add_concl False (genimp x (iff_imp2 (axiom_not p))) 
+      val th6 = imp_trans (iff_imp1 (axiom_not (Forall(x,Not p)))) th5 
+      val th7 = imp_trans (iff_imp1(axiom_exists x p)) th6 in
   imp_swap(imp_trans th7 (imp_swap th4))
   end;;
 
@@ -120,7 +120,7 @@ fun subspec th =
         let val th1 = imp_trans (genimp x (imp_swap th))
                             (exists_left_th x e q) in
         modusponens (imp_swap th1) (axiom_existseq x t)
-		end
+        end
   | _ => raise Fail "subspec: wrong sort of theorem";;
 
 (* ------------------------------------------------------------------------- *)
@@ -145,18 +145,18 @@ fun isubst s t sfm tfm =
   if sfm = tfm then add_assum (mk_eq s t) (imp_refl tfm) else
   case (sfm,tfm) of
     (Atom(R(p,sa)),Atom(R(p',ta))) =>
-		if p = p' andalso List.length sa = List.length ta then
-			let val ths = map2 (icongruence s t) sa ta
-			    val (ls,rs) = unzip (List.map (dest_eq o consequent o concl) ths) in
-			imp_trans_chain ths (axiom_predcong p ls rs)
-			end
-		else
-			raise Fail "isubst" (* In OCaml-version this case gives Fail "expand_connective" *)
+        if p = p' andalso List.length sa = List.length ta then
+            let val ths = map2 (icongruence s t) sa ta
+                val (ls,rs) = unzip (List.map (dest_eq o consequent o concl) ths) in
+            imp_trans_chain ths (axiom_predcong p ls rs)
+            end
+        else
+            raise Fail "isubst" (* In OCaml-version this case gives Fail "expand_connective" *)
   | (Imp(sp,sq),Imp(tp,tq)) =>
         let val th1 = imp_trans (eq_sym s t) (isubst t s tp sp)
             val th2 = isubst s t sq tq in
         imp_trans_chain [th1, th2] (imp_mono_th sp tp sq tq)
-		end
+        end
   | (Forall(x,p),Forall(y,q)) =>
         if x = y then
           imp_trans (gen_right x (isubst s t p q)) (axiom_allimp x p q)
@@ -165,19 +165,19 @@ fun isubst s t sfm tfm =
               val th1 = isubst (Var x) z p (subst (x |==> z) p)
               val th2 = isubst z (Var y) (subst (y |==> z) q) q 
               val th3 = subalpha th1 
-			  val th4 = subalpha th2 
+              val th4 = subalpha th2 
               val th5 = isubst s t (consequent(concl th3))
                                (antecedent(concl th4)) in
           imp_swap (imp_trans2 (imp_trans th3 (imp_swap th5)) th4)
-		  end
+          end
   | _ =>
         let val sth = iff_imp1(expand_connective sfm)
             val tth = iff_imp2(expand_connective tfm) 
             val th1 = isubst s t (consequent(concl sth))
                              (antecedent(concl tth)) in
         imp_swap(imp_trans sth (imp_swap(imp_trans2 th1 tth)))
-		end;;
-		
+        end;;
+        
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -191,7 +191,7 @@ fun alpha z fm =
   case fm of
     Forall(x,p) => let val p' = subst (x |==> Var z) p in
                    subalpha(isubst (Var x) (Var z) p p')
-				   end
+                   end
   | _ => raise Fail "alpha: not a universal formula";;
 
 (* ------------------------------------------------------------------------- *)
@@ -206,7 +206,7 @@ fun ispec t fm =
       if mem x (fvt t) then
         let val th = alpha (variant x (union_str (fvt t) (var p))) fm in
         imp_trans th (ispec t (consequent(concl th)))
-		end
+        end
       else subspec(isubst (Var x) t p (subst (x |==> t) p))
   | _ => raise Fail "ispec: non-universal formula";;
 
@@ -248,7 +248,7 @@ ispec (<<|"x + y + z"|>>) (<<"forall x y z. nothing_much">>) ;;
 
 isubst (<<|"x + x"|>>) (<<|"2 * x"|>>)
        (<<"(x + x = y + y) <=> (something \\/ y + y + y = x + x + x)">>) 
-	   (<<"(2 * x = y + y) <=> (something \\/ y + y + y = x + x + x)">>);;
+       (<<"(2 * x = y + y) <=> (something \\/ y + y + y = x + x + x)">>);;
 
 isubst (<<|"x + x"|>>)  (<<|"2 * x"|>>)
        (<<"(exists x. x = 2) <=> exists y. y + x + x = y + y + y">>)

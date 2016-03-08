@@ -15,29 +15,29 @@ datatype term =
   | Fn  of string * term list;;
   
 fun t_ord t1 t2 =
-	case (t1,t2) of 
-	  (Var x1, Var x2 ) => str_ord x1 x2
-	| (Var _, _) => 1
-	| (_, Var _) => ~1
-	| (Fn(f1,tl1),Fn(f2,tl2)) =>
-	   case str_ord f1 f2 of
-	     0 => tl_ord tl1 tl2
-		|n => n
+    case (t1,t2) of 
+      (Var x1, Var x2 ) => str_ord x1 x2
+    | (Var _, _) => 1
+    | (_, Var _) => ~1
+    | (Fn(f1,tl1),Fn(f2,tl2)) =>
+       case str_ord f1 f2 of
+         0 => tl_ord tl1 tl2
+        |n => n
 and tl_ord tl1 tl2 =
-	case  (tl1,tl2) of
-	  ([],[]) => 0
-	| ([],_) => 1
-	| (_,[]) => ~1
-	| (t1::tl1',t2::tl2') =>
-		case t_ord t1 t2 of 
-	     0 => tl_ord tl1' tl2'
-	   | n => n
+    case  (tl1,tl2) of
+      ([],[]) => 0
+    | ([],_) => 1
+    | (_,[]) => ~1
+    | (t1::tl1',t2::tl2') =>
+        case t_ord t1 t2 of 
+         0 => tl_ord tl1' tl2'
+       | n => n
 ;;
 
 fun t_hash t = 
     case t of
-	  Var x => str_hash x
-	| Fn (f,tl) => Word.toIntX(Word.+(Word.*(0wx31,Word.fromInt(str_hash f)), Word.fromInt(list_hash t_hash tl)))
+      Var x => str_hash x
+    | Fn (f,tl) => Word.toIntX(Word.+(Word.*(0wx31,Word.fromInt(str_hash f)), Word.fromInt(list_hash t_hash tl)))
 ;;
 
 infix 6 |---> (* For terms *)
@@ -65,11 +65,11 @@ END_INTERACTIVE;;
 
 datatype fol = (* Predicate *)
     R of string * (term list);;
-	
+    
 fun fol_ord (r1 as R(s1,tl1)) (r2 as R(s2,tl2)) =
-	case str_ord s1 s2 of
-	  0 => tl_ord tl1 tl2
-	| n => n
+    case str_ord s1 s2 of
+      0 => tl_ord tl1 tl2
+    | n => n
 ;;
 
 fun folfm_ord fm1 fm2 = fm_ord fol_ord fm1 fm2;;
@@ -77,10 +77,10 @@ fun folfm_ord fm1 fm2 = fm_ord fol_ord fm1 fm2;;
 fun union_folfm s1 s2 = union folfm_ord s1 s2;;
 
 fun ftp_ord (fm1,t1) (fm2,t2) =
-	case folfm_ord fm1 fm2 of
-	  0 => t_ord t1 t2
-	| n => n;;
-	
+    case folfm_ord fm1 fm2 of
+      0 => t_ord t1 t2
+    | n => n;;
+    
 fun setify_ftp s = setify ftp_ord s;;
 
 (* ------------------------------------------------------------------------- *)
@@ -96,7 +96,7 @@ fun onformula f = onatoms(fn (R(p,a)) => Atom(R(p,List.map f a)));;
 START_INTERACTIVE;;
 Atom(R("<",[Fn("+",[Var "x", Var "y"]), Var "z"]));;
 END_INTERACTIVE;;
-	
+    
 (* ------------------------------------------------------------------------- *)
 (* Parsing of terms.                                                         *)
 (* ------------------------------------------------------------------------- *)
@@ -147,7 +147,7 @@ fun parse_atom vs inp =
              (parse_bracketed (parse_list "," (parse_term vs)) ")" rest)
   | p::rest => 
       if p <> "(" then (Atom(R(p,[])),rest)
-	  else raise Fail "parse_atom"
+      else raise Fail "parse_atom"
   | _ => raise Fail "parse_atom";;
                                                                                
 val parse = make_parser                                                        
@@ -198,7 +198,7 @@ and print_fargs_aux f args = (
     print_term_aux 0 (List.hd args); print_break 0 0;
     List.app (fn t => (print_string ","; print_break 0 0 ; print_term_aux 0 t))
             (List.tl args);
-	close_box ();
+    close_box ();
     print_string ")")
 )
 
@@ -226,15 +226,15 @@ fun printert tm = (printert_aux tm; print_flush ());;
 (* ------------------------------------------------------------------------- *)
 (* Printing of formulas.                                                     *)
 (* ------------------------------------------------------------------------- *)
-	
+    
 fun print_atom_aux prec (R (p, args)) =
     if mem p ["=", "<", "<=", ">", ">="] andalso List.length args = 2 then
         print_infix_term_aux false 12 12 (" " ^ p) (List.nth (args, 0)) (List.nth (args, 1))
     else
         print_fargs_aux p args;;
-		
+        
 fun print_atom prec rpa = (print_atom_aux prec rpa; print_flush ());;
-		
+        
 val print_fol_formula_aux = print_qformula_aux print_atom_aux;;
 
 fun print_fol_formula f = (print_fol_formula_aux f; print_flush ());;
@@ -356,9 +356,9 @@ and substq subfn quant x p =
         if List.exists (fn y => mem x (fvt (tryapplyd_str subfn y (Var y)))) (subtract_str (fv p) [x]) then
             variant x (fv (subst (undefine_str x subfn) p)) 
         else x
-	in
+    in
     quant x' (subst ((x |--> Var x') subfn) p)
-	end
+    end
 ;;
 
 (* ------------------------------------------------------------------------- *)

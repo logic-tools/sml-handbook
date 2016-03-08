@@ -31,9 +31,9 @@
 (* ------------------------------------------------------------------------- *)
 
 fun matches s = 
-	let val chars = String.explode s in 
-	fn c => mem c chars
-	end;;
+    let val chars = String.explode s in 
+    fn c => mem c chars
+    end;;
 
 val space = matches " \t\n\r";;
 val punctuation = matches "()[]{},";;
@@ -45,8 +45,8 @@ val alphanumeric = matches
 fun lexwhile prop inp =
   if inp <> [] andalso prop (List.hd inp) then 
      let val (tok,rest) = lexwhile prop (List.tl inp) in 
-	 ((str (List.hd inp))^tok,rest)
-	 end
+     ((str (List.hd inp))^tok,rest)
+     end
   else
      ("",inp);;
   
@@ -58,13 +58,13 @@ fun lex inp =
                         else fn c => false 
                  val (toktl,rest) = lexwhile prop cs in
              ((str c)^toktl)::lex rest
-			 end;;
+             end;;
 
 START_INTERACTIVE;;
 lex(String.explode "2*((var_1 + x') + 11)");;
 lex(String.explode "if (*p1-- == *p2++) then f() else g()");;
 END_INTERACTIVE;;
-			 
+             
 (* ------------------------------------------------------------------------- *)
 (* Parsing.                                                                  *)
 (* ------------------------------------------------------------------------- *)

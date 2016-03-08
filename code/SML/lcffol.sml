@@ -25,16 +25,16 @@ fun unify_complementsf env =
 fun use_laterimp i fm =
   case fm of 
     Imp(_,Imp(i',_)) => 
-	  ( case (fm,i'=i) of 
-	      (Imp(Imp(q',s),Imp(i' as Imp(q,p),r)),true) =>
-		     let val th1 = axiom_distribimp i (Imp(Imp(q,s),r)) (Imp(Imp(p,s),r))
-			     val th2 = imp_swap(imp_trans_th q p s)
+      ( case (fm,i'=i) of 
+          (Imp(Imp(q',s),Imp(i' as Imp(q,p),r)),true) =>
+             let val th1 = axiom_distribimp i (Imp(Imp(q,s),r)) (Imp(Imp(p,s),r))
+                 val th2 = imp_swap(imp_trans_th q p s)
                  val th3 = imp_swap(imp_trans_th (Imp(p,s)) (Imp(q,s)) r) in
              imp_swap2(modusponens th1 (imp_trans th2 th3))
-			 end
-	    | (Imp(qs,Imp(a,b)),_) =>
-		     imp_swap2(imp_add_assum a (use_laterimp i (Imp(qs,b))))
-	  )
+             end
+        | (Imp(qs,Imp(a,b)),_) =>
+             imp_swap2(imp_add_assum a (use_laterimp i (Imp(qs,b))))
+      )
 ;;
 
 (* ------------------------------------------------------------------------- *)
@@ -92,49 +92,49 @@ fun is_exi (Imp(Forall(_,_),False)) = true
 fun dest_exi (Imp(yp as Forall(y,p),False)) = (y,p,yp);;
 
 fun lcftab skofun (fms,lits,n) cont (esk as (env,sks,k)) =
-	if n < 0 then raise Fail "lcftab: no proof" else
-	case fms of
-	  []     => raise Fail "lcftab: No contradiction"
-	| fm::fl =>
-		if is_false fm then (
-			cont (ex_falso' (fl @ lits)) esk
-		) else if is_true fm then (
-		    lcftab skofun (fl,lits,n) (cont o add_assum' fm) esk
-		) else if is_conj fm then (
-			let val (p,q)=dest_conj fm in
-			lcftab skofun (p::Imp(q,False)::fl,lits,n) (cont o imp_false_rule') esk
-			end
-		) else if is_disj fm then (
-			let val (p,q)=dest_disj fm in
-			lcftab skofun (Imp(p,False)::fl,lits,n) (fn th => lcftab skofun (q::fl,lits,n) (cont o imp_true_rule' th)) esk
-			end
-		) else if is_lit fm then (
+    if n < 0 then raise Fail "lcftab: no proof" else
+    case fms of
+      []     => raise Fail "lcftab: No contradiction"
+    | fm::fl =>
+        if is_false fm then (
+            cont (ex_falso' (fl @ lits)) esk
+        ) else if is_true fm then (
+            lcftab skofun (fl,lits,n) (cont o add_assum' fm) esk
+        ) else if is_conj fm then (
+            let val (p,q)=dest_conj fm in
+            lcftab skofun (p::Imp(q,False)::fl,lits,n) (cont o imp_false_rule') esk
+            end
+        ) else if is_disj fm then (
+            let val (p,q)=dest_disj fm in
+            lcftab skofun (Imp(p,False)::fl,lits,n) (fn th => lcftab skofun (q::fl,lits,n) (cont o imp_true_rule' th)) esk
+            end
+        ) else if is_lit fm then (
             (tryfind (fn p' => (
                 let val env' = unify_complementsf env (fm, p') in
                 cont (complits' (fms, lits) (index p' lits)) (env', sks, k)
-				end)) lits)
-			handle Fail _ => (  
-			    lcftab skofun (fl,fm::lits,n) (cont o imp_front' (List.length fl)) esk
-			)
-		) else if is_uni fm then (
-		    let val (x,p) = dest_uni fm
-		        val y = Var("X_"^(Int.toString k)) in
+                end)) lits)
+            handle Fail _ => (  
+                lcftab skofun (fl,fm::lits,n) (cont o imp_front' (List.length fl)) esk
+            )
+        ) else if is_uni fm then (
+            let val (x,p) = dest_uni fm
+                val y = Var("X_"^(Int.toString k)) in
             lcftab skofun ((subst (x |==> y) p)::fl@[fm],lits,n-1)
                     (cont o spec' y fm (List.length fms)) (env,sks,k+1)
-			end
-		) else if is_exi fm then (
-			let val (y,p,yp) = dest_exi fm
-			    val fx = skofun yp 
+            end
+        ) else if is_exi fm then (
+            let val (y,p,yp) = dest_exi fm
+                val fx = skofun yp 
                 val p' = subst(y |==> fx) p
                 val skh = Imp(p',Forall(y,p)) 
                 val sks' = (Forall(y,p),fx)::sks in
             lcftab skofun (Imp(p',False)::fl,lits,n) (cont o deskol' skh) (env,sks',k)
-			end
-		) else ( (* is nonprimitive *)
-		   let val fm' = consequent(concl(eliminate_connective fm)) in
+            end
+        ) else ( (* is nonprimitive *)
+           let val fm' = consequent(concl(eliminate_connective fm)) in
            lcftab skofun (fm'::fl,lits,n) (cont o eliminate_connective' fm) esk
-		   end
-		)
+           end
+        )
 ;;
 
 (* ------------------------------------------------------------------------- *)
@@ -166,7 +166,7 @@ fun skolemfuns fm =
       fun skofun i (ap as Forall(y,p)) =
             let val vars = List.map (fn v => Var v) (fv ap) in
             (ap,Fn(variant("f"^"_"^Int.toString i) fns,vars))
-			end
+            end
   in
   map2 skofun (1--length skts) skts
   end;;
@@ -186,21 +186,21 @@ fun form_match (fp as (f1,f2)) env =
   | (Imp(p1,q1),Imp(p2,q2)) => form_match (p1,p2) (form_match (q1,q2) env)
   | (Iff(p1,q1),Iff(p2,q2)) => form_match (p1,p2) (form_match (q1,q2) env)
   | (Forall(x1,p1),Forall(x2,p2)) =>
-		if (x1=x2) then
+        if (x1=x2) then
           let val z = variant x1 (union_str (fv p1) (fv p2))
               val inst_fn = subst (x1 |==> Var z) in
           undefine_str z (form_match (inst_fn p1,inst_fn p2) env)
-		  end
-		else
-		  raise Fail "form_match"
+          end
+        else
+          raise Fail "form_match"
   | (Exists(x1,p1),Exists(x2,p2)) =>
         if (x1=x2) then
           let val z = variant x1 (union_str (fv p1) (fv p2))
               val inst_fn = subst (x1 |==> Var z) in
           undefine_str z (form_match (inst_fn p1,inst_fn p2) env)
-		  end
-		else
-		  raise Fail "form_match"
+          end
+        else
+          raise Fail "form_match"
   | _ => raise Fail "form_match";;
 
 (* ------------------------------------------------------------------------- *)
@@ -247,7 +247,7 @@ fun elim_skolemvar th =
             val th3 = gen_right v th1 
             val th4 = imp_trans th3 (alpha x (consequent(concl th3))) in
         modusponens (axiom_doubleneg q) (right_mp th2 th4)
-		end
+        end
   | _ => raise Fail "elim_skolemvar";;
 
 (* ------------------------------------------------------------------------- *)

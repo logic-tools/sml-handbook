@@ -1,4 +1,4 @@
-        Objective Caml version 3.09.3
+        OCaml version 4.02.3
 
 # - : unit = ()
 type dummy_interactive = START_INTERACTIVE | END_INTERACTIVE
@@ -50,6 +50,17 @@ val set_formatter_output_functions :
   (string -> int -> int -> unit) -> (unit -> unit) -> unit = <fun>
 val get_formatter_output_functions :
   unit -> (string -> int -> int -> unit) * (unit -> unit) = <fun>
+type formatter_out_functions =
+  Format.formatter_out_functions = {
+  out_string : string -> int -> int -> unit;
+  out_flush : unit -> unit;
+  out_newline : unit -> unit;
+  out_spaces : int -> unit;
+}
+val set_formatter_out_functions : formatter_out_functions -> unit =
+  <fun>
+val get_formatter_out_functions : unit -> formatter_out_functions =
+  <fun>
 type formatter_tag_functions =
   Format.formatter_tag_functions = {
   mark_open_tag : tag -> string;
@@ -61,14 +72,6 @@ val set_formatter_tag_functions : formatter_tag_functions -> unit =
   <fun>
 val get_formatter_tag_functions : unit -> formatter_tag_functions =
   <fun>
-val set_all_formatter_output_functions :
-  out:(string -> int -> int -> unit) ->
-  flush:(unit -> unit) ->
-  newline:(unit -> unit) -> spaces:(int -> unit) -> unit = <fun>
-val get_all_formatter_output_functions :
-  unit ->
-  (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
-  (int -> unit) = <fun>
 type formatter = Format.formatter
 val formatter_of_out_channel : out_channel -> formatter = <fun>
 val std_formatter : formatter = <abstr>
@@ -127,6 +130,43 @@ val pp_set_formatter_output_functions :
 val pp_get_formatter_output_functions :
   formatter -> unit -> (string -> int -> int -> unit) * (unit -> unit) =
   <fun>
+val pp_set_formatter_tag_functions :
+  formatter -> formatter_tag_functions -> unit = <fun>
+val pp_get_formatter_tag_functions :
+  formatter -> unit -> formatter_tag_functions = <fun>
+val pp_set_formatter_out_functions :
+  formatter -> formatter_out_functions -> unit = <fun>
+val pp_get_formatter_out_functions :
+  formatter -> unit -> formatter_out_functions = <fun>
+val pp_print_list :
+  ?pp_sep:(formatter -> unit -> unit) ->
+  (formatter -> 'a -> unit) -> formatter -> 'a list -> unit = <fun>
+val pp_print_text : formatter -> string -> unit = <fun>
+val fprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
+val printf : ('a, formatter, unit) format -> 'a = <fun>
+val eprintf : ('a, formatter, unit) format -> 'a = <fun>
+val sprintf : ('a, unit, string) format -> 'a = <fun>
+val asprintf : ('a, formatter, unit, string) format4 -> 'a = <fun>
+val ifprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
+val kfprintf :
+  (formatter -> 'a) ->
+  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
+val ikfprintf :
+  (formatter -> 'a) ->
+  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
+val ksprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
+  <fun>
+val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a = <fun>
+val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
+  <fun>
+val set_all_formatter_output_functions :
+  out:(string -> int -> int -> unit) ->
+  flush:(unit -> unit) ->
+  newline:(unit -> unit) -> spaces:(int -> unit) -> unit = <fun>
+val get_all_formatter_output_functions :
+  unit ->
+  (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
+  (int -> unit) = <fun>
 val pp_set_all_formatter_output_functions :
   formatter ->
   out:(string -> int -> int -> unit) ->
@@ -137,22 +177,6 @@ val pp_get_all_formatter_output_functions :
   unit ->
   (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
   (int -> unit) = <fun>
-val pp_set_formatter_tag_functions :
-  formatter -> formatter_tag_functions -> unit = <fun>
-val pp_get_formatter_tag_functions :
-  formatter -> unit -> formatter_tag_functions = <fun>
-val fprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
-val printf : ('a, formatter, unit) format -> 'a = <fun>
-val eprintf : ('a, formatter, unit) format -> 'a = <fun>
-val sprintf : ('a, unit, string) format -> 'a = <fun>
-val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a = <fun>
-val kfprintf :
-  (formatter -> 'a) ->
-  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
-val ksprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
-  <fun>
-val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
-  <fun>
 type num =
   Num.num =
     Int of int
@@ -213,6 +237,9 @@ val float_of_num : num -> float = <fun>
 val print_num : num -> unit = <fun>
 - : dummy_interactive = START_INTERACTIVE
 - : dummy_interactive = END_INTERACTIVE
+File "Quotexpander.ml", line 2, characters 5-72:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val quotexpander : string -> string = <fun>
 - : unit = ()
 - : unit = ()
@@ -263,6 +290,17 @@ val set_formatter_output_functions :
   (string -> int -> int -> unit) -> (unit -> unit) -> unit = <fun>
 val get_formatter_output_functions :
   unit -> (string -> int -> int -> unit) * (unit -> unit) = <fun>
+type formatter_out_functions =
+  Format.formatter_out_functions = {
+  out_string : string -> int -> int -> unit;
+  out_flush : unit -> unit;
+  out_newline : unit -> unit;
+  out_spaces : int -> unit;
+}
+val set_formatter_out_functions : formatter_out_functions -> unit =
+  <fun>
+val get_formatter_out_functions : unit -> formatter_out_functions =
+  <fun>
 type formatter_tag_functions =
   Format.formatter_tag_functions = {
   mark_open_tag : tag -> string;
@@ -274,14 +312,6 @@ val set_formatter_tag_functions : formatter_tag_functions -> unit =
   <fun>
 val get_formatter_tag_functions : unit -> formatter_tag_functions =
   <fun>
-val set_all_formatter_output_functions :
-  out:(string -> int -> int -> unit) ->
-  flush:(unit -> unit) ->
-  newline:(unit -> unit) -> spaces:(int -> unit) -> unit = <fun>
-val get_all_formatter_output_functions :
-  unit ->
-  (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
-  (int -> unit) = <fun>
 type formatter = Format.formatter
 val formatter_of_out_channel : out_channel -> formatter = <fun>
 val std_formatter : formatter = <abstr>
@@ -340,6 +370,43 @@ val pp_set_formatter_output_functions :
 val pp_get_formatter_output_functions :
   formatter -> unit -> (string -> int -> int -> unit) * (unit -> unit) =
   <fun>
+val pp_set_formatter_tag_functions :
+  formatter -> formatter_tag_functions -> unit = <fun>
+val pp_get_formatter_tag_functions :
+  formatter -> unit -> formatter_tag_functions = <fun>
+val pp_set_formatter_out_functions :
+  formatter -> formatter_out_functions -> unit = <fun>
+val pp_get_formatter_out_functions :
+  formatter -> unit -> formatter_out_functions = <fun>
+val pp_print_list :
+  ?pp_sep:(formatter -> unit -> unit) ->
+  (formatter -> 'a -> unit) -> formatter -> 'a list -> unit = <fun>
+val pp_print_text : formatter -> string -> unit = <fun>
+val fprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
+val printf : ('a, formatter, unit) format -> 'a = <fun>
+val eprintf : ('a, formatter, unit) format -> 'a = <fun>
+val sprintf : ('a, unit, string) format -> 'a = <fun>
+val asprintf : ('a, formatter, unit, string) format4 -> 'a = <fun>
+val ifprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
+val kfprintf :
+  (formatter -> 'a) ->
+  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
+val ikfprintf :
+  (formatter -> 'a) ->
+  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
+val ksprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
+  <fun>
+val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a = <fun>
+val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
+  <fun>
+val set_all_formatter_output_functions :
+  out:(string -> int -> int -> unit) ->
+  flush:(unit -> unit) ->
+  newline:(unit -> unit) -> spaces:(int -> unit) -> unit = <fun>
+val get_all_formatter_output_functions :
+  unit ->
+  (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
+  (int -> unit) = <fun>
 val pp_set_all_formatter_output_functions :
   formatter ->
   out:(string -> int -> int -> unit) ->
@@ -350,22 +417,6 @@ val pp_get_all_formatter_output_functions :
   unit ->
   (string -> int -> int -> unit) * (unit -> unit) * (unit -> unit) *
   (int -> unit) = <fun>
-val pp_set_formatter_tag_functions :
-  formatter -> formatter_tag_functions -> unit = <fun>
-val pp_get_formatter_tag_functions :
-  formatter -> unit -> formatter_tag_functions = <fun>
-val fprintf : formatter -> ('a, formatter, unit) format -> 'a = <fun>
-val printf : ('a, formatter, unit) format -> 'a = <fun>
-val eprintf : ('a, formatter, unit) format -> 'a = <fun>
-val sprintf : ('a, unit, string) format -> 'a = <fun>
-val bprintf : Buffer.t -> ('a, formatter, unit) format -> 'a = <fun>
-val kfprintf :
-  (formatter -> 'a) ->
-  formatter -> ('b, formatter, unit, 'a) format4 -> 'b = <fun>
-val ksprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
-  <fun>
-val kprintf : (string -> 'a) -> ('b, unit, string, 'a) format4 -> 'b =
-  <fun>
 type num =
   Num.num =
     Int of int
@@ -444,7 +495,13 @@ val end_itlist : ('a -> 'a -> 'a) -> 'a list -> 'a = <fun>
 val itlist2 : ('a -> 'b -> 'c -> 'c) -> 'a list -> 'b list -> 'c -> 'c =
   <fun>
 val zip : 'a list -> 'b list -> ('a * 'b) list = <fun>
+File "atp_interactive.ml", line 116, characters 12-29:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val forall : ('a -> bool) -> 'a list -> bool = <fun>
+File "atp_interactive.ml", line 121, characters 12-30:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val exists : ('a -> bool) -> 'a list -> bool = <fun>
 val partition : ('a -> bool) -> 'a list -> 'a list * 'a list = <fun>
 val filter : ('a -> bool) -> 'a list -> 'a list = <fun>
@@ -460,9 +517,18 @@ val distinctpairs : 'a list -> ('a * 'a) list = <fun>
 val chop_list : int -> 'a list -> 'a list * 'a list = <fun>
 val replicate : int -> 'a -> 'a list = <fun>
 val insertat : int -> 'a -> 'a list -> 'a list = <fun>
+File "atp_interactive.ml", line 186, characters 23-48:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val forall2 : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool = <fun>
 val index : 'a -> 'a list -> int = <fun>
 val unzip : ('a * 'b) list -> 'a list * 'b list = <fun>
+File "atp_interactive.ml", line 208, characters 12-101:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 209, characters 13-56:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val earlier : 'a list -> 'a -> 'a -> bool = <fun>
 val do_list : ('a -> 'b) -> 'a list -> unit = <fun>
 val assoc : 'a -> ('a * 'b) list -> 'b = <fun>
@@ -479,6 +545,9 @@ val optimize : ('a -> 'a -> bool) -> ('b -> 'a) -> 'b list -> 'b =
   <fun>
 val maximize : ('a -> 'b) -> 'a list -> 'a = <fun>
 val minimize : ('a -> 'b) -> 'a list -> 'a = <fun>
+File "atp_interactive.ml", line 316, characters 28-71:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val setify : 'a list -> 'a list = <fun>
 val union : 'a list -> 'a list -> 'a list = <fun>
 val intersect : 'a list -> 'a list -> 'a list = <fun>
@@ -489,6 +558,9 @@ val set_eq : 'a list -> 'a list -> bool = <fun>
 val insert : 'a -> 'a list -> 'a list = <fun>
 val image : ('a -> 'b) -> 'a list -> 'b list = <fun>
 val unions : 'a list list -> 'a list = <fun>
+File "atp_interactive.ml", line 393, characters 14-51:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val mem : 'a -> 'a list -> bool = <fun>
 val allsets : int -> 'a list -> 'a list list = <fun>
 val allsubsets : 'a list -> 'a list list = <fun>
@@ -570,6 +642,9 @@ type 'a formula =
   | Iff of 'a formula * 'a formula
   | Forall of string * 'a formula
   | Exists of string * 'a formula
+File "atp_interactive.ml", line 45, characters 5-33:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val parse_ginfix :
   'a ->
   (('b -> 'c) -> 'b -> 'b -> 'c) ->
@@ -587,6 +662,9 @@ val parse_list :
   'a -> ('a list -> 'b * 'a list) -> 'a list -> 'b list * 'a list =
   <fun>
 val papply : ('a -> 'b) -> 'a * 'c -> 'b * 'c = <fun>
+File "atp_interactive.ml", line 64, characters 21-45:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val nextin : 'a list -> 'a -> bool = <fun>
 val parse_bracketed : ('a -> 'b * 'c list) -> 'c -> 'a -> 'b * 'c list =
   <fun>
@@ -634,12 +712,24 @@ val parse_prop_formula : string -> prop formula = <fun>
 val default_parser : string -> prop formula = <fun>
 val print_propvar : 'a -> prop -> unit = <fun>
 val print_prop_formula : prop formula -> unit = <fun>
-File "atp_interactive.ml", line 1199, characters 2-263:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 25, characters 16-39:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 26, characters 15-39:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 27, characters 16-43:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 20, characters 2-263:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _))
+(Forall (_, _)|Exists (_, _))
 val eval : 'a formula -> ('a -> bool) -> bool = <fun>
 val atoms : 'a formula -> 'a list = <fun>
+File "atp_interactive.ml", line 64, characters 13-98:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val onallvaluations :
   (('a -> bool) -> bool) -> ('a -> bool) -> 'a list -> bool = <fun>
 val print_truthtable : prop formula -> unit = <fun>
@@ -674,8 +764,8 @@ val dnf : 'a formula -> 'a formula = <fun>
 val purecnf : 'a formula -> 'a formula list list = <fun>
 val simpcnf : 'a formula -> 'a formula list list = <fun>
 val cnf : 'a formula -> 'a formula = <fun>
-File "atp_interactive.ml", line 1649, characters 6-7:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 470, characters 7-68:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val ramsey : int -> int -> int -> prop formula = <fun>
@@ -720,8 +810,8 @@ val carryselect :
   (int -> 'a formula) ->
   (int -> 'a formula) ->
   (int -> 'a formula) -> int -> int -> 'a formula = <fun>
-File "atp_interactive.ml", line 1754, characters 6-42:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 575, characters 6-42:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val mk_adder_test : int -> int -> prop formula = <fun>
@@ -739,12 +829,12 @@ val bitlength : int -> int = <fun>
 val bit : int -> int -> bool = <fun>
 val congruent_to : (int -> 'a formula) -> int -> int -> 'a formula =
   <fun>
-File "atp_interactive.ml", line 1805, characters 6-17:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 626, characters 6-17:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 1807, characters 6-12:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 628, characters 6-12:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val prime : int -> prop formula = <fun>
@@ -759,6 +849,9 @@ val defstep :
   prop formula * (prop formula, prop formula * prop formula) func * num ->
   prop formula * (prop formula, prop formula * prop formula) func * num =
   <fun>
+File "atp_interactive.ml", line 686, characters 7-40:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val max_varindex : string -> string -> num -> num = <fun>
 val mk_defcnf :
   (prop formula * ('a, 'b) func * num ->
@@ -797,6 +890,9 @@ val dp : 'a formula list list -> bool = <fun>
 val dpsat : prop formula -> bool = <fun>
 val dptaut : prop formula -> bool = <fun>
 val posneg_count : 'a formula list list -> 'a formula -> int = <fun>
+File "atp_interactive.ml", line 837, characters 2-63:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val dpll : 'a formula list list -> bool = <fun>
 val dpllsat : prop formula -> bool = <fun>
 val dplltaut : prop formula -> bool = <fun>
@@ -845,25 +941,25 @@ val triggers :
   'a formula ->
   (('a formula * 'a formula) * ('a formula * 'a formula) list) list =
   <fun>
-File "atp_interactive.ml", line 2179, characters 6-7:
-Warning Y: unused variable p.
-File "atp_interactive.ml", line 2179, characters 20-21:
-Warning Y: unused variable q.
-File "atp_interactive.ml", line 2179, characters 34-35:
-Warning Y: unused variable r.
-File "atp_interactive.ml", line 2176, characters 6-45:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 997, characters 6-45:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 2181, characters 6-13:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 1002, characters 14-104:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 2187, characters 2-245:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 1008, characters 2-245:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
-True|False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 1000, characters 6-7:
+Warning 26: unused variable p.
+File "atp_interactive.ml", line 1000, characters 20-21:
+Warning 26: unused variable q.
+File "atp_interactive.ml", line 1000, characters 34-35:
+Warning 26: unused variable r.
 val trigger :
   prop formula ->
   ((prop formula * prop formula) * (prop formula * prop formula) list)
@@ -907,6 +1003,9 @@ val stal_intersect :
   'a formula partition * ('a formula, ('b * 'c list) list) func ->
   'a formula partition * ('a formula, ('b * 'c list) list) func ->
   'a formula partition * ('a formula, ('b * 'c list) list) func = <fun>
+File "atp_interactive.ml", line 1114, characters 5-28:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val saturate :
   int ->
   'a formula partition *
@@ -923,6 +1022,9 @@ val splits :
   'a formula list ->
   'a formula partition *
   ('a formula, ('b * ('a formula * 'a formula) list) list) func = <fun>
+File "atp_interactive.ml", line 1137, characters 4-62:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val saturate_upto :
   'a formula list ->
   int ->
@@ -939,12 +1041,21 @@ val expand_node : bdd -> int -> bddnode = <fun>
 val lookup_unique : bdd -> bddnode -> bdd * int = <fun>
 val mk_node : bdd -> prop * int * int -> bdd * int = <fun>
 val mk_bdd : (prop -> prop -> bool) -> bdd = <fun>
+File "atp_interactive.ml", line 38, characters 31-66:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 38, characters 32-52:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val order : bdd -> prop -> prop -> bool = <fun>
 val thread :
   'a ->
   ('b -> 'c * 'd -> 'e) ->
   ('a -> 'f -> 'g * 'c) * 'f -> ('g -> 'h -> 'b * 'd) * 'h -> 'e =
   <fun>
+File "atp_interactive.ml", line 52, characters 5-23:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val bdd_and :
   bdd * (int * int, int) func ->
   int * int -> (bdd * (int * int, int) func) * int = <fun>
@@ -957,10 +1068,10 @@ val bdd_imp :
 val bdd_iff :
   bdd * (int * int, int) func ->
   int * int -> (bdd * (int * int, int) func) * int = <fun>
-File "atp_interactive.ml", line 2442, characters 2-423:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 83, characters 2-423:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _))
+(Forall (_, _)|Exists (_, _))
 val mkbdd :
   bdd * (int * int, int) func ->
   prop formula -> (bdd * (int * int, int) func) * int = <fun>
@@ -974,10 +1085,10 @@ val sort_defs :
   ('a * 'a formula) list ->
   ('a * 'a formula) list ->
   'a formula -> ('a * 'a formula) list * 'a formula = <fun>
-File "atp_interactive.ml", line 2494, characters 2-528:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 135, characters 2-528:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _))
+(Forall (_, _)|Exists (_, _))
 val mkbdde :
   (prop, int) func ->
   bdd * (int * int, int) func ->
@@ -991,7 +1102,13 @@ val ebddtaut : prop formula -> bool = <fun>
 type term = Var of string | Fn of string * term list
 type fol = R of string * term list
 val onformula : (term -> term) -> fol formula -> fol formula = <fun>
+File "atp_interactive.ml", line 215, characters 22-61:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val is_const_name : string -> bool = <fun>
+File "atp_interactive.ml", line 227, characters 10-41:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val parse_atomic_term :
   string list -> string list -> term * string list = <fun>
 val parse_term : string list -> string list -> term * string list =
@@ -1009,14 +1126,29 @@ val print_fargs : string -> term list -> unit = <fun>
 val print_infix_term :
   bool -> int -> int -> string -> term -> term -> unit = <fun>
 val printert : term -> unit = <fun>
+File "atp_interactive.ml", line 8, characters 5-56:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val print_atom : 'a -> fol -> unit = <fun>
 val print_fol_formula : fol formula -> unit = <fun>
 val termval :
   'a * (string -> 'b list -> 'b) * 'c ->
   (string, 'b) func -> term -> 'b = <fun>
+File "atp_interactive.ml", line 28, characters 16-45:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 29, characters 15-45:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 30, characters 16-49:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val holds :
   'a list * (string -> 'a list -> 'a) * (string -> 'a list -> bool) ->
   (string, 'a) func -> fol formula -> bool = <fun>
+File "atp_interactive.ml", line 45, characters 21-26:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val bool_interp :
   bool list * (string -> bool list -> bool) *
   (string -> 'a list -> bool) = ([false; true], <fun>, <fun>)
@@ -1108,7 +1240,19 @@ val dp_refine_loop :
   fol formula list list ->
   term list list -> term list list -> term list list = <fun>
 val davisputnam' : fol formula -> int = <fun>
+File "atp_interactive.ml", line 522, characters 13-64:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 522, characters 22-64:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 523, characters 18-64:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val istriv : (string, term) func -> string -> term -> bool = <fun>
+File "atp_interactive.ml", line 533, characters 11-46:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val unify :
   (string, term) func -> (term * term) list -> (string, term) func =
   <fun>
@@ -1135,8 +1279,8 @@ val tableau :
   ((string, term) func * int -> 'a) -> (string, term) func * int -> 'a =
   <fun>
 val deepen : (int -> 'a) -> int -> 'a = <fun>
-File "atp_interactive.ml", line 3403, characters 19-64:
-Warning S: this expression should have type unit.
+File "atp_interactive.ml", line 711, characters 19-64:
+Warning 10: this expression should have type unit.
 val tabrefute : fol formula list -> int = <fun>
 val tab : fol formula -> int = <fun>
 val splittab : fol formula -> int list = <fun>
@@ -1147,6 +1291,9 @@ val mgu :
   <fun>
 val unifiable : fol formula -> fol formula -> bool = <fun>
 val rename : string -> fol formula list -> fol formula list = <fun>
+File "atp_interactive.ml", line 1141, characters 29-51:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val resolvents :
   fol formula list ->
   fol formula list ->
@@ -1157,6 +1304,9 @@ val resloop : fol formula list list * fol formula list list -> bool =
   <fun>
 val pure_resolution : fol formula -> bool = <fun>
 val resolution : fol formula -> bool list = <fun>
+File "atp_interactive.ml", line 1193, characters 34-63:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val term_match :
   (string, term) func -> (term * term) list -> (string, term) func =
   <fun>
@@ -1168,6 +1318,9 @@ val subsumes_clause : fol formula list -> fol formula list -> bool =
 val replace :
   fol formula list -> fol formula list list -> fol formula list list =
   <fun>
+File "atp_interactive.ml", line 1231, characters 5-76:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val incorporate :
   fol formula list ->
   fol formula list -> fol formula list list -> fol formula list list =
@@ -1176,6 +1329,9 @@ val resloop : fol formula list list * fol formula list list -> bool =
   <fun>
 val pure_resolution : fol formula -> bool = <fun>
 val resolution : fol formula -> bool list = <fun>
+File "atp_interactive.ml", line 1269, characters 5-49:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val presolve_clauses :
   fol formula list -> fol formula list -> fol formula list list = <fun>
 val presloop : fol formula list list * fol formula list list -> bool =
@@ -1193,6 +1349,9 @@ val backchain :
   <fun>
 val hornify : 'a formula list -> 'a formula list * 'a formula = <fun>
 val hornprove : fol formula -> (string, term) func * int = <fun>
+File "atp_interactive.ml", line 2117, characters 7-34:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val parserule : string -> fol formula list * fol formula = <fun>
 val simpleprolog : string list -> string -> (string, term) func = <fun>
 val prolog : string list -> string -> fol formula list = <fun>
@@ -1204,8 +1363,8 @@ val mexpand :
   fol formula ->
   ((string, term) func * int * int -> 'a) ->
   (string, term) func * int * int -> 'a = <fun>
-File "atp_interactive.ml", line 4973, characters 5-56:
-Warning S: this expression should have type unit.
+File "atp_interactive.ml", line 2281, characters 5-56:
+Warning 10: this expression should have type unit.
 val puremeson : fol formula -> int = <fun>
 val meson : fol formula -> int list = <fun>
 val equal : (string, term) func -> fol formula -> fol formula -> bool =
@@ -1227,8 +1386,8 @@ val mexpands :
   fol formula list ->
   ((string, term) func * int * int -> 'a) ->
   (string, term) func * int * int -> 'a = <fun>
-File "atp_interactive.ml", line 5031, characters 5-56:
-Warning S: this expression should have type unit.
+File "atp_interactive.ml", line 2339, characters 5-56:
+Warning 10: this expression should have type unit.
 val puremeson : fol formula -> int = <fun>
 val meson : fol formula -> int list = <fun>
 val rename_term : term -> term = <fun>
@@ -1249,6 +1408,9 @@ val equivalence_axioms : fol formula list =
   [<<forall x. x = x>>; <<forall x y z. x = y /\ x = z ==> y = z>>]
 val equalitize : fol formula -> fol formula = <fun>
 val subterms : term -> term list = <fun>
+File "atp_interactive.ml", line 3081, characters 25-63:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val congruent : term partition -> term * term -> bool = <fun>
 val emerge :
   term * term ->
@@ -1261,7 +1423,28 @@ val ccvalid : fol formula -> bool = <fun>
 val rewrite1 : fol formula list -> term -> term = <fun>
 val rewrite : fol formula list -> term -> term = <fun>
 val termsize : term -> int = <fun>
+File "atp_interactive.ml", line 3230, characters 28-54:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val lexord : ('a -> 'a -> bool) -> 'a list -> 'a list -> bool = <fun>
+File "atp_interactive.ml", line 3236, characters 8-34:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 3238, characters 8-181:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 3239, characters 8-131:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 3240, characters 9-94:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 3240, characters 9-46:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 3244, characters 19-42:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val lpo_gt :
   (string * int -> string * int -> bool) -> term -> term -> bool =
   <fun>
@@ -1277,37 +1460,40 @@ val listcases :
 val overlaps :
   term * term -> term -> ((string, term) func -> term -> 'a) -> 'a list =
   <fun>
-File "atp_interactive.ml", line 5977, characters 4-9:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 3285, characters 33-113:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
-File "atp_interactive.ml", line 5977, characters 4-9:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 3285, characters 10-113:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val crit1 : fol formula -> fol formula -> fol formula list = <fun>
 val critical_pairs : fol formula -> fol formula -> fol formula list =
   <fun>
-File "atp_interactive.ml", line 5997, characters 4-24:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 3305, characters 33-205:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val normalize_and_orient :
   (term -> term -> bool) ->
   fol formula list -> fol formula -> term * term = <fun>
+File "atp_interactive.ml", line 3315, characters 5-44:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val status : 'a list * 'b list * 'c list -> 'a list -> unit = <fun>
 val complete :
   (term -> term -> bool) ->
   fol formula list * fol formula list * fol formula list ->
   fol formula list = <fun>
-File "atp_interactive.ml", line 6054, characters 2-221:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 3362, characters 2-221:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)::_
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))::_
 val interreduce :
   fol formula list -> fol formula list -> fol formula list = <fun>
 val complete_and_simplify :
@@ -1316,11 +1502,11 @@ val modify_S : fol formula list -> fol formula list list = <fun>
 val modify_T : fol formula list -> fol formula list = <fun>
 val is_nonvar : term -> bool = <fun>
 val find_nestnonvar : term -> term = <fun>
-File "atp_interactive.ml", line 6668, characters 2-144:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 3976, characters 2-144:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|True|
-False)
+(False|True|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val find_nvsubterm : fol formula -> term = <fun>
 val replacet : (term, term) func -> term -> term = <fun>
 val replace : (term, term) func -> fol formula -> fol formula = <fun>
@@ -1328,8 +1514,8 @@ val emodify : string list -> fol formula list -> fol formula list =
   <fun>
 val modify_E : fol formula list -> fol formula list = <fun>
 val brand : fol formula list list -> fol formula list list = <fun>
-File "atp_interactive.ml", line 6715, characters 5-56:
-Warning S: this expression should have type unit.
+File "atp_interactive.ml", line 4023, characters 5-56:
+Warning 10: this expression should have type unit.
 val bpuremeson : fol formula -> int = <fun>
 val bmeson : fol formula -> int list = <fun>
 val overlapl :
@@ -1359,16 +1545,16 @@ val premiss_A : string * string -> fol formula = <fun>
 val premiss_E : string * string -> fol formula = <fun>
 val premiss_I : string * string -> fol formula = <fun>
 val premiss_O : string * string -> fol formula = <fun>
-File "atp_interactive.ml", line 7133, characters 2-309:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 4441, characters 2-309:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _))
 val anglicize_premiss : fol formula -> string = <fun>
-File "atp_interactive.ml", line 7140, characters 4-23:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 4448, characters 24-147:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
-True|False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val anglicize_syllogism : fol formula -> string = <fun>
 val all_possible_syllogisms : fol formula list =
   [<<(forall x. M(x) ==> P(x)) /\ (forall x. S(x) ==> M(x)) ==>
@@ -2663,9 +2849,12 @@ val limmeson : int -> fol formula -> (string, term) func * int * int =
   <fun>
 val limited_meson :
   int -> fol formula -> ((string, term) func * int * int) list = <fun>
-File "atp_interactive.ml", line 7218, characters 8-26:
-Warning S: this expression should have type unit.
+File "atp_interactive.ml", line 4526, characters 8-26:
+Warning 10: this expression should have type unit.
 val decide_fmp : fol formula -> bool = <fun>
+File "atp_interactive.ml", line 4552, characters 5-55:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val decide_monadic : fol formula -> bool = <fun>
 val qelim :
   (fol formula -> fol formula) -> string -> fol formula -> fol formula =
@@ -2678,26 +2867,26 @@ val lift_qelim :
 val cnnf : (fol formula -> fol formula) -> fol formula -> fol formula =
   <fun>
 val lfn_dlo : fol formula -> fol formula = <fun>
-File "atp_interactive.ml", line 7377, characters 23-60:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 4685, characters 22-61:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
-File "atp_interactive.ml", line 7378, characters 24-53:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 4686, characters 23-54:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
-File "atp_interactive.ml", line 7379, characters 24-53:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 4687, characters 23-54:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
-File "atp_interactive.ml", line 7367, characters 2-701:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 4675, characters 2-701:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
-False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+Forall (_, _))
 val dlobasic : fol formula -> fol formula = <fun>
 val afn_dlo : 'a -> fol formula -> fol formula = <fun>
 val quelim_dlo : fol formula -> fol formula = <fun>
@@ -2728,8 +2917,8 @@ val cooper : string list -> fol formula -> fol formula = <fun>
 val operations : (string * (num -> num -> bool)) list =
   [("=", <fun>); ("<", <fun>); (">", <fun>); ("<=", <fun>);
    (">=", <fun>); ("divides", <fun>)]
-File "atp_interactive.ml", line 7705, characters 3-167:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 5013, characters 2-168:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 R (_, [])
 val evalc : fol formula -> fol formula = <fun>
@@ -2737,16 +2926,16 @@ val integer_qelim : fol formula -> fol formula = <fun>
 val relativize : (string -> 'a formula) -> 'a formula -> 'a formula =
   <fun>
 val natural_qelim : fol formula -> fol formula = <fun>
-File "atp_interactive.ml", line 8023, characters 11-106:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 5331, characters 11-106:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _
 val poly_add : string list -> term -> term -> term = <fun>
 val poly_ladd : string list -> term -> term -> term = <fun>
 val poly_neg : term -> term = <fun>
 val poly_sub : string list -> term -> term -> term = <fun>
-File "atp_interactive.ml", line 8043, characters 11-199:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 5351, characters 11-199:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _
 val poly_mul : string list -> term -> term -> term = <fun>
@@ -2762,8 +2951,8 @@ val is_constant : string list -> term -> bool = <fun>
 val head : string list -> term -> term = <fun>
 val behead : string list -> term -> term = <fun>
 val poly_cmul : num -> term -> term = <fun>
-File "atp_interactive.ml", line 8124, characters 2-96:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 5432, characters 2-96:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _
 val headconst : term -> num = <fun>
@@ -2772,6 +2961,15 @@ val pdivide : string list -> term -> term -> int * term = <fun>
 type sign = Zero | Nonzero | Positive | Negative
 val swap : bool -> sign -> sign = <fun>
 val findsign : (term * sign) list -> term -> sign = <fun>
+File "atp_interactive.ml", line 5489, characters 5-63:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 5489, characters 16-63:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 5489, characters 32-62:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val assertsign :
   (term * sign) list -> term * sign -> (term * sign) list = <fun>
 val split_zero :
@@ -2789,11 +2987,11 @@ val cqelim :
   term list * term list -> (term * sign) list -> fol formula = <fun>
 val init_sgns : (term * sign) list =
   [(<<|1|>>, Positive); (<<|0|>>, Zero)]
-File "atp_interactive.ml", line 8244, characters 4-23:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 5552, characters 29-171:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
-False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+Forall (_, _))
 val basic_complex_qelim : string list -> fol formula -> fol formula =
   <fun>
 val complex_qelim : fol formula -> fol formula = <fun>
@@ -2802,8 +3000,8 @@ val poly_diff : string list -> term -> term = <fun>
 val rel_signs : (string * sign list) list =
   [("=", [Zero]); ("<=", [Zero; Negative]); (">=", [Zero; Positive]);
    ("<", [Negative]); (">", [Positive])]
-File "atp_interactive.ml", line 9032, characters 11-69:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 6340, characters 10-70:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 R (_, [])
 val testform : (term * sign) list -> fol formula -> bool = <fun>
@@ -2811,6 +3009,9 @@ val inferpsign : sign list * sign list -> sign list = <fun>
 val condense : sign list list -> sign list list = <fun>
 val inferisign : sign list list -> sign list list = <fun>
 val dedmatrix : (sign list list -> 'a) -> sign list list -> 'a = <fun>
+File "atp_interactive.ml", line 6398, characters 10-39:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val pdivide_pos :
   string list -> (term * sign) list -> term -> term -> term = <fun>
 val split_sign :
@@ -2839,30 +3040,36 @@ val matrix :
   term list ->
   (sign list list -> fol formula) -> (term * sign) list -> fol formula =
   <fun>
-File "atp_interactive.ml", line 9137, characters 4-20:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 6445, characters 26-276:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
-False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+Forall (_, _))
 val basic_real_qelim : string list -> fol formula -> fol formula =
   <fun>
 val real_qelim : fol formula -> fol formula = <fun>
-File "atp_interactive.ml", line 9185, characters 2-243:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 6493, characters 2-243:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Fn ("", _)
 val grpterm : term -> term = <fun>
-File "atp_interactive.ml", line 9192, characters 4-11:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 6500, characters 12-154:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val grpform : fol formula -> fol formula = <fun>
 val real_qelim' : fol formula -> fol formula = <fun>
 - : fol formula = <<true>>
 val mmul : num * int list -> num * int list -> num * int list = <fun>
 val mdiv : num * int list -> num * int list -> num * int list = <fun>
 val mlcm : 'a * 'b list -> 'c * 'b list -> num * 'b list = <fun>
+File "atp_interactive.ml", line 6605, characters 2-38:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 6605, characters 13-38:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val morder_lt : int list -> int list -> bool = <fun>
 val mpoly_mmul :
   num * int list -> (num * int list) list -> (num * int list) list =
@@ -2926,8 +3133,8 @@ val coordinations : (string * fol formula) list =
     <<(1_x - 2_x) * (2_y - 3_y) = (1_y - 2_y) * (2_x - 3_x) /\
       (1_x - 4_x) * (4_y - 5_y) = (1_y - 4_y) * (4_x - 5_x)>>);
    ("=", <<1_x = 2_x /\ 1_y = 2_y>>)]
-File "atp_interactive.ml", line 9729, characters 11-49:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7037, characters 10-50:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Fn (_, _)
 val coordinate : fol formula -> fol formula = <fun>
@@ -2937,8 +3144,8 @@ val invariant_under_translation : string * fol formula -> fol formula =
   <fun>
 val invariant_under_rotation : string * fol formula -> fol formula =
   <fun>
-File "atp_interactive.ml", line 9781, characters 6-15:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7089, characters 6-15:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val originate : fol formula -> fol formula = <fun>
@@ -2946,8 +3153,8 @@ val invariant_under_scaling : string * fol formula -> fol formula =
   <fun>
 val invariant_under_shearing : string * fol formula -> fol formula =
   <fun>
-File "atp_interactive.ml", line 9830, characters 2-522:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7138, characters 2-522:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _::_
 val pprove :
@@ -2958,31 +3165,43 @@ val triangulate : string list -> term list -> term list -> term list =
 val wu : fol formula -> string list -> string list -> fol formula list =
   <fun>
 val pinterpolate : 'a formula -> 'a formula -> 'a formula = <fun>
-File "atp_interactive.ml", line 9984, characters 26-47:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7292, characters 25-48:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|Not _|Atom _|
-True|False)
+(False|True|Atom _|Not _|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val urinterpolate : fol formula -> fol formula -> fol formula = <fun>
 val toptermt : (string * int) list -> term -> term list = <fun>
 val topterms : (string * int) list -> fol formula -> term list = <fun>
-File "atp_interactive.ml", line 10023, characters 4-287:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7331, characters 4-287:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _::_
 val uinterpolate : fol formula -> fol formula -> fol formula = <fun>
-File "atp_interactive.ml", line 10055, characters 6-18:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7363, characters 6-18:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-((Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|Not _|Atom _|
- True|False),
+((False|True|Atom _|Not _|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+ Exists (_, _)),
 _)
 val cinterpolate : fol formula -> fol formula -> fol formula = <fun>
 val interpolate : fol formula -> fol formula -> fol formula = <fun>
 val einterpolate : fol formula -> fol formula -> fol formula = <fun>
+File "atp_interactive.ml", line 7502, characters 16-60:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 7502, characters 16-44:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val real_lang :
   (string * int -> bool) * (string * int -> bool) *
   (fol formula -> bool) = (<fun>, <fun>, <fun>)
+File "atp_interactive.ml", line 7513, characters 16-60:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 7513, characters 16-44:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val int_lang :
   (string * int -> bool) * (string * int -> bool) *
   (fol formula -> bool) = (<fun>, <fun>, <fun>)
@@ -2990,11 +3209,11 @@ val add_default :
   (('a -> bool) * (string * int -> bool) * (fol formula -> bool)) list ->
   (('a -> bool) * (string * int -> bool) * (fol formula -> bool)) list =
   <fun>
-File "atp_interactive.ml", line 10222, characters 2-217:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 7530, characters 2-217:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Not _|True|False)
+(False|True|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val chooselang :
   ((string * int -> bool) * (string * int -> bool) * 'a) list ->
   fol formula -> (string * int -> bool) * (string * int -> bool) * 'a =
@@ -3019,6 +3238,9 @@ val homo :
 val homogenize :
   ((string * int -> bool) * (string * int -> bool) * 'a) list ->
   fol formula list -> fol formula list = <fun>
+File "atp_interactive.ml", line 7594, characters 2-75:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val belongs :
   (string * int -> bool) * (string * int -> bool) * 'a ->
   fol formula -> bool = <fun>
@@ -3084,7 +3306,16 @@ module type Proofsystem =
     val axiom_exists : string -> fol formula -> thm
     val concl : thm -> fol formula
   end
+File "atp_interactive.ml", line 7910, characters 2-88:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val occurs_in : term -> term -> bool = <fun>
+File "atp_interactive.ml", line 7920, characters 42-68:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 7921, characters 31-69:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val free_in : term -> fol formula -> bool = <fun>
 module Proven : Proofsystem
 type thm = Proven.thm
@@ -3131,16 +3362,16 @@ val iff_imp2 : thm -> thm = <fun>
 val imp_antisym : thm -> thm -> thm = <fun>
 val right_doubleneg : thm -> thm = <fun>
 val ex_falso : fol formula -> thm = <fun>
-File "atp_interactive.ml", line 10858, characters 6-21:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 190, characters 6-21:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
-True|False)
-File "atp_interactive.ml", line 10858, characters 38-47:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 190, characters 38-47:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
-True|False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val imp_trans2 : thm -> thm -> thm = <fun>
 val imp_trans_chain : thm list -> thm -> thm = <fun>
 val imp_truefalse : fol formula -> fol formula -> thm = <fun>
@@ -3169,6 +3400,12 @@ val lcfptab : fol formula list -> fol formula list -> thm = <fun>
 val lcftaut : fol formula -> thm = <fun>
 val eq_sym : term -> term -> thm = <fun>
 val eq_trans : term -> term -> term -> thm = <fun>
+File "atp_interactive.ml", line 470, characters 10-27:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 472, characters 30-61:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val icongruence : term -> term -> term -> term -> thm = <fun>
 val gen_right_th : string -> fol formula -> fol formula -> thm = <fun>
 val genimp : string -> thm -> thm = <fun>
@@ -3178,6 +3415,9 @@ val exists_left_th : string -> fol formula -> fol formula -> thm =
 val exists_left : string -> thm -> thm = <fun>
 val subspec : thm -> thm = <fun>
 val subalpha : thm -> thm = <fun>
+File "atp_interactive.ml", line 570, characters 38-68:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val isubst : term -> term -> fol formula -> fol formula -> thm = <fun>
 val alpha : string -> fol formula -> thm = <fun>
 val ispec : term -> fol formula -> thm = <fun>
@@ -3185,11 +3425,11 @@ val spec : term -> thm -> thm = <fun>
 val unify_complementsf :
   (string, term) func ->
   fol formula * fol formula -> (string, term) func = <fun>
-File "atp_interactive.ml", line 11376, characters 2-402:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 708, characters 2-402:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
-True|False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val use_laterimp : fol formula -> fol formula -> thm = <fun>
 val imp_false_rule' : ('a -> thm) -> 'a -> thm = <fun>
 val imp_true_rule' : ('a -> thm) -> ('a -> thm) -> 'a -> thm = <fun>
@@ -3207,12 +3447,12 @@ val spec' :
   <fun>
 val ex_falso' : fol formula list -> (term -> term) * fol formula -> thm =
   <fun>
-File "atp_interactive.ml", line 11409, characters 6-15:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 741, characters 6-15:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 (_, [])
-File "atp_interactive.ml", line 11408, characters 4-13:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 740, characters 14-216:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 ([], _)
 val complits' :
@@ -3228,11 +3468,11 @@ val lcftab :
    (string, term) func * (fol formula * term) list * int -> 'a) ->
   (string, term) func * (fol formula * term) list * int -> 'a = <fun>
 val quantforms : bool -> 'a formula -> 'a formula list = <fun>
-File "atp_interactive.ml", line 11483, characters 6-12:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 815, characters 15-136:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
-False)
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+Exists (_, _))
 val skolemfuns : fol formula -> (fol formula * term) list = <fun>
 val form_match :
   fol formula * fol formula ->
@@ -3243,11 +3483,11 @@ val lcfrefute :
   (((term -> term) * fol formula -> thm) ->
    (string, term) func * (fol formula * term) list * int -> 'a) ->
   'a = <fun>
-File "atp_interactive.ml", line 11520, characters 4-11:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 852, characters 12-77:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-((Exists (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
- False),
+((False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+ Exists (_, _)),
 _)
 val mk_skol : fol formula * term -> fol formula -> fol formula = <fun>
 val simpcont :
@@ -3258,8 +3498,8 @@ val simpcont :
 |-
 (exists x. ~p(x)) /\ (forall x. p(x)) ==>
 (~(~p(f_1)) ==> (forall x. ~(~p(x)))) ==> false
-File "atp_interactive.ml", line 11540, characters 12-21:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 872, characters 12-21:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val elim_skolemvar : thm -> thm = <fun>
@@ -3271,87 +3511,90 @@ type goals =
     Goals of ((string * fol formula) list * fol formula) list *
       (thm list -> thm)
 val print_goal : goals -> unit = <fun>
-File "atp_interactive.ml", line 11995, characters 15-52:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 9, characters 15-52:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val set_goal : fol formula -> goals = <fun>
 val extract_thm : goals -> thm = <fun>
 val tac_proof : goals -> (goals -> goals) list -> thm = <fun>
 val prove : fol formula -> (goals -> goals) list -> thm = <fun>
-File "atp_interactive.ml", line 12011, characters 6-10:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 25, characters 11-84:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 12010, characters 4-18:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 24, characters 19-177:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val conj_intro_tac : goals -> goals = <fun>
-File "atp_interactive.ml", line 12019, characters 4-11:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 33, characters 20-52:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val jmodify : ('a list -> 'b) -> ('a -> 'a) -> 'a list -> 'b = <fun>
 val gen_right_alpha : string -> string -> thm -> thm = <fun>
-File "atp_interactive.ml", line 12033, characters 4-20:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 48, characters 5-53:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 47, characters 23-264:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val forall_intro_tac : string -> goals -> goals = <fun>
-File "atp_interactive.ml", line 12045, characters 6-17:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 59, characters 6-17:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|
-Atom _|True|False)
+(False|True|Atom _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
 val right_exists : string -> term -> fol formula -> thm = <fun>
-File "atp_interactive.ml", line 12054, characters 4-20:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 68, characters 23-164:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val exists_intro_tac : term -> goals -> goals = <fun>
-File "atp_interactive.ml", line 12062, characters 4-17:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 76, characters 20-171:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val imp_intro_tac : string -> goals -> goals = <fun>
-File "atp_interactive.ml", line 12070, characters 4-14:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 84, characters 15-86:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val assumptate : goals -> thm -> thm = <fun>
 val firstassum : ('a * fol formula) list -> thm = <fun>
 val using : thm list -> 'a -> goals -> thm list = <fun>
 val assumps : ('a * fol formula) list -> ('a * thm) list = <fun>
-File "atp_interactive.ml", line 12107, characters 4-6:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 121, characters 14-100:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val by : string list -> 'a -> goals -> thm list = <fun>
 val justify :
   ('a -> fol formula -> goals -> thm list) ->
   'a -> fol formula -> goals -> thm = <fun>
-File "atp_interactive.ml", line 12126, characters 28-42:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 140, characters 28-42:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 12125, characters 4-9:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 139, characters 17-95:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val proof : (goals -> goals) list -> fol formula -> goals -> thm list =
   <fun>
 val at : 'a -> 'b -> 'c -> 'd list = <fun>
 val once : 'a list = []
-File "atp_interactive.ml", line 12138, characters 4-12:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 152, characters 23-128:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val auto_tac :
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
-File "atp_interactive.ml", line 12146, characters 4-13:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 160, characters 28-223:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val lemma_tac :
@@ -3359,13 +3602,13 @@ val lemma_tac :
   fol formula ->
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
-File "atp_interactive.ml", line 12156, characters 6-17:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 170, characters 6-17:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Forall (_, _)|Iff (_, _)|Imp (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|True|
-False)
-File "atp_interactive.ml", line 12155, characters 4-19:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Atom _|Not _|And (_, _)|Or (_, _)|Imp (_, _)|Iff (_, _)|
+Forall (_, _))
+File "atp_interactive.ml", line 169, characters 35-381:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val exists_elim_tac :
@@ -3374,17 +3617,17 @@ val exists_elim_tac :
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
 val ante_disj : thm -> thm -> thm = <fun>
-File "atp_interactive.ml", line 12181, characters 38-45:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 195, characters 38-45:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _)|Iff (_, _)|Imp (_, _)|And (_, _)|Not _|Atom _|
-True|False)
-File "atp_interactive.ml", line 12182, characters 6-10:
-Warning P: this pattern-matching is not exhaustive.
+(False|True|Atom _|Not _|And (_, _)|Imp (_, _)|Iff (_, _)|Forall (_, _)|
+Exists (_, _))
+File "atp_interactive.ml", line 196, characters 11-128:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "atp_interactive.ml", line 12180, characters 4-17:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 194, characters 33-301:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val disj_elim_tac :
@@ -3393,8 +3636,8 @@ val disj_elim_tac :
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
 val multishunt : int -> thm -> thm = <fun>
-File "atp_interactive.ml", line 12230, characters 4-10:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 244, characters 15-264:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val assume : (string * fol formula) list -> goals -> goals = <fun>
@@ -3406,8 +3649,8 @@ val have :
   fol formula ->
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
-File "atp_interactive.ml", line 12241, characters 22-106:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 255, characters 22-106:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val so :
@@ -3423,16 +3666,16 @@ val cases :
   fol formula ->
   ('_a -> fol formula -> goals -> thm list) -> '_a -> goals -> goals =
   <fun>
-File "atp_interactive.ml", line 12256, characters 4-12:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 270, characters 25-349:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val conclude :
   fol formula ->
   ('a -> fol formula -> goals -> thm list) -> 'a -> goals -> goals =
   <fun>
-File "atp_interactive.ml", line 12268, characters 4-7:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 282, characters 25-84:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val our :
@@ -3440,8 +3683,8 @@ val our :
   ('b -> fol formula -> goals -> thm list) -> 'b -> goals -> goals =
   <fun>
 val thesis : string = ""
-File "atp_interactive.ml", line 12276, characters 4-7:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 290, characters 8-154:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
 val qed : goals -> goals = <fun>
@@ -3461,6 +3704,18 @@ val phi : string = "let `x' be `P(qdiag(x))' in P(qdiag(x))"
 val diag : string -> fol formula -> fol formula = <fun>
 val qdiag : string -> fol formula -> fol formula = <fun>
 val dtermval : (string, num) func -> term -> num = <fun>
+File "atp_interactive.ml", line 697, characters 16-39:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 698, characters 15-39:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 699, characters 16-45:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 705, characters 5-28:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val dholds : (string, num) func -> fol formula -> bool = <fun>
 val dhquant :
   ((num -> bool) -> num list -> bool) ->
@@ -3468,12 +3723,42 @@ val dhquant :
   string -> string -> string -> term -> fol formula -> bool = <fun>
 type formulaclass = Sigma | Pi | Delta
 val opp : formulaclass -> formulaclass = <fun>
+File "atp_interactive.ml", line 734, characters 26-57:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 735, characters 16-53:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 736, characters 16-55:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 737, characters 21-39:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 738, characters 21-36:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 741, characters 12-38:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 742, characters 34-70:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
 val classify : formulaclass -> int -> fol formula -> bool = <fun>
-File "atp_interactive.ml", line 12746, characters 2-936:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 767, characters 21-68:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 768, characters 20-68:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
+File "atp_interactive.ml", line 760, characters 2-936:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-(Exists (_, _)|Forall (_, _))
+(Forall (_, _)|Exists (_, _))
 (However, some guarded clause may match this value.)
+File "atp_interactive.ml", line 781, characters 5-28:
+Warning 3: deprecated: Pervasives.or
+Use (||) instead.
 val veref :
   (bool -> bool) -> num -> (string, num) func -> fol formula -> bool =
   <fun>
@@ -3509,8 +3794,8 @@ val robinson : fol formula =
     (forall m n. S(m) * n = n + m * n) /\
     (forall m n. m <= n <=> (exists d. m + d = n)) /\
     (forall m n. m < n <=> S(m) <= n)>>
-File "atp_interactive.ml", line 12910, characters 4-77:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 924, characters 4-77:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val suc_inj : thm =
@@ -3604,8 +3889,8 @@ val right_mp : thm -> thm -> thm = <fun>
 val right_imp_trans : thm -> thm -> thm = <fun>
 val right_sym : thm -> thm = <fun>
 val right_trans : thm -> thm -> thm = <fun>
-File "atp_interactive.ml", line 12938, characters 2-347:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 952, characters 2-347:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Var _
 val robop : term -> thm = <fun>
@@ -3806,8 +4091,8 @@ val robinson_thm : thm =
   (forall n. n <= 0 ==> n = 0) /\
   (forall m n. S(m) <= S(n) ==> m <= n) /\
   (forall m n. m < S(n) ==> m <= n) /\ (forall n. n < 0 ==> false)
-File "atp_interactive.ml", line 13074, characters 4-134:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 1088, characters 4-134:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
 val suc_0_l : thm =
@@ -3946,30 +4231,32 @@ val rob_ne : term -> term -> thm = <fun>
 val introduce_connective : fol formula -> thm = <fun>
 val elim_bex : fol formula -> thm = <fun>
 val sigma_elim : fol formula -> thm = <fun>
-File "atp_interactive.ml", line 13153, characters 2-1007:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 1167, characters 2-1007:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
-((Exists (_, _)|Forall (_, _)|Iff (_, _)|Or (_, _)|And (_, _)|Not _|Atom _|
- True|False),
+((False|True|Atom _|Not _|And (_, _)|Or (_, _)|Iff (_, _)|Forall (_, _)|
+ Exists (_, _)),
 _)
 val boundquant_step : thm -> thm -> thm = <fun>
-File "atp_interactive.ml", line 13220, characters 2-971:
-Warning P: this pattern-matching is not exhaustive.
+File "atp_interactive.ml", line 1211, characters 13-46:
+Warning 3: deprecated: Pervasives.&
+Use (&&) instead.
+File "atp_interactive.ml", line 1234, characters 2-971:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 ("", _)
 val sigma_prove : fol formula -> thm = <fun>
 val bounded_prove : string * string * term * fol formula -> thm = <fun>
 val boundednum_prove : string * string * term * fol formula -> thm =
   <fun>
-	Camlp4 Parsing version 3.09.3
+	Camlp5 parsing version 6.14
 
 # No printer named printert.
 No printer named print_fpf.
 val begin_output : unit -> unit = <fun>
 val end_output : unit -> unit = <fun>
-Warning: File "full_test.ml", line 24, chars 34-35: Invalid backslash escape in string
-File "verbose_functions.ml", line 17, characters 4-90:
-Warning S: this expression should have type unit.
+File "verbose_functions.ml", line 17, characters 4-89:
+Warning 10: this expression should have type unit.
 val print_list : ('a -> 'b) -> 'a list -> unit = <fun>
 val print_pair : ('a -> 'b) -> ('c -> 'd) -> 'a * 'c -> unit = <fun>
 val print_bool : bool -> unit = <fun>
@@ -4196,193 +4483,193 @@ Searching with depth limit 6
 val ewd1062_1 : thm = <abstr>
 - : dummy_interactive = END_INTERACTIVE
 - : dummy_interactive = START_INTERACTIVE
-val start_time : float = 14.948
+val start_time : float = 3.35066
 :::
 |- p ==> q <=> ~q ==> ~p
 ;;;
-CPU time (user): 0.008
+CPU time (user): 0.000633
 val p1 : thm = <abstr>
 :::
 |- ~(~p) <=> p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000293
 val p2 : thm = <abstr>
 :::
 |- ~(p ==> q) ==> q ==> p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000124
 val p3 : thm = <abstr>
 :::
 |- ~p ==> q <=> ~q ==> p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.00063
 val p4 : thm = <abstr>
 :::
 |- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.00077
 val p5 : thm = <abstr>
 :::
 |- p \/ ~p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.00013
 val p6 : thm = <abstr>
 :::
 |- p \/ ~(~(~p))
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000161
 val p7 : thm = <abstr>
 :::
 |- ((p ==> q) ==> p) ==> p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000144
 val p8 : thm = <abstr>
 :::
 |- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
 ;;;
-CPU time (user): 0.012
+CPU time (user): 0.001818
 val p9 : thm = <abstr>
 :::
 |- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.00159
 val p10 : thm = <abstr>
 :::
 |- p <=> p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000223
 val p11 : thm = <abstr>
 :::
 |- ((p <=> q) <=> r) <=> p <=> q <=> r
 ;;;
-CPU time (user): 0.048
+CPU time (user): 0.010065
 val p12 : thm = <abstr>
 :::
 |- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
 ;;;
-CPU time (user): 0.008
+CPU time (user): 0.002438
 val p13 : thm = <abstr>
 :::
 |- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
 ;;;
-CPU time (user): 0.012
+CPU time (user): 0.002531
 val p14 : thm = <abstr>
 :::
 |- p ==> q <=> ~p \/ q
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.00082
 val p15 : thm = <abstr>
 :::
 |- (p ==> q) \/ (q ==> p)
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000206
 val p16 : thm = <abstr>
 :::
 |- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
 ;;;
-CPU time (user): 0.032
+CPU time (user): 0.006074
 val p17 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p ==> q <=> ~q ==> ~p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000798
 val p1 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- ~(~p) <=> p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000396
 val p2 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- ~(p ==> q) ==> q ==> p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000139
 val p3 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- ~p ==> q <=> ~q ==> p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000795
 val p4 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- (p \/ q ==> p \/ r) ==> p \/ (q ==> r)
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000865
 val p5 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p \/ ~p
 ;;;
-CPU time (user): 0.008
+CPU time (user): 0.000338
 val p6 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p \/ ~(~(~p))
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000199
 val p7 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- ((p ==> q) ==> p) ==> p
 ;;;
-CPU time (user): 0.
+CPU time (user): 0.000159
 val p8 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- (p \/ q) /\ (~p \/ q) /\ (p \/ ~q) ==> ~(~q \/ ~q)
 ;;;
-CPU time (user): 0.012
+CPU time (user): 0.001995
 val p9 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- (q ==> r) /\ (r ==> p /\ q) /\ (p ==> q /\ r) ==> (p <=> q)
 ;;;
-CPU time (user): 0.008
+CPU time (user): 0.001766
 val p10 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p <=> p
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.000306
 val p11 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- ((p <=> q) <=> r) <=> p <=> q <=> r
 ;;;
-CPU time (user): 0.072
+CPU time (user): 0.012939
 val p12 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p \/ q /\ r <=> (p \/ q) /\ (p \/ r)
 ;;;
-CPU time (user): 0.016
+CPU time (user): 0.003152
 val p13 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- (p <=> q) <=> (q \/ ~p) /\ (~q \/ p)
 ;;;
-CPU time (user): 0.016
+CPU time (user): 0.003222
 val p14 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p ==> q <=> ~p \/ q
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.001118
 val p15 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- (p ==> q) \/ (q ==> p)
 ;;;
-CPU time (user): 0.004
+CPU time (user): 0.00027
 val p16 : thm = <abstr>
 Searching with depth limit 0
 :::
 |- p /\ (q ==> r) ==> s <=> (~p \/ q \/ s) /\ (~p \/ ~r \/ s)
 ;;;
-CPU time (user): 0.04
+CPU time (user): 0.007444
 val p17 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4390,7 +4677,7 @@ Searching with depth limit 2
 :::
 |- exists y. forall x. P(y) ==> P(x)
 ;;;
-CPU time (user): 0.012
+CPU time (user): 0.001895
 val p18 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4398,7 +4685,7 @@ Searching with depth limit 2
 :::
 |- exists x. forall y z. (P(y) ==> Q(z)) ==> P(x) ==> Q(x)
 ;;;
-CPU time (user): 0.112
+CPU time (user): 0.023528
 val p19 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4410,7 +4697,7 @@ Searching with depth limit 4
 (forall x y. exists z. forall w. P(x) /\ Q(y) ==> R(z) /\ U(w)) ==>
 (exists x y. P(x) /\ Q(y)) ==> (exists z. R(z))
 ;;;
-CPU time (user): 0.092
+CPU time (user): 0.018064
 val p20 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4420,7 +4707,7 @@ Searching with depth limit 2
 (exists x. P ==> Q(x)) /\ (exists x. Q(x) ==> P) ==>
 (exists x. P <=> Q(x))
 ;;;
-CPU time (user): 0.044
+CPU time (user): 0.007805
 val p21 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4428,14 +4715,14 @@ Searching with depth limit 2
 :::
 |- (forall x. P <=> Q(x)) ==> (P <=> (forall x. Q(x)))
 ;;;
-CPU time (user): 0.016
+CPU time (user): 0.003072
 val p22 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
 :::
 |- (forall x. P \/ Q(x)) <=> P \/ (forall x. Q(x))
 ;;;
-CPU time (user): 0.024
+CPU time (user): 0.004319
 val p23 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4451,7 +4738,7 @@ Searching with depth limit 6
 ~(exists x. P(x) ==> (exists x. Q(x))) /\
 (forall x. Q(x) /\ R(x) ==> U(x)) ==> (exists x. P(x) /\ R(x))
 ;;;
-CPU time (user): 0.108
+CPU time (user): 0.019996
 val p24 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4464,7 +4751,7 @@ Searching with depth limit 2
 ((forall x. P(x) ==> Q(x)) \/ (exists x. Q(x) /\ P(x))) ==>
 (exists x. Q(x) /\ P(x))
 ;;;
-CPU time (user): 0.028
+CPU time (user): 0.004839
 val p25 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4478,7 +4765,7 @@ Searching with depth limit 5
 (forall x y. P(x) /\ Q(y) ==> (R(x) <=> U(y))) ==>
 ((forall x. P(x) ==> R(x)) <=> (forall x. Q(x) ==> U(x)))
 ;;;
-CPU time (user): 0.636
+CPU time (user): 0.11588
 val p26 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4491,7 +4778,7 @@ Searching with depth limit 3
 (forall x. U(x) /\ V(x) ==> P(x)) /\ (exists x. R(x) /\ ~Q(x)) ==>
 (forall x. V(x) ==> ~R(x)) ==> (forall x. U(x) ==> ~V(x))
 ;;;
-CPU time (user): 0.22
+CPU time (user): 0.041177
 val p27 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4504,7 +4791,7 @@ Searching with depth limit 3
 ((exists x. R(x)) ==> (forall x. L(x) ==> M(x))) ==>
 (forall x. P(x) /\ L(x) ==> M(x))
 ;;;
-CPU time (user): 0.164
+CPU time (user): 0.031259
 val p28 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4517,7 +4804,7 @@ Searching with depth limit 4
 ((forall x. P(x) ==> H(x)) /\ (forall x. G(x) ==> J(x)) <=>
  (forall x y. P(x) /\ G(y) ==> H(x) /\ J(y)))
 ;;;
-CPU time (user): 0.256
+CPU time (user): 0.042443
 val p29 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4527,7 +4814,7 @@ Searching with depth limit 2
 (forall x. P(x) \/ G(x) ==> ~H(x)) /\
 (forall x. (G(x) ==> ~U(x)) ==> P(x) /\ H(x)) ==> (forall x. U(x))
 ;;;
-CPU time (user): 0.024
+CPU time (user): 0.004083
 val p30 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4539,7 +4826,7 @@ Searching with depth limit 3
 (exists x. Q(x) /\ P(x)) /\ (forall x. ~H(x) ==> J(x)) ==>
 (exists x. Q(x) /\ J(x))
 ;;;
-CPU time (user): 0.044
+CPU time (user): 0.006611
 val p31 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4551,7 +4838,7 @@ Searching with depth limit 3
 (forall x. Q(x) /\ H(x) ==> J(x)) /\ (forall x. R(x) ==> H(x)) ==>
 (forall x. P(x) /\ R(x) ==> J(x))
 ;;;
-CPU time (user): 0.144
+CPU time (user): 0.027088
 val p32 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4560,7 +4847,7 @@ Searching with depth limit 1
 (forall x. P(a) /\ (P(x) ==> P(b)) ==> P(c)) <=>
 (forall x. P(a) ==> P(x) \/ P(c)) /\ (P(a) ==> P(b) ==> P(c))
 ;;;
-CPU time (user): 0.524
+CPU time (user): 0.107628
 val p33 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4568,7 +4855,7 @@ Searching with depth limit 2
 :::
 |- exists x y. P(x,y) ==> (forall x y. P(x,y))
 ;;;
-CPU time (user): 0.012
+CPU time (user): 0.003015
 val p35 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4585,7 +4872,7 @@ Searching with depth limit 6
    P(x,y) \/ G(x,y) ==> (forall z. P(y,z) \/ G(y,z) ==> H(x,z))) ==>
 (forall x. exists y. H(x,y))
 ;;;
-CPU time (user): 0.072
+CPU time (user): 0.014479
 val p36 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4606,7 +4893,7 @@ Searching with depth limit 6
 ((exists x y. Q(x,y)) ==> (forall x. R(x,x))) ==>
 (forall x. exists y. R(x,y))
 ;;;
-CPU time (user): 0.584
+CPU time (user): 0.12957
 val p37 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4624,14 +4911,14 @@ Searching with depth limit 4
     ~(exists y. P(y) /\ R(x,y)) \/
     (exists z w. P(z) /\ R(x,w) /\ R(w,z))))
 ;;;
-CPU time (user): 4.656
+CPU time (user): 0.812398
 val p38 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
 :::
 |- ~(exists x. forall y. P(y,x) <=> ~P(y,y))
 ;;;
-CPU time (user): 0.044
+CPU time (user): 0.003309
 val p39 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4642,7 +4929,7 @@ Searching with depth limit 3
 (exists y. forall x. P(x,y) <=> P(x,x)) ==>
 ~(forall x. exists y. forall z. P(z,y) <=> ~P(z,x))
 ;;;
-CPU time (user): 0.108
+CPU time (user): 0.014955
 val p40 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4653,7 +4940,7 @@ Searching with depth limit 3
 (forall z. exists y. forall x. P(x,y) <=> P(x,z) /\ ~P(x,x)) ==>
 ~(exists z. forall x. P(x,z))
 ;;;
-CPU time (user): 0.06
+CPU time (user): 0.01087
 val p41 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4663,7 +4950,7 @@ Searching with depth limit 4
 :::
 |- ~(exists y. forall x. P(x,y) <=> ~(exists z. P(x,z) /\ P(z,x)))
 ;;;
-CPU time (user): 0.244
+CPU time (user): 0.0359
 val p42 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4676,7 +4963,7 @@ Searching with depth limit 3
 (exists x. J(x) /\ (forall y. G(y) ==> H(x,y))) ==>
 (exists x. J(x) /\ ~P(x))
 ;;;
-CPU time (user): 0.148
+CPU time (user): 0.017509
 val p44 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4703,7 +4990,7 @@ lives(charles) /\
 killed(agatha,agatha) /\
 ~killed(butler,agatha) /\ ~killed(charles,agatha)
 ;;;
-CPU time (user): 30.048
+CPU time (user): 4.278226
 val p55 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4715,7 +5002,7 @@ P(f(a,b),f(b,c)) /\
 P(f(b,c),f(a,c)) /\ (forall x y z. P(x,y) /\ P(y,z) ==> P(x,z)) ==>
 P(f(a,b),f(a,c))
 ;;;
-CPU time (user): 0.14
+CPU time (user): 0.029573
 val p57 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4728,7 +5015,7 @@ forall P Q R x.
   exists v w.
     forall y z. P(x) /\ Q(y) ==> (P(v) \/ R(w)) /\ (R(z) ==> Q(v))
 ;;;
-CPU time (user): 0.328
+CPU time (user): 0.072059
 val p58 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4737,7 +5024,7 @@ Searching with depth limit 3
 :::
 |- (forall x. P(x) <=> ~P(f(x))) ==> (exists x. P(x) /\ ~P(f(x)))
 ;;;
-CPU time (user): 0.024
+CPU time (user): 0.005048
 val p59 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4746,7 +5033,7 @@ Searching with depth limit 1
 forall x.
   P(x,f(x)) <=> (exists y. (forall z. P(z,y) ==> P(z,f(x))) /\ P(x,y))
 ;;;
-CPU time (user): 0.068
+CPU time (user): 0.013342
 val p60 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4759,7 +5046,7 @@ exists x.
     ((F(y,z) ==> G(y) ==> H(x)) ==> F(x,x)) /\
     ((F(z,x) ==> G(x)) ==> H(z)) /\ F(x,y) ==> F(z,z)
 ;;;
-CPU time (user): 2.784
+CPU time (user): 0.511274
 val gilmore_3 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4776,7 +5063,7 @@ exists x y.
     (F(x,y) ==> F(y,z) /\ F(z,z)) /\
     (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
 ;;;
-CPU time (user): 8.928
+CPU time (user): 1.742367
 val gilmore_4 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4788,7 +5075,7 @@ Searching with depth limit 4
 (forall x. exists y. F(x,y) \/ F(y,x)) /\
 (forall x y. F(y,x) ==> F(y,y)) ==> (exists z. F(z,z))
 ;;;
-CPU time (user): 0.028
+CPU time (user): 0.008706
 val gilmore_5 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4802,7 +5089,7 @@ forall x.
     (exists u. forall v. F(u,y) ==> G(v,u) /\ G(u,y)) \/
     (forall u v. exists w. G(v,u) \/ H(w,y,u) ==> G(u,w))
 ;;;
-CPU time (user): 0.144
+CPU time (user): 0.031145
 val gilmore_6 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4815,7 +5102,7 @@ Searching with depth limit 4
 (exists z. K(z) /\ (forall u. L(u) ==> F(z,u))) ==>
 (exists v w. K(v) /\ L(w) /\ G(v,w))
 ;;;
-CPU time (user): 0.068
+CPU time (user): 0.01585
 val gilmore_7 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4833,7 +5120,7 @@ exists x.
     ((F(z,x) ==> G(x)) ==> (forall u. exists v. H(u,v,z))) /\ F(x,y) ==>
     F(z,z)
 ;;;
-CPU time (user): 11.364
+CPU time (user): 2.168344
 val gilmore_8 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4855,7 +5142,7 @@ forall x.
        (forall u. exists v. F(y,u,v) /\ G(y,u) /\ ~H(y,x)) /\
        (forall u. exists v. F(z,u,v) /\ G(y,u) /\ ~H(z,y)))
 ;;;
-CPU time (user): 13.828
+CPU time (user): 2.613637
 val gilmore_9 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4872,7 +5159,7 @@ exists x y.
     (F(x,y) ==> F(y,z) /\ F(z,z)) /\
     (F(x,y) /\ G(x,y) ==> G(x,z) /\ G(z,z))
 ;;;
-CPU time (user): 9.136
+CPU time (user): 1.757037
 val davis_putnam_example : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4888,7 +5175,7 @@ Searching with depth limit 6
 (forall x y. f(x) <= y <=> x <= g(y)) ==>
 (forall x y. x <= y ==> f(x) <= f(y))
 ;;;
-CPU time (user): 0.212
+CPU time (user): 0.046187
 val ewd1062_1 : thm = <abstr>
 Searching with depth limit 0
 Searching with depth limit 1
@@ -4904,9 +5191,9 @@ Searching with depth limit 6
 (forall x y. f(x) <= y <=> x <= g(y)) ==>
 (forall x y. x <= y ==> g(x) <= g(y))
 ;;;
-CPU time (user): 0.28
+CPU time (user): 0.05804
 val ewd1062_2 : thm = <abstr>
-Complete CPU time (user): 86.504- : unit = ()
+Complete CPU time (user): 14.969227- : unit = ()
 
 - : unit = ()
 - : dummy_interactive = END_INTERACTIVE
@@ -4927,7 +5214,7 @@ true
 ;;;
 - : unit = ()
 val i : (string, term) func =
-  Leaf (121, [("y", Fn ("f", [Var "x"; Var "x"; Var "x"]))])
+  Leaf (469249333, [("y", Fn ("f", [Var "x"; Var "x"; Var "x"]))])
 :::
 false
 
@@ -5159,16 +5446,16 @@ Searching with depth limit 1
 (forall x. p(x) ==> p(f(x))) ==> (exists y. p(f(f(f(f(y))))))
 ;;;
 - : thm = <abstr>
-File "full_test.ml", line 586, characters 17-46:
-Warning Y: unused variable gl.
-File "full_test.ml", line 588, characters 8-99:
-Warning P: this pattern-matching is not exhaustive.
+File "full_test.ml", line 569, characters 8-99:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 []
-File "full_test.ml", line 586, characters 4-9:
-Warning P: this pattern-matching is not exhaustive.
+File "full_test.ml", line 567, characters 16-188:
+Warning 8: this pattern-matching is not exhaustive.
 Here is an example of a value that is not matched:
 Goals ([], _)
+File "full_test.ml", line 567, characters 17-46:
+Warning 26: unused variable gl.
 Searching with depth limit 0
 Searching with depth limit 1
 Searching with depth limit 2

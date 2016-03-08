@@ -11,15 +11,15 @@
 (* ------------------------------------------------------------------------- *)
 
 fun str_ord s1 s2 = 
-	case String.compare(s1,s2) of
-	  EQUAL => 0	| GREATER => 1	| LESS  => ~1;;
-	  
+    case String.compare(s1,s2) of
+      EQUAL => 0    | GREATER => 1    | LESS  => ~1;;
+      
 fun sip_ord (f1,a1) (f2,a2) =
-	case str_ord f1 f2 of
-	  0 => if a1>a2 then 1 else ~1
-	| n => n
+    case str_ord f1 f2 of
+      0 => if a1>a2 then 1 else ~1
+    | n => n
 ;;
-	  
+      
 infix 6 lxor 
 infix 6 land 
 
@@ -33,9 +33,9 @@ fun list_hash elem_hash l= (* Inspired by the list hash of Java*)
         case l of
          [] => sval
         | e::l' => 
-		  let val e_hash = Word.fromInt (elem_hash e) in
-		  hash_code (Word.+(Word.*(sval,0wx31),(e_hash))) l'
-		  end
+          let val e_hash = Word.fromInt (elem_hash e) in
+          hash_code (Word.+(Word.*(sval,0wx31),(e_hash))) l'
+          end
   in
   Word.toIntX(hash_code 0wx0 l)
   end
@@ -79,7 +79,7 @@ fun check p x = if p(x) then x else raise Fail "check";;
 fun funpow n f x =
     if n < 1 then x
     else funpow (n - 1) f (f x);;
-	
+    
 fun can f x = (f x; true) handle Fail _ => false;;
 
 fun repeat f x = repeat f (f x) handle Fail _ => x;;
@@ -174,7 +174,7 @@ fun unzip l =
     [] => ([],[])
   | (x,y)::t =>
       let val (xs,ys) = unzip t in (x::xs,y::ys) end;;
-	  
+      
 (* ------------------------------------------------------------------------- *)
 (* Whether the first of two items comes earlier in the list.                 *)
 (* ------------------------------------------------------------------------- *)
@@ -240,11 +240,11 @@ fun decreasing f x y = (f x) > (f y) ;;
 fun uniq l =
     case l of
       x :: (t as y :: ys ) => 
-		let val t' = uniq t in
-			if x = y then t' 
-			else
-				x :: t'
-		end
+        let val t' = uniq t in
+            if x = y then t' 
+            else
+                x :: t'
+        end
     | _ => l;;
 
 (* TODO: repetitions *)
@@ -253,7 +253,7 @@ fun tryfind f l =
   case l of
       [] => raise Fail "tryfind"
     | (h::t) => 
-	  ((f h) handle Fail _ => tryfind f t);;
+      ((f h) handle Fail _ => tryfind f t);;
 
 (* TODO: mapfilter *)
 
@@ -276,7 +276,7 @@ fun setify ord l=
   if canonical l then l
   else uniq (sort (fn x => fn y => ord x y <= 0) l)
   end;;
-	 
+     
 fun union ord s1 s2=
   let fun union l1 l2 =
     case (l1,l2) of
@@ -338,7 +338,7 @@ fun mem x lis =
       [] => false
     | hd :: tl => hd = x orelse mem x tl;;
 
-	
+    
 (* ------------------------------------------------------------------------- *)
 (* Finding all subsets or all subsets of a given size.                       *)
 (* ------------------------------------------------------------------------- *)
@@ -358,13 +358,13 @@ fun mem x lis =
 (* ------------------------------------------------------------------------- *)
   
 fun time f x = 
-	let val timer = Timer.startRealTimer()
-	    val result = f x
-		val time = Timer.checkRealTimer timer
+    let val timer = Timer.startRealTimer()
+        val result = f x
+        val time = Timer.checkRealTimer timer
     in (
-	print_string ("CPU time (user): " ^ (Real.toString (Time.toReal time)));
-	print_newline();
-	result
+    print_string ("CPU time (user): " ^ (Real.toString (Time.toReal time)));
+    print_newline();
+    result
     ) end;;
 
 (* ------------------------------------------------------------------------- *)
@@ -433,8 +433,8 @@ end;;
 fun applyd ord hash f d x=
   let fun apply_listd l d x =
         case l of
-	      (a,b)::t => if x = a then b else if ord x a > 0 then apply_listd t d x else d x
-	    | [] => d x
+          (a,b)::t => if x = a then b else if ord x a > 0 then apply_listd t d x else d x
+        | [] => d x
       val k = hash x 
       fun look t =
         case t of
@@ -475,15 +475,15 @@ local
     case l of
       (ab as (a,b))::t =>
           let val c = ord x a in
-	      if c = 0 then 
-		    t
-		  else if c < 0 then 
-		    l
-		  else
-		    let val t' = undefine_list ord x t in
+          if c = 0 then 
+            t
+          else if c < 0 then 
+            l
+          else
+            let val t' = undefine_list ord x t in
             ab::t' (* Like the F# version, = is used instead of the shallow comparison (== in ocaml) *)
-			end
-		  end
+            end
+          end
     | [] => []
 in
   fun undefine ord hash x =
@@ -491,30 +491,30 @@ in
         fun und t =
           case t of
             Leaf(h,l) =>
-			  if h=k then (
+              if h=k then (
                 let val l' = undefine_list ord x l in
                 if l' = l then t (* Like the F# version, = is used instead of the shallow comparison (== in ocaml) *)
                 else if l' = [] then Empty
                 else Leaf(h,l')
-				end
-			  ) else t
+                end
+              ) else t
           | Branch(p,b,l,r) =>
-		      if k land (b - 1) = p then (
+              if k land (b - 1) = p then (
                 if k land b = 0 then
                   let val l' = und l in
                   if l' = l then t (* Like the F# version, = is used instead of the shallow comparison (== in ocaml) *)
                   else (case l' of Empty => r | _ => Branch(p,b,l',r))
-				  end
+                  end
                 else
                   let val r' = und r in
                   if r' = r then t (* Like the F# version, = is used instead of the shallow comparison (== in ocaml) *)
                   else (case r' of Empty => l | _ => Branch(p,b,l,r'))
-				  end
-			  ) else t
+                  end
+              ) else t
           | _ => t 
-	in
+    in
     und
-	end
+    end
 end;;
 
 fun undefine_str x t = undefine str_ord str_hash x t
@@ -532,7 +532,7 @@ local
             val p = p1 land (b - 1) in
         if p1 land b = 0 then Branch(p,b,t1,t2)
         else Branch(p,b,t2,t1)
-		end 
+        end 
   fun define_list ord (xy as (x,y)) l =
         case l of
           (ab as (a,b))::t =>
@@ -540,7 +540,7 @@ local
               if c = 0 then xy::t
               else if c < 0 then xy::l
               else ab::(define_list ord xy t)
-			  end
+              end
         | [] => [xy]
   fun combine_list ord op' z l1 l2 =
         case (l1,l2) of
@@ -549,15 +549,15 @@ local
         | ((xy1 as (x1,y1))::t1,(xy2 as (x2,y2))::t2) =>
               let val c = ord x1 x2 in
               if c < 0 then 
-				xy1::(combine_list ord op' z t1 l2)
+                xy1::(combine_list ord op' z t1 l2)
               else if c > 0 then 
-				xy2::(combine_list ord op' z l1 t2) 
-			  else
-				let val y = op' y1 y2 
-				    val l = combine_list ord op' z t1 t2 in
-				if z(y) then l else (x1,y)::l
-				end
-			  end
+                xy2::(combine_list ord op' z l1 t2) 
+              else
+                let val y = op' y1 y2 
+                    val l = combine_list ord op' z t1 t2 in
+                if z(y) then l else (x1,y)::l
+                end
+              end
   in
   fun (x |-> y) t ord hash =
         let val k = hash x 
@@ -572,7 +572,7 @@ local
                   else if k land b = 0 then Branch(p,b,upd l,r)
                   else Branch(p,b,l,upd r) in
         upd t
-		end
+        end
   fun combine ord op' z t1 t2 =
         case (t1,t2) of
           (Empty,_) => t2
@@ -581,7 +581,7 @@ local
               if h1 = h2 then
                 let val l = combine_list ord op' z l1 l2 in
                 if l = [] then Empty else Leaf(h1,l)
-				end
+                end
               else newbranch h1 t1 h2 t2
         | ((lf as Leaf(k,lis)),(br as Branch(p,b,l,r))) =>
               if k land (b - 1) = p then
