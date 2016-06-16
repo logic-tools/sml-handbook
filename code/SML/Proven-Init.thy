@@ -1,4 +1,4 @@
-theory Init
+theory "Proven-Init"
 imports Main
 begin
 
@@ -20,7 +20,8 @@ SML_file "resolution.sml"
 SML_file "equal.sml"
 SML_file "order.sml"
 SML_file "eqelim.sml"
-SML_file "lcf.sml"
+SML_file "Proven-lcf.sml"
+SML_file "Proven-init.sml"
 SML_file "lcfprop.sml"
 SML_file "folderived.sml"
 SML_file "lcffol.sml"
