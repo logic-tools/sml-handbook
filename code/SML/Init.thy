@@ -3,7 +3,7 @@ imports Main
 begin
 
 SML_import {* val load = (fn _ => ()) *}
-SML_import {* val use = (fn _ => ()) *} 
+SML_import {* val use = (fn _ => ()) *}
 
 SML_file "init.sml"
 SML_file "format.sml"
@@ -26,16 +26,16 @@ SML_file "folderived.sml"
 SML_file "lcffol.sml"
 SML_file "tactics.sml"
 
-SML_export {* 
-  val res =
-    let val p = Atom(R("p",[])) 
+SML_export {*
+  val ex =
+    let val p = Atom(R("p",[]))
         val q = Atom(R("q",[]))
-    in 
-      lcftaut (Or(Imp(p,q),Imp(q,p))) 
-    end 
+    in
+      concl (lcftaut (Or(Imp(p,q),Imp(q,p))))
+    end
 *}
 
-ML {* res *}
+ML {* ex *}
 
 SML_file "verbose_functions.sml"
 SML_file "full_test.sml"
