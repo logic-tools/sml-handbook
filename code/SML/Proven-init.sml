@@ -2,7 +2,8 @@
 (* Initialize theorem proving example code.                                  *)
 (*                                                                           *)
 (* Copyright (c) 2003-2007, John Harrison.                                   *)
-(* Copyright (c) 2015, Anders Schlichtkrull and Jørgen Villadsen             *)
+(* Copyright (c) 2015-2016, Anders Schlichtkrull and Jørgen Villadsen        *)
+(* Copyright (c) 2016, Alexander Birch Jensen                                *)
 (* All rights reserved. (See "LICENSE.txt" for details.)                     *)
 (* ========================================================================= *)
 
