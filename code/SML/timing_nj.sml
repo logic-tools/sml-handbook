@@ -1,2 +1,2 @@
-fun load s = ();;
-use "timing.sml";;
+fun load s = ();
+use "timing.sml";

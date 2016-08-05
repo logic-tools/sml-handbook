@@ -10,7 +10,7 @@ fun deepen f n =
   (print_string "Searching with depth limit ";
       print_int n; print_newline(); f n
   )
-  handle Fail _ => deepen f (n + 1);;
-  
-  
+  handle Fail _ => deepen f (n + 1);
+
+
 (* TODO: All other functions *)

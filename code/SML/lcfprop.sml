@@ -13,7 +13,7 @@
 fun imp_refl p =
   modusponens (modusponens (axiom_distribimp p (Imp(p,p)) p)
                            (axiom_addimp p (Imp(p,p))))
-              (axiom_addimp p p);;
+              (axiom_addimp p p);
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p ==> p ==> q                                          *)
@@ -22,10 +22,10 @@ fun imp_refl p =
 (* ------------------------------------------------------------------------- *)
 
 fun imp_unduplicate th =
-  let val (p,pq) = dest_imp(concl th) 
+  let val (p,pq) = dest_imp(concl th)
       val q = consequent pq in
   modusponens (modusponens (axiom_distribimp p p q) th) (imp_refl p)
-  end ;;
+  end ;
 
 (* ------------------------------------------------------------------------- *)
 (* Some handy syntax operations.                                             *)
@@ -34,12 +34,12 @@ fun imp_unduplicate th =
 fun negatef fm =
   case fm of
     Imp(p,False) => p
-  | p => Imp(p,False);;
+  | p => Imp(p,False);
 
-fun negativef fm = 
+fun negativef fm =
   case fm of
-    Imp(p,False) => true 
-  | _ => false;;
+    Imp(p,False) => true
+  | _ => false;
 
 (* ------------------------------------------------------------------------- *)
 (*                           |- q                                            *)
@@ -47,7 +47,7 @@ fun negativef fm =
 (*                         |- p ==> q                                        *)
 (* ------------------------------------------------------------------------- *)
 
-fun add_assum p th = modusponens (axiom_addimp (concl th) p) th;;
+fun add_assum p th = modusponens (axiom_addimp (concl th) p) th;
 
 (* ------------------------------------------------------------------------- *)
 (*                   |- q ==> r                                              *)
@@ -58,7 +58,7 @@ fun add_assum p th = modusponens (axiom_addimp (concl th) p) th;;
 fun imp_add_assum p th =
   let val (q,r) = dest_imp(concl th) in
   modusponens (axiom_distribimp p q r) (add_assum p th)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*            |- p ==> q              |- q ==> r                             *)
@@ -69,7 +69,7 @@ fun imp_add_assum p th =
 fun imp_trans th1 th2 =
   let val p = antecedent(concl th1) in
   modusponens (imp_add_assum p th2) th1
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p ==> r                                                *)
@@ -80,7 +80,7 @@ fun imp_trans th1 th2 =
 fun imp_insert q th =
   let val (p,r) = dest_imp(concl th) in
   imp_trans th (axiom_addimp r q)
-  end ;;
+  end ;
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p ==> q ==> r                                          *)
@@ -93,7 +93,7 @@ fun imp_swap th =
       val (q,r) = dest_imp qr in
   imp_trans (axiom_addimp q p)
             (modusponens (axiom_distribimp p q r) th)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- (q ==> r) ==> (p ==> q) ==> (p ==> r)                                  *)
@@ -101,7 +101,7 @@ fun imp_swap th =
 
 fun imp_trans_th p q r =
    imp_trans (axiom_addimp (Imp(q,r)) p)
-             (axiom_distribimp p q r);;
+             (axiom_distribimp p q r);
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p ==> q                                                *)
@@ -112,7 +112,7 @@ fun imp_trans_th p q r =
 fun imp_add_concl r th =
   let val (p,q) = dest_imp(concl th) in
   modusponens (imp_swap(imp_trans_th p q r)) th
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- (p ==> q ==> r) ==> (q ==> p ==> r)                                    *)
@@ -120,7 +120,7 @@ fun imp_add_concl r th =
 
 fun imp_swap_th p q r =
   imp_trans (axiom_distribimp p q r)
-            (imp_add_concl (Imp(p,r)) (axiom_addimp q p));;
+            (imp_add_concl (Imp(p,r)) (axiom_addimp q p));
 
 (* ------------------------------------------------------------------------- *)
 (*  |- (p ==> q ==> r) ==> (s ==> t ==> u)                                   *)
@@ -132,14 +132,14 @@ fun imp_swap2 th =
   case concl th of
     Imp(Imp(p,Imp(q,r)),Imp(s,Imp(t,u))) =>
         imp_trans (imp_swap_th q p r) (imp_trans th (imp_swap_th s t u))
-  | _ => raise Fail "imp_swap2";;
+  | _ => raise Fail "imp_swap2";
 
 (* ------------------------------------------------------------------------- *)
 (* If |- p ==> q ==> r and |- p ==> q then |- p ==> r.                       *)
 (* ------------------------------------------------------------------------- *)
 
 fun right_mp ith th =
-  imp_unduplicate(imp_trans th (imp_swap ith));;
+  imp_unduplicate(imp_trans th (imp_swap ith));
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p <=> q                                                *)
@@ -150,7 +150,7 @@ fun right_mp ith th =
 fun iff_imp1 th =
   let val (p,q) = dest_iff(concl th) in
   modusponens (axiom_iffimp1 p q) th
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*                 |- p <=> q                                                *)
@@ -161,7 +161,7 @@ fun iff_imp1 th =
 fun iff_imp2 th =
   let val (p,q) = dest_iff(concl th) in
   modusponens (axiom_iffimp2 p q) th
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*         |- p ==> q      |- q ==> p                                        *)
@@ -172,7 +172,7 @@ fun iff_imp2 th =
 fun imp_antisym th1 th2 =
   let val (p,q) = dest_imp(concl th1) in
   modusponens (modusponens (axiom_impiff p q) th1) th2
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*         |- p ==> (q ==> false) ==> false                                  *)
@@ -183,7 +183,7 @@ fun imp_antisym th1 th2 =
 fun right_doubleneg th =
   case concl th of
     Imp(_,Imp(Imp(p,False),False)) => imp_trans th (axiom_doubleneg p)
-  | _ => raise Fail "right_doubleneg";;
+  | _ => raise Fail "right_doubleneg";
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -191,7 +191,7 @@ fun right_doubleneg th =
 (*                 |- false ==> p                                            *)
 (* ------------------------------------------------------------------------- *)
 
-fun ex_falso p = right_doubleneg(axiom_addimp False (Imp(p,False)));;
+fun ex_falso p = right_doubleneg(axiom_addimp False (Imp(p,False)));
 
 (* ------------------------------------------------------------------------- *)
 (*  |- p ==> q ==> r        |- r ==> s                                       *)
@@ -200,27 +200,27 @@ fun ex_falso p = right_doubleneg(axiom_addimp False (Imp(p,False)));;
 (* ------------------------------------------------------------------------- *)
 
 fun imp_trans2 th1 th2 =
-  let val Imp(p,Imp(q,r)) = concl th1 
-      val Imp(r',s) = concl th2 
+  let val Imp(p,Imp(q,r)) = concl th1
+      val Imp(r',s) = concl th2
       val th = imp_add_assum p (modusponens (imp_trans_th q r s) th2) in
   modusponens th th1
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*         |- p ==> q1   ...   |- p ==> qn   |- q1 ==> ... ==> qn ==> r      *)
 (*        --------------------------------------------------------------     *)
 (*                             |- p ==> r                                    *)
 (* ------------------------------------------------------------------------- *)
-  
+
 fun imp_trans_chain ths th =
-  itlist (fn a => fn b => imp_unduplicate (imp_trans a (imp_swap b))) (List.rev(List.tl ths)) (imp_trans (List.hd ths) th);;
+  itlist (fn a => fn b => imp_unduplicate (imp_trans a (imp_swap b))) (List.rev(List.tl ths)) (imp_trans (List.hd ths) th);
 
 (* ------------------------------------------------------------------------- *)
 (* |- (q ==> false) ==> p ==> (p ==> q) ==> false                            *)
 (* ------------------------------------------------------------------------- *)
 
 fun imp_truefalse p q =
-  imp_trans (imp_trans_th p q False) (imp_swap_th (Imp(p,q)) p False);;
+  imp_trans (imp_trans_th p q False) (imp_swap_th (Imp(p,q)) p False);
 
 (* ------------------------------------------------------------------------- *)
 (*  |- (p' ==> p) ==> (q ==> q') ==> (p ==> q) ==> (p' ==> q')               *)
@@ -231,13 +231,13 @@ fun imp_mono_th p p' q q' =
       val th2 = imp_trans_th p' q q'
       val th3 = imp_swap(imp_trans_th p' p q) in
   imp_trans th3 (imp_swap(imp_trans th2 th1))
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- true                                                                   *)
 (* ------------------------------------------------------------------------- *)
 
-val truth = modusponens (iff_imp2 axiom_true) (imp_refl False);;
+val truth = modusponens (iff_imp2 axiom_true) (imp_refl False);
 
 (* ------------------------------------------------------------------------- *)
 (*         |- p ==> q                                                        *)
@@ -249,17 +249,17 @@ fun contrapos th =
   let val (p,q) = dest_imp(concl th) in
   imp_trans (imp_trans (iff_imp1(axiom_not q)) (imp_add_concl False th))
             (iff_imp2(axiom_not p))
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- p /\ q ==> p                                                           *)
 (* ------------------------------------------------------------------------- *)
 
 fun and_left p q =
-  let val th1 = imp_add_assum p (axiom_addimp False q) 
+  let val th1 = imp_add_assum p (axiom_addimp False q)
       val th2 = right_doubleneg(imp_add_concl False th1) in
   imp_trans (iff_imp1(axiom_and p q)) th2
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- p /\ q ==> q                                                           *)
@@ -269,7 +269,7 @@ fun and_right p q =
   let val th1 = axiom_addimp (Imp(q,False)) p
       val th2 = right_doubleneg(imp_add_concl False th1) in
   imp_trans (iff_imp1(axiom_and p q)) th2
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- p1 /\ ... /\ pn ==> pi for each 1 <= i <= n (input term right assoc)   *)
@@ -278,7 +278,7 @@ fun and_right p q =
 fun conjths fm =
   let val (p,q) = dest_and fm in
       (and_left p q)::List.map (imp_trans (and_right p q)) (conjths q)
-  end handle Fail _ => [imp_refl fm];;
+  end handle Fail _ => [imp_refl fm];
 
 (* ------------------------------------------------------------------------- *)
 (* |- p ==> q ==> p /\ q                                                     *)
@@ -289,7 +289,7 @@ fun and_pair p q =
       val th2 = imp_swap_th (Imp(p,Imp(q,False))) q False
       val th3 = imp_add_assum p (imp_trans2 th2 th1) in
   modusponens th3 (imp_swap (imp_refl (Imp(p,Imp(q,False)))))
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* If |- p /\ q ==> r then |- p ==> q ==> r                                  *)
@@ -298,7 +298,7 @@ fun and_pair p q =
 fun shunt th =
   let val (p,q) = dest_and(antecedent(concl th)) in
   modusponens (itlist imp_add_assum [p,q] th) (and_pair p q)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* If |- p ==> q ==> r then |- p /\ q ==> r                                  *)
@@ -308,24 +308,24 @@ fun unshunt th =
   let val (p,qr) = dest_imp(concl th)
       val (q,r) = dest_imp qr in
   imp_trans_chain [and_left p q, and_right p q] th
-  end;;
-  
+  end;
+
 (* ------------------------------------------------------------------------- *)
 (* Produce |- (p <=> q) <=> (p ==> q) /\ (q ==> p)                           *)
 (* ------------------------------------------------------------------------- *)
 
 
 fun iff_def p q = (* Not in the book *)
-  let val th1 = and_pair (Imp(p,q)) (Imp(q,p)) 
+  let val th1 = and_pair (Imp(p,q)) (Imp(q,p))
       val th2 = imp_trans_chain [axiom_iffimp1 p q, axiom_iffimp2 p q] th1 in
   imp_antisym th2 (unshunt (axiom_impiff p q))
-  end;; 
+  end;
 
 fun iff_def p q =
   let val th = and_pair (Imp(p,q)) (Imp(q,p))
       val thl = [axiom_iffimp1 p q, axiom_iffimp2 p q] in
   imp_antisym (imp_trans_chain thl th) (unshunt (axiom_impiff p q))
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* Produce "expansion" theorem for defined connectives.                      *)
@@ -339,11 +339,11 @@ fun expand_connective fm =
   | Or(p,q) => axiom_or p q
   | Iff(p,q) => iff_def p q
   | Exists(x,p) => axiom_exists x p
-  | _ => raise Fail "expand_connective";;
+  | _ => raise Fail "expand_connective";
 
 fun eliminate_connective fm =
   if not(negativef fm) then iff_imp1(expand_connective fm)
-  else imp_add_concl False (iff_imp2(expand_connective(negatef fm)));;
+  else imp_add_concl False (iff_imp2(expand_connective(negatef fm)));
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -354,7 +354,7 @@ fun eliminate_connective fm =
 
 fun imp_false_conseqs p q =
  [right_doubleneg(imp_add_concl False (imp_add_assum p (ex_falso q))),
-  imp_add_concl False (imp_insert p (imp_refl q))];;
+  imp_add_concl False (imp_insert p (imp_refl q))];
 
 (* ------------------------------------------------------------------------- *)
 (*         |- p ==> (q ==> false) ==> r                                      *)
@@ -365,7 +365,7 @@ fun imp_false_conseqs p q =
 fun imp_false_rule th =
   let val (p,r) = dest_imp (concl th) in
   imp_trans_chain (imp_false_conseqs p (funpow 2 antecedent r)) th
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*         |- (p ==> false) ==> r          |- q ==> r                        *)
@@ -377,12 +377,12 @@ fun imp_true_rule th1 th2 =
   let val p = funpow 2 antecedent (concl th1)
       val q = antecedent(concl th2)
       val th3 = right_doubleneg(imp_add_concl False th1)
-      val th4 = imp_add_concl False th2 
-      val th5 = imp_swap(imp_truefalse p q) 
+      val th4 = imp_add_concl False th2
+      val th5 = imp_swap(imp_truefalse p q)
       val th6 = imp_add_concl False (imp_trans_chain [th3, th4] th5)
       val th7 = imp_swap(imp_refl(Imp(Imp(p,q),False))) in
   right_doubleneg(imp_trans th7 th6)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*                                 *                                         *)
@@ -392,7 +392,7 @@ fun imp_true_rule th1 th2 =
 
 fun imp_contr p q =
   if negativef p then imp_add_assum (negatef p) (ex_falso q)
-  else imp_swap (imp_add_assum p (ex_falso q));;
+  else imp_swap (imp_add_assum p (ex_falso q));
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -403,11 +403,11 @@ fun imp_contr p q =
 
 fun imp_front_th n fm =
   if n = 0 then imp_refl fm else
-  let val (p,qr) = dest_imp fm 
+  let val (p,qr) = dest_imp fm
       val th1 = imp_add_assum p (imp_front_th (n - 1) qr)
       val (q',r') = dest_imp(funpow 2 consequent(concl th1)) in
   imp_trans th1 (imp_swap_th p q' r')
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*           |- p0 ==> p1 ==> ... ==> pn ==> q                               *)
@@ -415,35 +415,35 @@ fun imp_front_th n fm =
 (*           |- pn ==> p0 ==> p1 ==> .. p(n-1) ==> q                         *)
 (* ------------------------------------------------------------------------- *)
 
-fun imp_front n th = modusponens (imp_front_th n (concl th)) th;;
+fun imp_front n th = modusponens (imp_front_th n (concl th)) th;
 
 (* ------------------------------------------------------------------------- *)
 (* Propositional tableaux procedure.                                         *)
 (* ------------------------------------------------------------------------- *)
 
-fun is_false False = true 
+fun is_false False = true
   | is_false _ = false;
 
-fun is_true (Imp(p,q)) = (p = q) 
-  | is_true _ = false;;
-  
+fun is_true (Imp(p,q)) = (p = q)
+  | is_true _ = false;
+
 fun is_conj (Imp(Imp(p,q),False)) = true
   | is_conj _ = false
-  
+
 fun dest_conj fm =
     case fm of
       (Imp(Imp(p,q),False)) => (p,q)
     | _ => raise Fail "dest_conj"
-  
+
 fun is_disj (Imp(p,q)) = (q <> False)
   | is_disj _ = false
-  
-fun dest_disj fm = dest_imp fm;;
 
-fun is_prop_lit p = 
+fun dest_disj fm = dest_imp fm;
+
+fun is_prop_lit p =
   case p of
      Atom(_) => true | Forall(_,_) => true | Imp(Atom(_),False) => true | Imp(Forall(_),False) => true
-   | _ => false ;;
+   | _ => false ;
 
 fun lcfptab fms lits =
     case fms of
@@ -473,7 +473,7 @@ fun lcfptab fms lits =
            imp_trans th (lcfptab (consequent(concl th)::fl) lits)
            end
         )
-;;
+;
 
 
 (* ------------------------------------------------------------------------- *)
@@ -481,16 +481,16 @@ fun lcfptab fms lits =
 (* ------------------------------------------------------------------------- *)
 
 fun lcftaut p =
-  modusponens (axiom_doubleneg p) (lcfptab [negatef p] []);;
+  modusponens (axiom_doubleneg p) (lcfptab [negatef p] []);
 
 (* ------------------------------------------------------------------------- *)
 (* The examples in the text.                                                 *)
 (* ------------------------------------------------------------------------- *)
 
-START_INTERACTIVE;;
-lcftaut (<<"(p ==> q) \\/ (q ==> p)">>);;
+START_INTERACTIVE;
+lcftaut (<<"(p ==> q) \\/ (q ==> p)">>);
 
-lcftaut (<<"p /\\ q <=> ((p <=> q) <=> p \\/ q)">>);;
+lcftaut (<<"p /\\ q <=> ((p <=> q) <=> p \\/ q)">>);
 
-lcftaut (<<"((p <=> q) <=> r) <=> (p <=> (q <=> r))">>);;
-END_INTERACTIVE;;
+lcftaut (<<"((p <=> q) <=> r) <=> (p <=> (q <=> r))">>);
+END_INTERACTIVE;

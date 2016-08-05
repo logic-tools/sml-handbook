@@ -59,20 +59,20 @@ sig
        val axiom_or : fol formula -> fol formula -> thm
        val axiom_exists : string -> fol formula -> thm
        val concl : thm -> fol formula
-end ;;
+end ;
 
 (* ------------------------------------------------------------------------- *)
 (* Auxiliary functions.                                                      *)
 (* ------------------------------------------------------------------------- *)
-  
+
 fun occurs_in s t =
     s = t orelse
     case t of
       Var y => false
-    | Fn(f,args) => List.exists (occurs_in s) args;;
-    
+    | Fn(f,args) => List.exists (occurs_in s) args;
+
 fun free_in t fm =
-    case fm of 
+    case fm of
       False => false
     | True  => false
     | Atom(R(p,args)) => List.exists (occurs_in t) args
@@ -82,19 +82,19 @@ fun free_in t fm =
     | Imp(p,q) => (free_in t p) orelse (free_in t q)
     | Iff(p,q) => (free_in t p) orelse (free_in t q)
     | Forall(y,p) => not(occurs_in (Var y) t) andalso free_in t p
-    | Exists(y,p) => not(occurs_in (Var y) t) andalso free_in t p;;
+    | Exists(y,p) => not(occurs_in (Var y) t) andalso free_in t p;
 
 (* ------------------------------------------------------------------------- *)
 (* Implementation of the abstract data type of theorems.                     *)
 (* ------------------------------------------------------------------------- *)
-    
+
 structure Proven :> PROOFSYSTEM =
 struct
     type thm = fol formula
     fun modusponens pq p =
         case pq of
-          Imp(p',q) => 
-            if p = p' then q 
+          Imp(p',q) =>
+            if p = p' then q
             else raise Fail "modusponens"
         | _ =>   raise Fail "modusponens"
     fun gen x p = Forall(x,p)
@@ -113,7 +113,7 @@ struct
     fun axiom_eqrefl t = mk_eq t t
     fun axiom_funcong f lefts rights =
        itlist2 (fn s => fn t => fn p => Imp(mk_eq s t,p)) lefts rights
-               (mk_eq (Fn(f,lefts)) (Fn(f,rights))) 
+               (mk_eq (Fn(f,lefts)) (Fn(f,rights)))
     fun axiom_predcong p lefts rights =
        itlist2 (fn s => fn t => fn p => Imp(mk_eq s t,p)) lefts rights
                (Imp(Atom(R(p,lefts)),Atom(R(p,rights))))
@@ -126,19 +126,19 @@ struct
     fun axiom_or p q = Iff(Or(p,q),Not(And(Not(p),Not(q))))
     fun axiom_exists x p = Iff(Exists(x,p),Not(Forall(x,Not p)))
     fun concl c = c
-  end;;
-  
+  end;
+
 (* ------------------------------------------------------------------------- *)
 (* A printer for theorems.                                                   *)
 (* ------------------------------------------------------------------------- *)
-  
-open Proven;;
+
+open Proven;
 
 fun print_thm_aux th = (
     open_box 0;
     print_string "|-"; print_space();
     open_box 0; print_formula_aux print_atom_aux (concl th); close_box();
     close_box()
-);;
+);
 
-fun print_thm th = (print_thm_aux th; print_flush ());;
+fun print_thm th = (print_thm_aux th; print_flush ());

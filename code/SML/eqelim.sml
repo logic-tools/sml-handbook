@@ -12,10 +12,10 @@
 (* ------------------------------------------------------------------------- *)
 
 fun replacet rfn tm =
-  apply_t rfn tm 
+  apply_t rfn tm
   handle Fail _ =>
   case tm of
     Fn(f,args) => Fn(f,List.map (replacet rfn) args)
-  | _ => tm;;
+  | _ => tm;
 
 (* TODO: All other functions *)

@@ -1,2 +1,2 @@
-fun load s = ();;
-use "Proven-init.sml";;
+fun load s = ();
+use "Proven-init.sml";

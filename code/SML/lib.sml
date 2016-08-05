@@ -10,47 +10,47 @@
 (* Implementations of functions not available in SML                         *)
 (* ------------------------------------------------------------------------- *)
 
-fun str_ord s1 s2 = 
+fun str_ord s1 s2 =
     case String.compare(s1,s2) of
-      EQUAL => 0    | GREATER => 1    | LESS  => ~1;;
-      
+      EQUAL => 0    | GREATER => 1    | LESS  => ~1;
+
 fun sip_ord (f1,a1) (f2,a2) =
     case str_ord f1 f2 of
       0 => if a1>a2 then 1 else ~1
     | n => n
-;;
-      
-infix 6 lxor 
-infix 6 land 
+;
 
-fun to_int_fun f = fn a => fn b => Word.toIntX (f ((Word.fromInt a),(Word.fromInt b) ) );;
+infix 6 lxor
+infix 6 land
 
-fun a lxor b = to_int_fun Word.xorb a b;;
-fun a land b = to_int_fun Word.andb a b;;
+fun to_int_fun f = fn a => fn b => Word.toIntX (f ((Word.fromInt a),(Word.fromInt b) ) );
+
+fun a lxor b = to_int_fun Word.xorb a b;
+fun a land b = to_int_fun Word.andb a b;
 
 fun list_hash elem_hash l= (* Inspired by the list hash of Java*)
   let fun hash_code sval l =
         case l of
          [] => sval
-        | e::l' => 
+        | e::l' =>
           let val e_hash = Word.fromInt (elem_hash e) in
           hash_code (Word.+(Word.*(sval,0wx31),(e_hash))) l'
           end
   in
   Word.toIntX(hash_code 0wx0 l)
   end
-;;
+;
 
-fun str_hash str = list_hash Char.ord (String.explode str);; (* Inspired by the string hash of Java*)
+fun str_hash str = list_hash Char.ord (String.explode str); (* Inspired by the string hash of Java*)
 
-fun fst (x,_) = x;; (* Implementation of built-in Ocaml function *)
-fun snd (_,y) = y;; (* Implementation of built-in Ocaml function *)
+fun fst (x,_) = x; (* Implementation of built-in Ocaml function *)
+fun snd (_,y) = y; (* Implementation of built-in Ocaml function *)
 
 (* ========================================================================= *)
 (* Misc library functions to set up a nice environment.                      *)
 (* ========================================================================= *)
 
-fun identity x = x;;
+fun identity x = x;
 
 (* NOTE: The ( ** ) operator has been replaced with the equivalent built-in sml operator o. *)
 
@@ -64,13 +64,13 @@ fun identity x = x;;
 (* A useful idiom for "non contradictory" etc.                               *)
 (* ------------------------------------------------------------------------- *)
 
-fun non p x = not(p x);;
+fun non p x = not(p x);
 
 (* ------------------------------------------------------------------------- *)
 (* Kind of assertion checking.                                               *)
 (* ------------------------------------------------------------------------- *)
 
-fun check p x = if p(x) then x else raise Fail "check";;
+fun check p x = if p(x) then x else raise Fail "check";
 
 (* ------------------------------------------------------------------------- *)
 (* Repetition of a function.                                                 *)
@@ -78,18 +78,18 @@ fun check p x = if p(x) then x else raise Fail "check";;
 
 fun funpow n f x =
     if n < 1 then x
-    else funpow (n - 1) f (f x);;
-    
-fun can f x = (f x; true) handle Fail _ => false;;
+    else funpow (n - 1) f (f x);
 
-fun repeat f x = repeat f (f x) handle Fail _ => x;;
+fun can f x = (f x; true) handle Fail _ => false;
+
+fun repeat f x = repeat f (f x) handle Fail _ => x;
 
 (* ------------------------------------------------------------------------- *)
 (* Handy list operations.                                                    *)
 (* ------------------------------------------------------------------------- *)
 
 infix 6 -- (* I am not sure 6 is the right no. *)
-fun m -- n = if m > n then [] else m::((m + 1) -- n);;
+fun m -- n = if m > n then [] else m::((m + 1) -- n);
 
 (* TODO: --- operator *)
 
@@ -97,34 +97,34 @@ fun map2 f l1 l2 =
   case (l1,l2) of
     ([],[]) => []
   | ((h1::t1),(h2::t2)) => let val h = f h1 h2 in h::(map2 f t1 t2) end
-  | _ => raise Fail "map2: length mismatch";;
+  | _ => raise Fail "map2: length mismatch";
 
 (* NOTE: rev has been replaced with the equivalent built-in SML function List.rev. *)
 
 (* NOTE: hd has been replaced with the equivalent built-in SML function List.hd. *)
-        
+
 (* NOTE: tl has been replaced with the equivalent built-in SML function List.tl. *)
 
-fun itlist f l b = List.foldr (fn (x,y) => f x y) b l;; (* Uses SML library *)
+fun itlist f l b = List.foldr (fn (x,y) => f x y) b l; (* Uses SML library *)
 
 fun end_itlist f l =
   case l of
         []     => raise Fail "end_itlist"
       | [x]    => x
-      | (h::t) => f h (end_itlist f t);;
+      | (h::t) => f h (end_itlist f t);
 
-fun itlist2 f l1 l2 b = 
+fun itlist2 f l1 l2 b =
   case (l1,l2) of
     ([],[]) => b
   | (h1::t1,h2::t2) => f h1 h2 (itlist2 f t1 t2 b)
-  | _ => raise Fail "itlist2";;
+  | _ => raise Fail "itlist2";
 
 fun zip l1 l2 =
   case (l1,l2) of
         ([],[]) => []
       | (h1::t1,h2::t2) => (h1,h2)::(zip t1 t2)
-      | _ => raise Fail "zip";;
-  
+      | _ => raise Fail "zip";
+
 (* NOTE: forall has been replaced with the equivalent built-in SML function List.all. *)
 
 (* NOTE: exists has been replaced with the equivalent built-in SML function List.exists. *)
@@ -152,29 +152,29 @@ fun zip l1 l2 =
 fun chop_list n l =
   if n = 0 then ([],l) else
   let val (m,l') = chop_list (n-1) (tl l) in ((hd l)::m,l') end
-  handle Fail _ => raise Fail "chop_list";;
+  handle Fail _ => raise Fail "chop_list";
 
 (* TODO: replicate *)
 
 (* TODO: insertat *)
 
 (* TODO: forall2 *)
-  
+
 fun index x =
   let fun ind n l =
     case l of
       [] => raise Fail "index"
-    | (h::t) => if x = h then n else ind (n + 1) t 
-  in 
+    | (h::t) => if x = h then n else ind (n + 1) t
+  in
     ind 0
-  end;;
-  
+  end;
+
 fun unzip l =
   case l of
     [] => ([],[])
   | (x,y)::t =>
-      let val (xs,ys) = unzip t in (x::xs,y::ys) end;;
-      
+      let val (xs,ys) = unzip t in (x::xs,y::ys) end;
+
 (* ------------------------------------------------------------------------- *)
 (* Whether the first of two items comes earlier in the list.                 *)
 (* ------------------------------------------------------------------------- *)
@@ -194,10 +194,10 @@ fun unzip l =
 fun assoc a l =
   case l of
     (x,y)::t => if x = a then y else assoc a t
-  | [] => raise Fail "find";;
-  
+  | [] => raise Fail "find";
+
 (* TODO: rev_assoc *)
-  
+
 (* ------------------------------------------------------------------------- *)
 (* Merging of sorted lists (maintaining repetitions).                        *)
 (* ------------------------------------------------------------------------- *)
@@ -208,7 +208,7 @@ fun merge ord l1 l2 =
   | h1::t1 => case l2 of
                 [] => l1
               | h2::t2 => if ord h1 h2 then h1::(merge ord t1 l2)
-                          else h2::(merge ord l1 t2);;
+                          else h2::(merge ord l1 t2);
 
 (* ------------------------------------------------------------------------- *)
 (* Bottom-up mergesort.                                                      *)
@@ -222,15 +222,15 @@ fun sort ord =
       | (l,[s1]) => mergepairs (s1::l) []
       | (l,(s1::s2::ss)) => mergepairs ((merge ord s1 s2)::l) ss in
   fn l => if l = [] then [] else mergepairs [] (List.map (fn x => [x]) l)
-  end;;
-  
+  end;
+
 (* ------------------------------------------------------------------------- *)
 (* Common measure predicates to use with "sort".                             *)
 (* ------------------------------------------------------------------------- *)
 
-fun increasing f x y = (f x) < (f y);;
+fun increasing f x y = (f x) < (f y);
 
-fun decreasing f x y = (f x) > (f y) ;;
+fun decreasing f x y = (f x) > (f y) ;
 
 (* ------------------------------------------------------------------------- *)
 (* Eliminate repetitions of adjacent elements, with and without counting.    *)
@@ -239,21 +239,21 @@ fun decreasing f x y = (f x) > (f y) ;;
 (* Like the F# version, = is used instead of the shallow comparison (== in ocaml) *)
 fun uniq l =
     case l of
-      x :: (t as y :: ys ) => 
+      x :: (t as y :: ys ) =>
         let val t' = uniq t in
-            if x = y then t' 
+            if x = y then t'
             else
                 x :: t'
         end
-    | _ => l;;
+    | _ => l;
 
 (* TODO: repetitions *)
 
 fun tryfind f l =
   case l of
       [] => raise Fail "tryfind"
-    | (h::t) => 
-      ((f h) handle Fail _ => tryfind f t);;
+    | (h::t) =>
+      ((f h) handle Fail _ => tryfind f t);
 
 (* TODO: mapfilter *)
 
@@ -275,8 +275,8 @@ fun setify ord l=
      | _ => true in
   if canonical l then l
   else uniq (sort (fn x => fn y => ord x y <= 0) l)
-  end;;
-     
+  end;
+
 fun union ord s1 s2=
   let fun union l1 l2 =
     case (l1,l2) of
@@ -287,13 +287,13 @@ fun union ord s1 s2=
           else if ord h1 h2 = ~1 then h1::(union t1 l2)
           else h2::(union l1 t2) in
   union (setify ord s1) (setify ord s2)
-  end;;
+  end;
 
- fun union_str s1 s2 = union str_ord s1 s2;;
- fun union_sip p1 p2 = union sip_ord p1 p2;;
- 
+ fun union_str s1 s2 = union str_ord s1 s2;
+ fun union_sip p1 p2 = union sip_ord p1 p2;
+
  (* TODO: intersect *)
- 
+
 fun subtract ord s1 s2=
   let fun subtract l1 l2 =
     case (l1,l2) of
@@ -304,17 +304,17 @@ fun subtract ord s1 s2=
           else if ord h1 h2 = ~1 then h1::(subtract t1 l2)
           else subtract l1 t2 in
   subtract (setify ord s1) (setify ord s2)
-  end;;
-  
-fun subtract_str s1 s2 = subtract str_ord s1 s2;;
+  end;
+
+fun subtract_str s1 s2 = subtract str_ord s1 s2;
 
 (* TODO: subset, psubset *)
 
 (* TODO: seteq *)
 
-fun insert ord x s = union ord [x] s;;
+fun insert ord x s = union ord [x] s;
 
-fun insert_str x s = insert str_ord x s;;
+fun insert_str x s = insert str_ord x s;
 
 (* TODO: image *)
 
@@ -322,12 +322,12 @@ fun insert_str x s = insert str_ord x s;;
 (* Union of a family of sets.                                                *)
 (* ------------------------------------------------------------------------- *)
 
-fun unions ord s = 
+fun unions ord s =
    let fun concat a b = a @ b in
    setify ord (itlist concat s [])
-   end;;
+   end;
 
-fun unions_str s = unions str_ord s;;
+fun unions_str s = unions str_ord s;
 
 (* ------------------------------------------------------------------------- *)
 (* List membership. This does *not* assume the list is a set.                *)
@@ -336,9 +336,9 @@ fun unions_str s = unions str_ord s;;
 fun mem x lis =
     case lis of
       [] => false
-    | hd :: tl => hd = x orelse mem x tl;;
+    | hd :: tl => hd = x orelse mem x tl;
 
-    
+
 (* ------------------------------------------------------------------------- *)
 (* Finding all subsets or all subsets of a given size.                       *)
 (* ------------------------------------------------------------------------- *)
@@ -356,8 +356,8 @@ fun mem x lis =
 (* ------------------------------------------------------------------------- *)
 (* Timing; useful for documentation but not logically necessary.             *)
 (* ------------------------------------------------------------------------- *)
-  
-fun time f x = 
+
+fun time f x =
     let val timer = Timer.startRealTimer()
         val result = f x
         val time = Timer.checkRealTimer timer
@@ -365,7 +365,7 @@ fun time f x =
     print_string ("CPU time (user): " ^ (Real.toString (Time.toReal time)));
     print_newline();
     result
-    ) end;;
+    ) end;
 
 (* ------------------------------------------------------------------------- *)
 (* Polymorphic finite partial functions via Patricia trees.                  *)
@@ -379,13 +379,13 @@ fun time f x =
 datatype ('a,'b)func =
    Empty
  | Leaf of int * ('a*'b)list
- | Branch of int * int * ('a,'b)func * ('a,'b)func;;
- 
+ | Branch of int * int * ('a,'b)func * ('a,'b)func;
+
 (* ------------------------------------------------------------------------- *)
 (* Undefined function.                                                       *)
 (* ------------------------------------------------------------------------- *)
 
-val undefined = Empty;;
+val undefined = Empty;
 
 (* ------------------------------------------------------------------------- *)
 (* In case of equality comparison worries, better use this.                  *)
@@ -394,29 +394,29 @@ val undefined = Empty;;
 fun is_undefined f =
   case f of
     Empty => true
-  | _ => false;;
-  
+  | _ => false;
+
 (* ------------------------------------------------------------------------- *)
 (* Operation analogous to "map" for lists.                                   *)
 (* ------------------------------------------------------------------------- *)
 
-local 
+local
   fun map_list f l =
         case l of
           [] => []
-        | (x,y)::t => (x,f(y))::(map_list f t) 
+        | (x,y)::t => (x,f(y))::(map_list f t)
 in
   fun mapf f t =
         case t of
           Empty => Empty
         | Leaf(h,l) => Leaf(h,map_list f l)
-        | Branch(p,b,l,r) => Branch(p,b,mapf f l,mapf f r) 
-end;;
+        | Branch(p,b,l,r) => Branch(p,b,mapf f l,mapf f r)
+end;
 
 (* ------------------------------------------------------------------------- *)
 (* Operations analogous to "fold" for lists.                                 *)
 (* ------------------------------------------------------------------------- *)
-  
+
 (* TODO *)
 
 (* ------------------------------------------------------------------------- *)
@@ -424,7 +424,7 @@ end;;
 (* ------------------------------------------------------------------------- *)
 
 (* TODO *)
-  
+
 (* ------------------------------------------------------------------------- *)
 (* Application.                                                              *)
 (* ------------------------------------------------------------------------- *)
@@ -435,36 +435,36 @@ fun applyd ord hash f d x=
         case l of
           (a,b)::t => if x = a then b else if ord x a > 0 then apply_listd t d x else d x
         | [] => d x
-      val k = hash x 
+      val k = hash x
       fun look t =
         case t of
-          Leaf(h,l) => 
-            if (h = k) then 
+          Leaf(h,l) =>
+            if (h = k) then
               apply_listd l d x
             else d x
-        | Branch(p,b,l,r) => 
+        | Branch(p,b,l,r) =>
             if ((k lxor p) land (b - 1)) = 0 then
               look (if k land b = 0 then l else r)
             else d x
-        | _ => d x 
+        | _ => d x
   in
   look f
   end
-;;
+;
 
-fun apply ord hash f = applyd ord hash f (fn x => raise Fail "apply");;
+fun apply ord hash f = applyd ord hash f (fn x => raise Fail "apply");
 
-fun apply_str f = apply str_ord str_hash f;;
+fun apply_str f = apply str_ord str_hash f;
 
-fun tryapplyd ord hash f a d = applyd ord hash f (fn x => d) a;;
+fun tryapplyd ord hash f a d = applyd ord hash f (fn x => d) a;
 
-fun tryapplyd_str f a d = tryapplyd str_ord str_hash f a d;;
+fun tryapplyd_str f a d = tryapplyd str_ord str_hash f a d;
 
-fun tryapplyl ord hash f x = tryapplyd ord hash f x [];;
+fun tryapplyl ord hash f x = tryapplyd ord hash f x [];
 
-fun defined ord hash f x = (apply ord hash f x; true) handle Fail _ => false;;
+fun defined ord hash f x = (apply ord hash f x; true) handle Fail _ => false;
 
-fun defined_str f x = defined str_ord str_hash f x;;
+fun defined_str f x = defined str_ord str_hash f x;
 
 (* ------------------------------------------------------------------------- *)
 (* Undefinition.                                                             *)
@@ -475,9 +475,9 @@ local
     case l of
       (ab as (a,b))::t =>
           let val c = ord x a in
-          if c = 0 then 
+          if c = 0 then
             t
-          else if c < 0 then 
+          else if c < 0 then
             l
           else
             let val t' = undefine_list ord x t in
@@ -487,7 +487,7 @@ local
     | [] => []
 in
   fun undefine ord hash x =
-    let val k = hash x 
+    let val k = hash x
         fun und t =
           case t of
             Leaf(h,l) =>
@@ -511,11 +511,11 @@ in
                   else (case r' of Empty => l | _ => Branch(p,b,l,r'))
                   end
               ) else t
-          | _ => t 
+          | _ => t
     in
     und
     end
-end;;
+end;
 
 fun undefine_str x t = undefine str_ord str_hash x t
 
@@ -527,12 +527,12 @@ infix 6 |->
 
 local
   fun newbranch p1 t1 p2 t2 =
-        let val zp = p1 lxor p2 
-            val b = zp land (~zp) 
+        let val zp = p1 lxor p2
+            val b = zp land (~zp)
             val p = p1 land (b - 1) in
         if p1 land b = 0 then Branch(p,b,t1,t2)
         else Branch(p,b,t2,t1)
-        end 
+        end
   fun define_list ord (xy as (x,y)) l =
         case l of
           (ab as (a,b))::t =>
@@ -548,19 +548,19 @@ local
         | (_,[]) => l1
         | ((xy1 as (x1,y1))::t1,(xy2 as (x2,y2))::t2) =>
               let val c = ord x1 x2 in
-              if c < 0 then 
+              if c < 0 then
                 xy1::(combine_list ord op' z t1 l2)
-              else if c > 0 then 
-                xy2::(combine_list ord op' z l1 t2) 
+              else if c > 0 then
+                xy2::(combine_list ord op' z l1 t2)
               else
-                let val y = op' y1 y2 
+                let val y = op' y1 y2
                     val l = combine_list ord op' z t1 t2 in
                 if z(y) then l else (x1,y)::l
                 end
               end
   in
   fun (x |-> y) t ord hash =
-        let val k = hash x 
+        let val k = hash x
             fun upd t =
               case t of
                 Empty => Leaf (k,[(x,y)])
@@ -624,12 +624,12 @@ local
                (case (combine ord op' z l1 l2,combine ord op' z r1 r2) of
                   (Empty,r) => r | (l,Empty) => l | (l,r) => Branch(p1,b1,l,r))
               else
-                newbranch p1 t1 p2 t2 
-end ;;
+                newbranch p1 t1 p2 t2
+end ;
 
 infix 6 |--> (* For strings *)
 
-fun (x |--> y) t = (x |-> y) t str_ord str_hash;;
+fun (x |--> y) t = (x |-> y) t str_ord str_hash;
 
 (* ------------------------------------------------------------------------- *)
 (* Special case of point function.                                           *)
@@ -637,11 +637,11 @@ fun (x |--> y) t = (x |-> y) t str_ord str_hash;;
 
 infix 6 |=>
 
-fun x |=> y = (x |-> y) undefined;;
+fun x |=> y = (x |-> y) undefined;
 
 infix 6 |==> (* For strings *)
 
-fun x |==> y = (x |=> y) str_ord str_hash;;
+fun x |==> y = (x |=> y) str_ord str_hash;
 
 (* ------------------------------------------------------------------------- *)
 (* Idiom for a mapping zipping domain and range lists.                       *)

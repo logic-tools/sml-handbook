@@ -13,9 +13,9 @@
 fun funcs tm =
   case tm of
     Var x => []
-  | Fn(f,args) => itlist (union_sip o funcs) args [(f,List.length args)];;
-  
+  | Fn(f,args) => itlist (union_sip o funcs) args [(f,List.length args)];
+
 fun functions fm =
-  atom_union_sip (fn (R(p,a)) => itlist (union_sip o funcs) a []) fm;;
-  
+  atom_union_sip (fn (R(p,a)) => itlist (union_sip o funcs) a []) fm;
+
 (* TODO: All other functions *)

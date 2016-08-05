@@ -25,6 +25,6 @@ fun term_match env eqs =
         else
             raise Fail "term_match"
     | _ =>
-        raise Fail "term_match";;
-        
+        raise Fail "term_match";
+
 (* TODO: All other functions *)

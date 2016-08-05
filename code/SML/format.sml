@@ -19,13 +19,13 @@ All rights reserved. (See "LICENSE" for details.)
 (***********************************************************************)
 
 (* Library functions *)
-val max_int = 
+val max_int =
     case Int.maxInt of
       SOME n => n
     | NONE => 1073741823
-;;
+;
 
-fun max a b = Int.max(a,b);;
+fun max a b = Int.max(a,b);
 
 fun string_make n c =
     if n<0 then raise Fail "n<0" else
@@ -34,13 +34,13 @@ fun string_make n c =
     in
     String.implode (string_make_aux [] n)
     end
-;;
+;
 
-fun pred x = x - 1;;
+fun pred x = x - 1;
 
 (* Different from OCaml version in that it does not throw Invalid_argument exception *)
 fun output oc buf pos len =
-  TextIO.output(oc,String.substring(buf,pos,len));;
+  TextIO.output(oc,String.substring(buf,pos,len));
 
 (* A pretty-printing facility and definition of formatters for ``parallel''
    (i.e. unrelated or independent) pretty-printing on multiple out channels. *)
@@ -51,9 +51,9 @@ fun output oc buf pos len =
 
  **************************************************************)
 
-type size = int;;
-fun  size_of_int (n : int)  = (n : size);;
-fun  int_of_size (s : size) = (s : int);;
+type size = int;
+fun  size_of_int (n : int)  = (n : size);
+fun  int_of_size (s : size) = (s : int);
 
 (* Tokens are one of the following : *)
 
@@ -88,10 +88,10 @@ and block_type =
 
 and tblock =
     Pp_tbox of int list ref  (* Tabulation box *)
-;;
+;
 
-fun  string_of_tag (t : tag)  = (t : string);;
-fun  tag_of_string (s : string)  = (s : tag);;
+fun  string_of_tag (t : tag)  = (t : string);
+fun  tag_of_string (s : string)  = (s : tag);
 
 (* The Queue:
    contains all formatting elements.
@@ -102,18 +102,18 @@ type pp_queue_elem = {
   elem_size : size ref,
   token : pp_token,
   length : int
-};;
+};
 
 (* Scan stack:
    each element is (left_total, queue element) where left_total
    is the value of pp_left_total when the element has been enqueued. *)
-datatype pp_scan_elem = Scan_elem of int * pp_queue_elem;;
+datatype pp_scan_elem = Scan_elem of int * pp_queue_elem;
 
 (* Formatting stack:
    used to break the lines while printing tokens.
    The formatting stack contains the description of
    the currently active blocks. *)
-datatype pp_format_elem = Format_elem of block_type * int;;
+datatype pp_format_elem = Format_elem of block_type * int;
 
 (* General purpose queues, used in the formatter. *)
 datatype 'a queue_elem =
@@ -122,15 +122,15 @@ datatype 'a queue_elem =
 and 'a queue_cell = Queue_cell of {
   head : 'a ref,
   tail : ('a queue_elem) ref
-};;
+};
 
-fun dest_q_cell (Queue_cell c) = c;;
+fun dest_q_cell (Queue_cell c) = c;
 
 type 'a queue = {
   insert : ('a queue_elem) ref,
   body : ('a queue_elem) ref
 }
-;;
+;
 
 
 
@@ -187,33 +187,33 @@ type formatter = {
   (* The pretty-printer queue. *)
    pp_queue : (pp_queue_elem queue) ref
 }
-;;
+;
 
 (* Queues auxilliaries. *)
-fun make_queue () = ({ insert = ref Nil, body = ref Nil }:'a queue);;
+fun make_queue () = ({ insert = ref Nil, body = ref Nil }:'a queue);
 
-fun clear_queue (q : 'a queue) = ((#insert q ) := Nil; (#body q ) := Nil);;
+fun clear_queue (q : 'a queue) = ((#insert q ) := Nil; (#body q ) := Nil);
 
 fun add_queue x (q : 'a queue) =
   let val c = Cons (Queue_cell { head = ref x, tail = ref Nil} ) in
   case q of
     { insert = ref (Cons (Queue_cell cell)), body = _} => (
-       #insert q := c; 
+       #insert q := c;
        #tail cell := c
        )
   (* Invariant: when insert is Nil body should be Nil. *)
   | { insert = ref Nil, body = _ } => (
-       #insert q := c; 
+       #insert q := c;
        #body q := c
        )
-  end;;
+  end;
 
-exception Empty_queue;;
+exception Empty_queue;
 
 val peek_queue = fn
     { body = ref( Cons ( Queue_cell { head = ref x, tail = _ })), insert = _ } => x
   | { body = ref Nil, insert = _ } => raise Empty_queue
-;;
+;
 
 val take_queue = fn
     q as { body = ref (Cons (Queue_cell { head = ref x, tail = ref tl })), insert = _ } => (
@@ -222,18 +222,18 @@ val take_queue = fn
     x
     )
   | { body = ref Nil, insert = _ } => raise Empty_queue
-;;
+;
 
 (* Enter a token in the pretty-printer queue. *)
 fun pp_enqueue (state : formatter) (token as { length = len, elem_size = _, token = _}) =(
   #pp_right_total state := !(#pp_right_total state) + len;
   add_queue token (!(#pp_queue state))
-);;
+);
 
 fun pp_clear_queue (state : formatter) =(
   (#pp_left_total state ) := 1; (#pp_right_total state ) := 1;
   clear_queue (!(#pp_queue state))
-);;
+);
 
 (* Pp_infinity: large value for default tokens size.
 
@@ -256,13 +256,13 @@ fun pp_clear_queue (state : formatter) =(
    pp_infinity to the theoretically maximum limit. It is not worth the
    burden ! *)
 
-val pp_infinity = 1000000010;;
+val pp_infinity = 1000000010;
 
 (* Output functions for the formatter. *)
 fun pp_output_string (state :formatter) s = !(#pp_output_function state) s 0 (String.size s)
 and pp_output_newline (state : formatter) = !(#pp_output_newline state) ()
 and pp_display_blanks (state : formatter) n = !(#pp_output_spaces state) n
-;;
+;
 
 (* To format a break, indenting a new line. *)
 fun break_new_line (state : formatter) offset width = (
@@ -276,16 +276,16 @@ fun break_new_line (state : formatter) offset width = (
   pp_display_blanks state (!(#pp_current_indent state))
   )
   end
-);;
+);
 
 (* To force a line break inside a block: no offset is added. *)
-fun break_line state width =  break_new_line state 0 width;;
+fun break_line state width =  break_new_line state 0 width;
 
 (* To format a break that fits on the current line. *)
 fun break_same_line state width =(
   (#pp_space_left state) := !(#pp_space_left state) - width;
   pp_display_blanks state width
-);;
+);
 
 
 (* To indent no more than pp_max_indent, if one tries to open a block
@@ -304,7 +304,7 @@ fun pp_force_break_line state =
       )
     else ()
   | [] => pp_output_newline state
-;;
+;
 
 (* To skip a token, if the previous line has been broken. *)
 fun pp_skip_token (state : formatter) =
@@ -314,9 +314,9 @@ fun pp_skip_token (state : formatter) =
     (#pp_left_total state) := !(#pp_left_total state) - len;
     (#pp_space_left state) := !(#pp_space_left state) + int_of_size size
     )
-;;
+;
 
-exception Not_found;;
+exception Not_found;
 
 (**************************************************************
 
@@ -336,9 +336,9 @@ fun format_pp_token (state : formatter) size = fn
     let val insertion_point = !(#pp_margin state) - !(#pp_space_left state) in
     if insertion_point > !(#pp_max_indent state) then
       (* can't open a block right there. *)
-      (pp_force_break_line state ) else () 
+      (pp_force_break_line state ) else ()
     end;
-    let val offset = !(#pp_space_left state) - off 
+    let val offset = !(#pp_space_left state) - off
         val bl_type =
       ( case ty of
         Pp_vbox => Pp_vbox
@@ -349,9 +349,9 @@ fun format_pp_token (state : formatter) size = fn
       | Pp_fits    => if size > !(#pp_space_left state) then ty else Pp_fits
       ) in
     #pp_format_stack state :=
-      Format_elem (bl_type, offset) :: !(#pp_format_stack state) 
+      Format_elem (bl_type, offset) :: !(#pp_format_stack state)
     end)
-    
+
   | Pp_end =>
     ( case !(#pp_format_stack state) of
       _ :: ls => (#pp_format_stack state) := ls
@@ -359,7 +359,7 @@ fun format_pp_token (state : formatter) size = fn
     )
 
   | Pp_tbegin (tbox as (Pp_tbox _)) =>
-    #pp_tbox_stack state := tbox :: !(#pp_tbox_stack state) 
+    #pp_tbox_stack state := tbox :: !(#pp_tbox_stack state)
 
   | Pp_tend =>
     ( case !(#pp_tbox_stack state) of
@@ -384,15 +384,15 @@ fun format_pp_token (state : formatter) size = fn
       Pp_tbox tabs :: _ =>
       let fun find n = fn
           x :: l => if x >= n then x else find n l
-        | [] => raise Not_found 
+        | [] => raise Not_found
           val tab =
         case !tabs of
           x :: _ =>
           (
-            (find insertion_point (!tabs)) 
+            (find insertion_point (!tabs))
             handle Not_found => x
           )
-        | _ => insertion_point 
+        | _ => insertion_point
           val offset = tab - insertion_point in
       if offset >= 0
       then break_same_line state (offset + n)
@@ -409,7 +409,7 @@ fun format_pp_token (state : formatter) size = fn
     )
 
   | Pp_if_newline =>
-    if (!(#pp_current_indent state)) <> (!(#pp_margin state)) - (!(#pp_space_left state)) 
+    if (!(#pp_current_indent state)) <> (!(#pp_margin state)) - (!(#pp_space_left state))
     then pp_skip_token state else ()
 
   | Pp_break (n, off) =>
@@ -417,13 +417,13 @@ fun format_pp_token (state : formatter) size = fn
       Format_elem (ty, width) :: _ =>
       ( case ty of
         Pp_hovbox =>
-        if size > !(#pp_space_left state) 
+        if size > !(#pp_space_left state)
         then break_new_line state off width
         else break_same_line state n
       | Pp_box =>
         (* Have the line just been broken here ? *)
         if !(#pp_is_new_line state) then break_same_line state n else
-        if size > !(#pp_space_left state) 
+        if size > !(#pp_space_left state)
          then break_new_line state off width else
         (* break the line here leads to new indentation ? *)
         if !(#pp_current_indent state) > !(#pp_margin state) - width + off
@@ -440,7 +440,7 @@ fun format_pp_token (state : formatter) size = fn
    | Pp_open_tag tag_name =>
      let val marker = !(#pp_mark_open_tag state) tag_name in
      pp_output_string state marker;
-     (#pp_mark_stack state) := tag_name :: !(#pp_mark_stack state) 
+     (#pp_mark_stack state) := tag_name :: !(#pp_mark_stack state)
      end
 
    | Pp_close_tag =>
@@ -453,7 +453,7 @@ fun format_pp_token (state : formatter) size = fn
        end
      | [] => () (* No more tag to close. *)
      )
-;;
+;
 
 (* Print if token size is known or printing is delayed.
    Size is known when not negative.
@@ -462,7 +462,7 @@ fun format_pp_token (state : formatter) size = fn
 
    Note: [advance_loop] must be tail recursive to prevent stack overflows. *)
 fun advance_loop (state : formatter) =
-  ( 
+  (
   case peek_queue (!(#pp_queue state)) of
     {elem_size = ref size, token = tok, length = len} =>
     let val size = int_of_size size in
@@ -479,31 +479,31 @@ fun advance_loop (state : formatter) =
     )
     end
     )
-;;
+;
 
 fun advance_left state =
   (advance_loop state) handle
    Empty_queue => ()
-;;
+;
 
-fun enqueue_advance state tok = (pp_enqueue state tok; advance_left state);;
+fun enqueue_advance state tok = (pp_enqueue state tok; advance_left state);
 
 (* To enqueue a string : try to advance. *)
 fun make_queue_elem size tok len =
-  { elem_size = ref size, token = tok, length = len };; 
+  { elem_size = ref size, token = tok, length = len };
 
-  
+
 fun enqueue_string_as state size s =
   let val len = int_of_size size in
   enqueue_advance state (make_queue_elem size (Pp_text s) len)
   end
-;;
-  
+;
+
 fun enqueue_string state s =
   let val len = String.size s in
   enqueue_string_as state (size_of_int len) s
   end
-;;
+;
 
 (* Routines for scan stack
    determine sizes of blocks. *)
@@ -513,12 +513,12 @@ val scan_stack_bottom =
   let val q_elem = make_queue_elem (size_of_int (~1)) (Pp_text "") 0 in
   [Scan_elem (~1, q_elem)]
   end
-;;
+;
 
 (* Set size of blocks on scan stack:
    if ty = true then size of break is set else size of block is set;
    in each case pp_scan_stack is popped. *)
-fun clear_scan_stack (state : formatter) = (#pp_scan_stack state) := scan_stack_bottom;;
+fun clear_scan_stack (state : formatter) = (#pp_scan_stack state) := scan_stack_bottom;
 
 (* Pattern matching on scan stack is exhaustive,
    since scan_stack is never empty.
@@ -567,7 +567,7 @@ fun scan_push (state : formatter) b tok =(
   if b then set_size state true else ();
   (#pp_scan_stack state) :=
     Scan_elem ( !(#pp_right_total state), tok) :: (!(#pp_scan_stack state))
-);;
+);
 
 
 (* To open a new block :
@@ -581,14 +581,14 @@ fun pp_open_box_gen (state : formatter) indent br_ty =(
         (size_of_int (~ (!(#pp_right_total state)) ))
         (Pp_begin (indent, br_ty))
         0 in
-    scan_push state false elem 
+    scan_push state false elem
     end
-  else if !(#pp_curr_depth state) = !(#pp_max_boxes state) 
+  else if !(#pp_curr_depth state) = !(#pp_max_boxes state)
   then enqueue_string state (!(#pp_ellipsis state)) else ()
-);;
+);
 
 (* The box which is always opened. *)
-fun pp_open_sys_box state = pp_open_box_gen state 0 Pp_hovbox;;
+fun pp_open_sys_box state = pp_open_box_gen state 0 Pp_hovbox;
 
 (* Close a block, setting sizes of its sub blocks. *)
 fun pp_close_box state () =
@@ -602,13 +602,13 @@ fun pp_close_box state () =
     ) else ();
     (#pp_curr_depth state) := !(#pp_curr_depth state) - 1
   ) else ()
-;;
+;
 
-fun pp_set_print_tags (state:formatter) b = #pp_print_tags state := b;;
-fun pp_set_mark_tags (state:formatter) b = #pp_mark_tags state := b;;
-fun pp_get_print_tags (state:formatter) () = !(#pp_print_tags state);;
-fun pp_get_mark_tags (state:formatter) () = !(#pp_mark_tags state);;
-fun pp_set_tags (state:formatter) b = (pp_set_print_tags state b; pp_set_mark_tags state b);;
+fun pp_set_print_tags (state:formatter) b = #pp_print_tags state := b;
+fun pp_set_mark_tags (state:formatter) b = #pp_mark_tags state := b;
+fun pp_get_print_tags (state:formatter) () = !(#pp_print_tags state);
+fun pp_get_mark_tags (state:formatter) () = !(#pp_mark_tags state);
+fun pp_set_tags (state:formatter) b = (pp_set_print_tags state b; pp_set_mark_tags state b);
 
 (* Initialize pretty-printer. *)
 fun pp_rinit (state: formatter) = (
@@ -622,7 +622,7 @@ fun pp_rinit (state: formatter) = (
   (#pp_curr_depth state ) := 0;
   (#pp_space_left state ) := !(#pp_margin state) ;
   pp_open_sys_box state
-);;
+);
 
 (* Flushing pretty-printer queue. *)
 fun pp_flush_queue (state : formatter) b = (
@@ -632,7 +632,7 @@ fun pp_flush_queue (state : formatter) b = (
   advance_left state;
   if b then pp_output_newline state else ();
   pp_rinit state
-) ;;
+) ;
 
 (**************************************************************
 
@@ -642,25 +642,25 @@ fun pp_flush_queue (state : formatter) b = (
 
 (* To format a string. *)
 fun pp_print_as_size state size s =
-  if !(#pp_curr_depth state ) < !(#pp_max_boxes state) 
+  if !(#pp_curr_depth state ) < !(#pp_max_boxes state)
   then enqueue_string_as state size s else ()
-;;
+;
 
 fun pp_print_as state isize s =
   pp_print_as_size state (size_of_int isize) s
-;;
+;
 
 fun pp_print_string state s =
   pp_print_as state (String.size s) s
-;;
+;
 
 (* To format an integer. *)
-fun pp_print_int state i = pp_print_string state (Int.toString i);;
+fun pp_print_int state i = pp_print_string state (Int.toString i);
 
 (* Opening boxes. *)
 fun pp_open_hbox state () = pp_open_box_gen state 0 Pp_hbox
-fun pp_open_box state indent = pp_open_box_gen state indent Pp_box;;
-fun pp_open_hvbox state indent = pp_open_box_gen state indent Pp_hvbox;;
+fun pp_open_box state indent = pp_open_box_gen state indent Pp_box;
+fun pp_open_hvbox state indent = pp_open_box_gen state indent Pp_hvbox;
 
 (* Print a new line after printing all queued text
    (same for print_flush but without a newline). *)
@@ -669,7 +669,7 @@ fun pp_print_newline state () = (
 )
 and pp_print_flush state () = (
   pp_flush_queue state false; !(#pp_flush_function state ) ()
-);; 
+);
 
 fun pp_print_break state width offset =
   if !(#pp_curr_depth state) < !(#pp_max_boxes state) then
@@ -681,9 +681,9 @@ fun pp_print_break state width offset =
     scan_push state true elem
     end
   else ()
-;;
+;
 
-fun pp_print_space state () = pp_print_break state 1 0;;
+fun pp_print_space state () = pp_print_break state 1 0;
 
 (**************************************************************
 
@@ -692,12 +692,12 @@ fun pp_print_space state () = pp_print_break state 1 0;;
  **************************************************************)
 
 (* Fit max_boxes. *)
-fun pp_set_max_boxes (state:formatter) n = if n > 1 then #pp_max_boxes state := n else ();;
+fun pp_set_max_boxes (state:formatter) n = if n > 1 then #pp_max_boxes state := n else ();
 
 (* To set the margin of pretty-printer. *)
 fun pp_limit n =
   if n < pp_infinity then n else pred pp_infinity
-;;
+;
 
 fun pp_set_min_space_left state n =
   if n >= 1 then
@@ -707,31 +707,31 @@ fun pp_set_min_space_left state n =
     pp_rinit state
     ) end
   else ()
-;;
+;
 
 (* Initially, we have :
   pp_max_indent = pp_margin - pp_min_space_left, and
   pp_space_left = pp_margin. *)
 fun pp_set_max_indent (state:formatter) n =
   pp_set_min_space_left state (!(#pp_margin state) - n)
-;;
+;
 
 fun pp_set_margin state n =
   if n >= 1 then
-    let val n = pp_limit n 
+    let val n = pp_limit n
     in
       (
         (#pp_margin state) := n;
         let val new_max_indent =
           (* Try to maintain max_indent to its actual value. *)
-          if !(#pp_max_indent state) <= !(#pp_margin state) then 
+          if !(#pp_max_indent state) <= !(#pp_margin state) then
               !(#pp_max_indent state)
             else
           (* If possible maintain pp_min_space_left to its actual value,
              if this leads to a too small max_indent, take half of the
              new margin, if it is greater than 1. *)
             max (max (!(#pp_margin state) - !(#pp_min_space_left state))
-                    (!(#pp_margin state) div 2)) 1 
+                    (!(#pp_margin state) div 2)) 1
         in
           (* Rebuild invariants. *)
           pp_set_max_indent state new_max_indent
@@ -739,17 +739,17 @@ fun pp_set_margin state n =
       )
     end
   else ()
-;;
+;
 
-fun default_pp_mark_open_tag s = "<" ^ s ^ ">";;
-fun default_pp_mark_close_tag s = "</" ^ s ^ ">";;
+fun default_pp_mark_open_tag s = "<" ^ s ^ ">";
+fun default_pp_mark_close_tag s = "</" ^ s ^ ">";
 
-fun default_pp_print_open_tag _ = ();;
-fun default_pp_print_close_tag x = default_pp_print_open_tag x;;
+fun default_pp_print_open_tag _ = ();
+fun default_pp_print_close_tag x = default_pp_print_open_tag x;
 
 fun pp_make_formatter f g h i =
   (* The initial state of the formatter contains a dummy box. *)
-  let val pp_q = make_queue () 
+  let val pp_q = make_queue ()
       val sys_tok =
     make_queue_elem (size_of_int (~1)) (Pp_begin (0, Pp_hovbox)) 0 in (
   add_queue sys_tok pp_q;
@@ -763,7 +763,7 @@ fun pp_make_formatter f g h i =
    pp_mark_stack = ref [],
    pp_margin = ref 78,
    pp_min_space_left = ref 10,
-   pp_max_indent = ref (78 - 10), 
+   pp_max_indent = ref (78 - 10),
    pp_space_left = ref 78,
    pp_current_indent = ref 0,
    pp_is_new_line = ref true,
@@ -779,15 +779,15 @@ fun pp_make_formatter f g h i =
    pp_print_tags = ref false,
    pp_mark_tags = ref false,
    pp_mark_open_tag = ref default_pp_mark_open_tag,
-   pp_mark_close_tag = ref default_pp_mark_close_tag, 
+   pp_mark_close_tag = ref default_pp_mark_close_tag,
    pp_print_open_tag = ref default_pp_print_open_tag,
    pp_print_close_tag = ref default_pp_print_close_tag,
    pp_queue = ref pp_q
   } : formatter) end ) end
-;;
+;
 
 (* Default function to output spaces. *)
-val blank_line = string_make 80 #" ";;
+val blank_line = string_make 80 #" ";
 
 fun display_blanks (state : formatter) n =
   if n > 0 then
@@ -796,10 +796,10 @@ fun display_blanks (state : formatter) n =
     !(#pp_output_function state ) blank_line 0 80;
     display_blanks state (n - 80)
   ) else ()
-;;
+;
 
 (* Default function to output new lines. *)
-fun display_newline (state : formatter) () = !(#pp_output_function state ) "\n" 0  1;;
+fun display_newline (state : formatter) () = !(#pp_output_function state ) "\n" 0  1;
 
 (* Make a formatter with default functions to output spaces and new lines. *)
 fun make_formatter output flush =
@@ -808,16 +808,16 @@ fun make_formatter output flush =
   (#pp_output_spaces ppf ) := display_blanks ppf;
   ppf
   ) end
-;;
+;
 
 fun formatter_of_out_channel oc =
   make_formatter (output oc) (fn () => TextIO.flushOut oc)
-;;
+;
 
 (* Predefined formatters. *)
-(* val str_formatter = formatter_of_buffer stdbuf;; *)
-val std_formatter = formatter_of_out_channel TextIO.stdOut;;
-val err_formatter = formatter_of_out_channel TextIO.stdErr;;
+(* val str_formatter = formatter_of_buffer stdbuf; *)
+val std_formatter = formatter_of_out_channel TextIO.stdOut;
+val err_formatter = formatter_of_out_channel TextIO.stdErr;
 
 (**************************************************************
 
@@ -825,19 +825,19 @@ val err_formatter = formatter_of_out_channel TextIO.stdErr;;
 
  **************************************************************)
 
- val open_hbox = pp_open_hbox std_formatter;;
- val open_hvbox = pp_open_hvbox std_formatter;;
- val open_box = pp_open_box std_formatter;;
- val close_box = pp_close_box std_formatter;;
- val print_break = pp_print_break std_formatter;;
- val print_string = pp_print_string std_formatter;;
- val print_space = pp_print_space std_formatter;;
- val print_flush = pp_print_flush std_formatter;;
- val print_newline = pp_print_newline std_formatter;;
- val print_int = pp_print_int std_formatter;;
- 
- val set_margin = pp_set_margin std_formatter;;
- val set_max_indent = pp_set_max_indent std_formatter;;
- val set_max_boxes = pp_set_max_boxes std_formatter;;
+ val open_hbox = pp_open_hbox std_formatter;
+ val open_hvbox = pp_open_hvbox std_formatter;
+ val open_box = pp_open_box std_formatter;
+ val close_box = pp_close_box std_formatter;
+ val print_break = pp_print_break std_formatter;
+ val print_string = pp_print_string std_formatter;
+ val print_space = pp_print_space std_formatter;
+ val print_flush = pp_print_flush std_formatter;
+ val print_newline = pp_print_newline std_formatter;
+ val print_int = pp_print_int std_formatter;
+
+ val set_margin = pp_set_margin std_formatter;
+ val set_max_indent = pp_set_max_indent std_formatter;
+ val set_max_boxes = pp_set_max_boxes std_formatter;
  val set_mark_tags =
-    pp_set_mark_tags std_formatter;;
+    pp_set_mark_tags std_formatter;

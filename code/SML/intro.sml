@@ -30,41 +30,41 @@
 (* Lexical analysis.                                                         *)
 (* ------------------------------------------------------------------------- *)
 
-fun matches s = 
-    let val chars = String.explode s in 
+fun matches s =
+    let val chars = String.explode s in
     fn c => mem c chars
-    end;;
+    end;
 
-val space = matches " \t\n\r";;
-val punctuation = matches "()[]{},";;
-val symbolic = matches "~`!@#$%^&*-+=|\\:;<>.?/";;
-val numeric = matches "0123456789";;
+val space = matches " \t\n\r";
+val punctuation = matches "()[]{},";
+val symbolic = matches "~`!@#$%^&*-+=|\\:;<>.?/";
+val numeric = matches "0123456789";
 val alphanumeric = matches
-  "abcdefghijklmnopqrstuvwxyz_'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";;
-  
+  "abcdefghijklmnopqrstuvwxyz_'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
 fun lexwhile prop inp =
-  if inp <> [] andalso prop (List.hd inp) then 
-     let val (tok,rest) = lexwhile prop (List.tl inp) in 
+  if inp <> [] andalso prop (List.hd inp) then
+     let val (tok,rest) = lexwhile prop (List.tl inp) in
      ((str (List.hd inp))^tok,rest)
      end
   else
-     ("",inp);;
-  
+     ("",inp);
+
 fun lex inp =
   case snd(lexwhile space inp) of
     [] => []
   | c::cs => let val prop = if alphanumeric(c) then alphanumeric
                         else if symbolic(c) then symbolic
-                        else fn c => false 
+                        else fn c => false
                  val (toktl,rest) = lexwhile prop cs in
              ((str c)^toktl)::lex rest
-             end;;
+             end;
 
-START_INTERACTIVE;;
-lex(String.explode "2*((var_1 + x') + 11)");;
-lex(String.explode "if (*p1-- == *p2++) then f() else g()");;
-END_INTERACTIVE;;
-             
+START_INTERACTIVE;
+lex(String.explode "2*((var_1 + x') + 11)");
+lex(String.explode "if (*p1-- == *p2++) then f() else g()");
+END_INTERACTIVE;
+
 (* ------------------------------------------------------------------------- *)
 (* Parsing.                                                                  *)
 (* ------------------------------------------------------------------------- *)
@@ -78,8 +78,8 @@ END_INTERACTIVE;;
 fun make_parser pfn s =
   let val (expr,rest) = pfn (lex(String.explode s)) in
   if rest = [] then expr else raise Fail "Unparsed input"
-  end;;
-  
+  end;
+
 (* ------------------------------------------------------------------------- *)
 (* Our parser.                                                               *)
 (* ------------------------------------------------------------------------- *)

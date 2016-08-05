@@ -1,2 +1,2 @@
-fun load s = ();;
-use "init.sml";;
+fun load s = ();
+use "init.sml";

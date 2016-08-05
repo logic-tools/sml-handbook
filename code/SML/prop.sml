@@ -11,6 +11,6 @@
 (* Disjunctive normal form (DNF) via truth tables.                           *)
 (* ------------------------------------------------------------------------- *)
 
-fun list_conj l = if l = [] then True else end_itlist mk_and l;;
+fun list_conj l = if l = [] then True else end_itlist mk_and l;
 
 (* TODO: All other functions *)

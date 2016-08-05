@@ -9,21 +9,21 @@
 fun termsize tm =
   case tm of
     Var x => 1
-  | Fn(f,args) => itlist (fn t => fn n => termsize t + n) args 1;;
-  
+  | Fn(f,args) => itlist (fn t => fn n => termsize t + n) args 1;
+
 (* ------------------------------------------------------------------------- *)
 (* This fails the rewrite properties.                                        *)
 (* ------------------------------------------------------------------------- *)
 
-START_INTERACTIVE;;
-val s = <<|"f(x,x,x)"|>>;;
-val t = <<|"g(x,y)"|>>;;
+START_INTERACTIVE;
+val s = <<|"f(x,x,x)"|>>;
+val t = <<|"g(x,y)"|>>;
 
-termsize s > termsize t;;
+termsize s > termsize t;
 
-val i = ("y" |==> (<<|"f(x,x,x)"|>>));;
+val i = ("y" |==> (<<|"f(x,x,x)"|>>));
 
-termsize (tsubst i s) > termsize (tsubst i t);;
-END_INTERACTIVE;;
-  
+termsize (tsubst i s) > termsize (tsubst i t);
+END_INTERACTIVE;
+
 (* TODO: All other functions *)

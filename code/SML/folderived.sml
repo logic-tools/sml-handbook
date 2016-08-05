@@ -16,18 +16,18 @@ fun eq_sym s t =
   let val rth = axiom_eqrefl s in
   funpow 2 (fn th => (modusponens (imp_swap th) rth))
            (axiom_predcong "=" [s, s] [t, s])
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- s = t ==> t = u ==> s = u.                                             *)
 (* ------------------------------------------------------------------------- *)
 
 fun eq_trans s t u =
-  let val th1 = axiom_predcong "=" [t, u] [s, u] 
+  let val th1 = axiom_predcong "=" [t, u] [s, u]
       val th2 = modusponens (imp_swap th1) (axiom_eqrefl u) in
   imp_trans (eq_sym s t) th2
-  end;;
-  
+  end;
+
 (* ------------------------------------------------------------------------- *)
 (*         ---------------------------- icongruence                          *)
 (*          |- s = t ==> tm[s] = tm[t]                                       *)
@@ -37,30 +37,30 @@ fun icongruence s t stm ttm =
   if stm = ttm then add_assum (mk_eq s t) (axiom_eqrefl stm)
   else if stm = s andalso ttm = t then imp_refl (mk_eq s t) else
   case (stm,ttm) of
-   (Fn(fs,sa),Fn(ft,ta)) => 
+   (Fn(fs,sa),Fn(ft,ta)) =>
         if fs = ft andalso length sa = length ta then
-            let val ths = map2 (icongruence s t) sa ta 
+            let val ths = map2 (icongruence s t) sa ta
                 val ts = List.map (consequent o concl) ths in
             imp_trans_chain ths (axiom_funcong fs (List.map lhs ts) (List.map rhs ts))
             end
         else raise Fail "icongruence: not congruent"
-  | _ => raise Fail "icongruence: not congruent";;
+  | _ => raise Fail "icongruence: not congruent";
 
 (* ------------------------------------------------------------------------- *)
 (* Example.                                                                  *)
 (* ------------------------------------------------------------------------- *)
 
-START_INTERACTIVE;;
+START_INTERACTIVE;
 icongruence (<<|"s"|>>) (<<|"t"|>>) (<<|"f(s,g(s,t,s),u,h(h(s)))"|>>)
-                            (<<|"f(s,g(t,t,s),u,h(h(t)))"|>>);;
-END_INTERACTIVE;;
+                            (<<|"f(s,g(t,t,s),u,h(h(t)))"|>>);
+END_INTERACTIVE;
 
 (* ------------------------------------------------------------------------- *)
 (* |- (forall x. p ==> q(x)) ==> p ==> (forall x. q(x))                      *)
 (* ------------------------------------------------------------------------- *)
 
 fun gen_right_th x p q =
-  imp_swap(imp_trans (axiom_impall x p) (imp_swap(axiom_allimp x p q)));;
+  imp_swap(imp_trans (axiom_impall x p) (imp_swap(axiom_allimp x p q)));
 
 (* ------------------------------------------------------------------------- *)
 (*                       |- p ==> q                                          *)
@@ -71,7 +71,7 @@ fun gen_right_th x p q =
 fun genimp x th =
   let val (p,q) = dest_imp(concl th) in
   modusponens (axiom_allimp x p q) (gen x th)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* If |- p ==> q[x] then |- p ==> forall x. q[x]                             *)
@@ -80,24 +80,24 @@ fun genimp x th =
 fun gen_right x th =
   let val (p,q) = dest_imp(concl th) in
   modusponens (gen_right_th x p q) (gen x th)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* |- (forall x. p(x) ==> q) ==> (exists x. p(x)) ==> q                      *)
 (* ------------------------------------------------------------------------- *)
 
 fun exists_left_th x p q =
-  let val  p' = Imp(p,False) 
-      val  q' = Imp(q,False) 
-      val th1 = genimp x (imp_swap(imp_trans_th p q False)) 
-      val th2 = imp_trans th1 (gen_right_th x q' p') 
-      val th3 = imp_swap(imp_trans_th q' (Forall(x,p')) False) 
-      val th4 = imp_trans2 (imp_trans th2 th3) (axiom_doubleneg q) 
-      val th5 = imp_add_concl False (genimp x (iff_imp2 (axiom_not p))) 
-      val th6 = imp_trans (iff_imp1 (axiom_not (Forall(x,Not p)))) th5 
+  let val  p' = Imp(p,False)
+      val  q' = Imp(q,False)
+      val th1 = genimp x (imp_swap(imp_trans_th p q False))
+      val th2 = imp_trans th1 (gen_right_th x q' p')
+      val th3 = imp_swap(imp_trans_th q' (Forall(x,p')) False)
+      val th4 = imp_trans2 (imp_trans th2 th3) (axiom_doubleneg q)
+      val th5 = imp_add_concl False (genimp x (iff_imp2 (axiom_not p)))
+      val th6 = imp_trans (iff_imp1 (axiom_not (Forall(x,Not p)))) th5
       val th7 = imp_trans (iff_imp1(axiom_exists x p)) th6 in
   imp_swap(imp_trans th7 (imp_swap th4))
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (* If |- p(x) ==> q then |- (exists x. p(x)) ==> q                           *)
@@ -106,7 +106,7 @@ fun exists_left_th x p q =
 fun exists_left x th =
   let val (p,q) = dest_imp(concl th) in
   modusponens (exists_left_th x p q) (gen x th)
-  end;;
+  end;
 
 (* ------------------------------------------------------------------------- *)
 (*    |- x = t ==> p ==> q    [x not in t and not free in q]                 *)
@@ -121,7 +121,7 @@ fun subspec th =
                             (exists_left_th x e q) in
         modusponens (imp_swap th1) (axiom_existseq x t)
         end
-  | _ => raise Fail "subspec: wrong sort of theorem";;
+  | _ => raise Fail "subspec: wrong sort of theorem";
 
 (* ------------------------------------------------------------------------- *)
 (*    |- x = y ==> p[x] ==> q[y]  [x not in FV(q); y not in FV(p) or x == y] *)
@@ -134,8 +134,8 @@ fun subalpha th =
     Imp(Atom(R("=",[Var x,Var y])),Imp(p,q)) =>
         if x = y then genimp x (modusponens th (axiom_eqrefl(Var x)))
         else gen_right y (subspec th)
-  | _ => raise Fail "subalpha: wrong sort of theorem";;
-  
+  | _ => raise Fail "subalpha: wrong sort of theorem";
+
 (* ------------------------------------------------------------------------- *)
 (*         ---------------------------------- isubst                         *)
 (*            |- s = t ==> p[s] ==> p[t]                                     *)
@@ -161,23 +161,23 @@ fun isubst s t sfm tfm =
         if x = y then
           imp_trans (gen_right x (isubst s t p q)) (axiom_allimp x p q)
         else
-          let val z = Var(variant x (unions_str [fv p, fv q, fvt s, fvt t])) 
+          let val z = Var(variant x (unions_str [fv p, fv q, fvt s, fvt t]))
               val th1 = isubst (Var x) z p (subst (x |==> z) p)
-              val th2 = isubst z (Var y) (subst (y |==> z) q) q 
-              val th3 = subalpha th1 
-              val th4 = subalpha th2 
+              val th2 = isubst z (Var y) (subst (y |==> z) q) q
+              val th3 = subalpha th1
+              val th4 = subalpha th2
               val th5 = isubst s t (consequent(concl th3))
                                (antecedent(concl th4)) in
           imp_swap (imp_trans2 (imp_trans th3 (imp_swap th5)) th4)
           end
   | _ =>
         let val sth = iff_imp1(expand_connective sfm)
-            val tth = iff_imp2(expand_connective tfm) 
+            val tth = iff_imp2(expand_connective tfm)
             val th1 = isubst s t (consequent(concl sth))
                              (antecedent(concl tth)) in
         imp_swap(imp_trans sth (imp_swap(imp_trans2 th1 tth)))
-        end;;
-        
+        end;
+
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -192,7 +192,7 @@ fun alpha z fm =
     Forall(x,p) => let val p' = subst (x |==> Var z) p in
                    subalpha(isubst (Var x) (Var z) p p')
                    end
-  | _ => raise Fail "alpha: not a universal formula";;
+  | _ => raise Fail "alpha: not a universal formula";
 
 (* ------------------------------------------------------------------------- *)
 (*                                                                           *)
@@ -208,68 +208,68 @@ fun ispec t fm =
         imp_trans th (ispec t (consequent(concl th)))
         end
       else subspec(isubst (Var x) t p (subst (x |==> t) p))
-  | _ => raise Fail "ispec: non-universal formula";;
+  | _ => raise Fail "ispec: non-universal formula";
 
 (* ------------------------------------------------------------------------- *)
 (* Specialization rule.                                                      *)
 (* ------------------------------------------------------------------------- *)
 
 
-fun spec t th = modusponens (ispec t (concl th)) th;;
+fun spec t th = modusponens (ispec t (concl th)) th;
 
 
 (* ------------------------------------------------------------------------- *)
 (* An example.                                                               *)
 (* ------------------------------------------------------------------------- *)
 
-START_INTERACTIVE;;
-ispec (<<|"y"|>>) (<<"forall x y z. x + y + z = z + y + x">>);;
+START_INTERACTIVE;
+ispec (<<|"y"|>>) (<<"forall x y z. x + y + z = z + y + x">>);
 
 (* ------------------------------------------------------------------------- *)
 (* Additional tests not in main text.                                        *)
 (* ------------------------------------------------------------------------- *)
 
 isubst (<<|"x + x"|>>) (<<|"2 * x"|>>)
-        (<<"x + x = x ==> x = 0">>) (<<"2 * x = x ==> x = 0">>);;
+        (<<"x + x = x ==> x = 0">>) (<<"2 * x = x ==> x = 0">>);
 
 isubst (<<|"x + x"|>>)  (<<|"2 * x"|>>)
        (<<"(x + x = y + y) ==> (y + y + y = x + x + x)">>)
-       (<<"2 * x = y + y ==> y + y + y = x + 2 * x">>);;
+       (<<"2 * x = y + y ==> y + y + y = x + 2 * x">>);
 
-ispec (<<|"x"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;;
+ispec (<<|"x"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;
 
-ispec (<<|"x"|>>) (<<"forall x. x = x">>) ;;
+ispec (<<|"x"|>>) (<<"forall x. x = x">>) ;
 
-ispec (<<|"w + y + z"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;;
+ispec (<<|"w + y + z"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;
 
-ispec (<<|"x + y + z"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;;
+ispec (<<|"x + y + z"|>>) (<<"forall x y z. x + y + z = y + z + z">>) ;
 
-ispec (<<|"x + y + z"|>>) (<<"forall x y z. nothing_much">>) ;;
+ispec (<<|"x + y + z"|>>) (<<"forall x y z. nothing_much">>) ;
 
 isubst (<<|"x + x"|>>) (<<|"2 * x"|>>)
-       (<<"(x + x = y + y) <=> (something \\/ y + y + y = x + x + x)">>) 
-       (<<"(2 * x = y + y) <=> (something \\/ y + y + y = x + x + x)">>);;
+       (<<"(x + x = y + y) <=> (something \\/ y + y + y = x + x + x)">>)
+       (<<"(2 * x = y + y) <=> (something \\/ y + y + y = x + x + x)">>);
 
 isubst (<<|"x + x"|>>)  (<<|"2 * x"|>>)
        (<<"(exists x. x = 2) <=> exists y. y + x + x = y + y + y">>)
-       (<<"(exists x. x = 2) <=> (exists y. y + 2 * x = y + y + y)">>);;
+       (<<"(exists x. x = 2) <=> (exists y. y + 2 * x = y + y + y)">>);
 
 isubst (<<|"x"|>>)  (<<|"y"|>>)
         (<<"(forall z. x = z) <=> (exists x. y < z) /\\ (forall y. y < x)">>)
-        (<<"(forall z. y = z) <=> (exists x. y < z) /\\ (forall y'. y' < y)">>);;
+        (<<"(forall z. y = z) <=> (exists x. y < z) /\\ (forall y'. y' < y)">>);
 
 (* ------------------------------------------------------------------------- *)
 (* The bug is now fixed.                                                     *)
 (* ------------------------------------------------------------------------- *)
 
-ispec (<<|"x'"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);;
+ispec (<<|"x'"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);
 
-ispec (<<|"x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);;
+ispec (<<|"x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);
 
-ispec (<<|"x' + x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);;
+ispec (<<|"x' + x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);
 
-ispec (<<|"x + x' + x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);;
+ispec (<<|"x + x' + x''"|>>) (<<"forall x x' x''. x + x' + x'' = 0">>);
 
-ispec (<<|"2 * x"|>>) (<<"forall x x'. x + x' = x' + x">>);;
+ispec (<<|"2 * x"|>>) (<<"forall x x'. x + x' = x' + x">>);
 
-END_INTERACTIVE;;
+END_INTERACTIVE;
