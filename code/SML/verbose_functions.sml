@@ -7,7 +7,7 @@
 (* ========================================================================= *)
 
 fun begin_output () = (print_string ":::"; print_newline ());
-fun end_output () = (print_newline (); print_string ";"; print_newline ());
+fun end_output () = (print_newline (); print_string ";;;"; print_newline ());
 
 fun print_list print_elem es= ( (* Inspired by the printing of terms *)
     if es = [] then print_string "[]" else (
