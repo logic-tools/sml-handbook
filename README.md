@@ -2,6 +2,7 @@
 
 *For Isabelle, Moscow ML, Standard ML of New Jersey and Poly/ML.*
 
+New entry in the Archive of Formal Proofs: https://www.isa-afp.org/entries/FOL_Harrison.shtml
 
 The verification in Isabelle of the kernel is described here:
 
